@@ -15,7 +15,7 @@ export interface SupabaseNode {
 
 export interface KVRecord {
   key: string;
-  value: any;
+  value: unknown;
   tags: string[];
   updatedAt: string;
   nodeId: string; // The primary node where it's stored

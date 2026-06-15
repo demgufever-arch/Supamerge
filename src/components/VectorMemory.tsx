@@ -2,6 +2,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { SupabaseNode, VectorMemory } from '../types';
 import { generateMockEmbedding } from '../utils/embedding';
 import { Brain, Search, Plus, Sparkles, Database, HelpCircle, User, Clock, BarChart2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface VectorMemoryProps {
   nodes: SupabaseNode[];
@@ -72,8 +82,8 @@ export default function VectorMemoryComponent({
       if (searchQuery.trim()) {
         handleSearch(new Event('submit') as any);
       }
-    } catch (err: any) {
-      alert(`Failed to add memory: ${err.message}`);
+    } catch (err) {
+      alert(`Failed to add memory: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsAdding(false);
     }
@@ -98,8 +108,8 @@ export default function VectorMemoryComponent({
         nodesQueried: nodes.filter(n => n.status === 'connected').length,
         timeMs: Math.round(end - start),
       });
-    } catch (err: any) {
-      alert(`Search failed: ${err.message}`);
+    } catch (err) {
+      alert(`Search failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsSearching(false);
     }
@@ -182,7 +192,7 @@ export default function VectorMemoryComponent({
           <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
             <Brain className="h-6 w-6 text-emerald-400" />
             Unified Vector Memory
-            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-750">
+            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
@@ -191,27 +201,23 @@ export default function VectorMemoryComponent({
           </p>
         </div>
 
-        <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-1 self-start sm:self-center">
-          <button
+        <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-0.5 self-start sm:self-center">
+          <Button
+            variant={activeTab === 'explore' ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setActiveTab('explore')}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-              activeTab === 'explore'
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'explore' ? 'bg-slate-700 text-white' : ''}`}
           >
             Semantic Explorer
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={activeTab === 'add' ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setActiveTab('add')}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-              activeTab === 'add'
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'add' ? 'bg-slate-700 text-white' : ''}`}
           >
             Add Memory Chunk
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -222,19 +228,19 @@ export default function VectorMemoryComponent({
             {/* Search Input */}
             <form onSubmit={handleSearch} className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4.5 w-4.5 text-slate-500" />
-                <input
+                <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-500" />
+                <Input
                   type="text"
-                  placeholder="Ask a question or enter a semantic query (e.g., 'What are the server settings?')..."
+                  placeholder="Ask a question or enter a semantic query..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full pl-10 bg-slate-900/40 border-slate-800"
                 />
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={isSearching || !searchQuery.trim()}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-5 text-sm font-semibold text-white transition disabled:opacity-50 flex items-center gap-1.5"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white"
               >
                 {isSearching ? (
                   <>
@@ -247,7 +253,7 @@ export default function VectorMemoryComponent({
                     Query
                   </>
                 )}
-              </button>
+              </Button>
             </form>
 
             {/* Parallel Search Diagnostics Banner */}
@@ -327,7 +333,6 @@ export default function VectorMemoryComponent({
                           className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 rounded bg-slate-950 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/30 p-1 text-slate-500 hover:text-rose-400 transition"
                           title="Delete Memory"
                         >
-                          <Clock className="hidden" /> {/* just placeholder */}
                           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                         </button>
                       </div>
@@ -359,9 +364,9 @@ export default function VectorMemoryComponent({
                             {mem.content}
                           </p>
                           <div className="flex flex-wrap items-center gap-2 text-[10px]">
-                            <span className={`rounded px-1.5 py-0.5 font-semibold border ${getCategoryColor(mem.metadata.category)}`}>
+                            <Badge className={`px-1.5 py-0.5 text-[10px] font-semibold border ${getCategoryColor(mem.metadata.category)}`}>
                               {formatCategory(mem.metadata.category)}
-                            </span>
+                            </Badge>
                             <span className="text-slate-500 flex items-center gap-0.5 font-mono">
                               <User className="h-3 w-3 text-slate-600" />
                               {mem.metadata.agentName}
@@ -370,9 +375,13 @@ export default function VectorMemoryComponent({
                               <Clock className="h-3 w-3 text-slate-600" />
                               {new Date(mem.metadata.timestamp).toLocaleDateString()}
                             </span>
-                            <span className="font-mono font-bold text-[10px]" style={{ color: getNodeColor(mem.nodeId) }}>
+                            <Badge
+                              variant="outline"
+                              className="font-mono font-bold text-[10px] px-1.5 py-0.5 border-slate-700"
+                              style={{ color: getNodeColor(mem.nodeId), borderColor: `${getNodeColor(mem.nodeId)}40` }}
+                            >
                               @{getNodeName(mem.nodeId)}
-                            </span>
+                            </Badge>
                           </div>
                         </div>
 
@@ -572,7 +581,7 @@ export default function VectorMemoryComponent({
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
                 disabled={isAdding}
-                className="w-full text-sm rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-200 placeholder-slate-600 focus:border-emerald-500 focus:outline-none leading-relaxed"
+                className="w-full text-sm rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-slate-200 placeholder-slate-600 focus:border-emerald-500 focus:outline-none leading-relaxed"
               />
             </div>
 
@@ -581,39 +590,39 @@ export default function VectorMemoryComponent({
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   Category
                 </label>
-                <select
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  disabled={isAdding}
-                  className="w-full text-xs rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-300 focus:border-emerald-500 focus:outline-none"
-                >
-                  <option value="user_preferences">User Preferences</option>
-                  <option value="infrastructure">Infrastructure & Ops</option>
-                  <option value="branding">Design & Branding</option>
-                  <option value="security">Security & Policies</option>
-                  <option value="general">General Context</option>
-                </select>
+                <Select value={newCategory} onValueChange={setNewCategory} disabled={isAdding}>
+                  <SelectTrigger className="w-full text-xs border-slate-800 bg-slate-950 text-slate-300">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="border-slate-800 bg-slate-950 text-slate-300">
+                    <SelectItem value="user_preferences">User Preferences</SelectItem>
+                    <SelectItem value="infrastructure">Infrastructure & Ops</SelectItem>
+                    <SelectItem value="branding">Design & Branding</SelectItem>
+                    <SelectItem value="security">Security & Policies</SelectItem>
+                    <SelectItem value="general">General Context</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   Agent Name (Originator)
                 </label>
-                <input
+                <Input
                   type="text"
                   required
                   value={newAgentName}
                   onChange={(e) => setNewAgentName(e.target.value)}
                   disabled={isAdding}
-                  className="w-full text-xs rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-none font-mono"
+                  className="font-mono text-xs"
                 />
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isAdding || !newContent.trim()}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 py-2.5 text-sm font-semibold text-white transition disabled:opacity-50"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white"
             >
               {isAdding ? (
                 <>
@@ -626,7 +635,7 @@ export default function VectorMemoryComponent({
                   Commit Memory to Cluster
                 </>
               )}
-            </button>
+            </Button>
           </form>
         </div>
       )}

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { SupabaseNode } from '../types';
 import { createClient } from '@supabase/supabase-js';
 import { Plus, Trash2, Terminal, Check, AlertTriangle, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 interface NodeConsoleProps {
   nodes: SupabaseNode[];
@@ -122,10 +125,10 @@ export default function NodeConsole({
           message: `HTTP Error: Received status ${res.status}. Verify your API key is correct.`,
         };
       }
-    } catch (err: any) {
+    } catch (err) {
       return {
         success: false,
-        message: `Network Error: ${err.message || 'Could not reach server.'} Ensure URL is correct and CORS is enabled.`,
+        message: `Network Error: ${err instanceof Error ? err.message : 'Could not reach server.'} Ensure URL is correct and CORS is enabled.`,
       };
     }
   };
@@ -157,8 +160,8 @@ export default function NodeConsole({
         setUrl('');
         setAnonKey('');
         setTestResult(null);
-      } catch (err: any) {
-        setTestResult({ success: false, message: `Failed to save node: ${err.message}` });
+      } catch (err) {
+        setTestResult({ success: false, message: `Failed to save node: ${err instanceof Error ? err.message : 'Unknown error'}` });
       }
     }
   };
@@ -227,27 +230,25 @@ export default function NodeConsole({
                   <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
                     Node Label (Name)
                   </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. supabase-prod-west"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-none"
-                  />
+                    <Input
+                      type="text"
+                      required
+                      placeholder="e.g. supabase-prod-west"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
                     Hosting Region
                   </label>
-                  <input
-                    type="text"
-                    list="supabase-regions"
-                    placeholder="e.g. us-east-1, eu-central-1..."
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className="w-full rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-250 placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
-                  />
+                    <Input
+                      type="text"
+                      list="supabase-regions"
+                      placeholder="e.g. us-east-1, eu-central-1..."
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                    />
                   <datalist id="supabase-regions">
                     <option value="us-east-1 (N. Virginia)" />
                     <option value="us-west-1 (N. California)" />
@@ -273,35 +274,35 @@ export default function NodeConsole({
                 <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   Supabase Project URL
                 </label>
-                <input
-                  type="url"
-                  required
-                  placeholder="https://your-project-ref.supabase.co"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="w-full rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-none font-mono"
-                />
+                    <Input
+                      type="url"
+                      required
+                      placeholder="https://your-project-ref.supabase.co"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="font-mono"
+                    />
               </div>
 
               <div>
                 <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   Supabase Anon API Key
                 </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  value={anonKey}
-                  onChange={(e) => setAnonKey(e.target.value)}
-                  className="w-full rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-none font-mono"
-                />
+                    <Input
+                      type="password"
+                      required
+                      placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      value={anonKey}
+                      onChange={(e) => setAnonKey(e.target.value)}
+                      className="font-mono"
+                    />
               </div>
 
               <div className="flex gap-3">
-                <button
+                <Button
                   type="submit"
                   disabled={isTesting || !name || !url || !anonKey}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 py-2.5 font-semibold text-white transition disabled:opacity-50"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white"
                 >
                   {isTesting ? (
                     <>
@@ -314,7 +315,7 @@ export default function NodeConsole({
                       Test & Add Node
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </form>
 
@@ -349,14 +350,16 @@ export default function NodeConsole({
               <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
                 Cluster Provisioned Nodes ({nodes.length})
               </h3>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={checkAllSchemas}
                 disabled={checkingSchema}
-                className="text-[10px] text-slate-400 hover:text-white flex items-center gap-1 transition"
+                className="text-[10px] text-slate-400 hover:text-white h-auto px-2 py-1"
               >
                 <RefreshCw className={`h-3 w-3 ${checkingSchema ? 'animate-spin' : ''}`} />
                 Refresh Schemas
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -372,7 +375,7 @@ export default function NodeConsole({
                   return (
                     <div
                       key={node.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl bg-slate-950/50 border border-slate-850 p-4 transition hover:border-slate-850/100"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl bg-slate-950/50 border border-slate-800 p-4 transition hover:border-slate-800/100"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -387,49 +390,59 @@ export default function NodeConsole({
                       <div className="flex flex-wrap items-center gap-3 self-start sm:self-center">
                         {nodeSchema?.checked && (
                           <div className="flex gap-1">
-                            <span
-                              className={`rounded px-1 text-[9px] font-mono font-semibold ${
-                                nodeSchema.kv ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                              }`}
-                              title="unified_kv table"
-                            >
-                              KV:{nodeSchema.kv ? '✓' : '✗'}
-                            </span>
-                            <span
-                              className={`rounded px-1 text-[9px] font-mono font-semibold ${
-                                nodeSchema.chunks ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                              }`}
-                              title="unified_chunks table"
-                            >
-                              DFS:{nodeSchema.chunks ? '✓' : '✗'}
-                            </span>
-                            <span
-                              className={`rounded px-1 text-[9px] font-mono font-semibold ${
-                                nodeSchema.vector ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                              }`}
-                              title="unified_vector & RPC function"
-                            >
-                              VEC:{nodeSchema.vector ? '✓' : '✗'}
-                            </span>
+                          <Badge
+                            variant={nodeSchema.kv ? 'default' : 'outline'}
+                            className={`text-[9px] font-mono ${
+                              nodeSchema.kv
+                                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+                                : 'text-amber-400 border-amber-500/30'
+                            }`}
+                            title="unified_kv table"
+                          >
+                            KV:{nodeSchema.kv ? '✓' : '✗'}
+                          </Badge>
+                          <Badge
+                            variant={nodeSchema.chunks ? 'default' : 'outline'}
+                            className={`text-[9px] font-mono ${
+                              nodeSchema.chunks
+                                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+                                : 'text-amber-400 border-amber-500/30'
+                            }`}
+                            title="unified_chunks table"
+                          >
+                            DFS:{nodeSchema.chunks ? '✓' : '✗'}
+                          </Badge>
+                          <Badge
+                            variant={nodeSchema.vector ? 'default' : 'outline'}
+                            className={`text-[9px] font-mono ${
+                              nodeSchema.vector
+                                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+                                : 'text-amber-400 border-amber-500/30'
+                            }`}
+                            title="unified_vector & RPC function"
+                          >
+                            VEC:{nodeSchema.vector ? '✓' : '✗'}
+                          </Badge>
                           </div>
                         )}
 
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                            isOnline ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
-                          }`}
+                        <Badge
+                          variant={isOnline ? 'default' : 'destructive'}
+                          className={`gap-1.5 ${isOnline ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/20' : ''}`}
                         >
                           <span className={`h-1 w-1 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-rose-400'}`} />
                           {isOnline ? 'Active' : 'Offline'}
-                        </span>
+                        </Badge>
 
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => onDeleteNode(node.id)}
-                          className="rounded p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                          className="text-slate-500 hover:text-rose-400 hover:bg-rose-500/10"
                           title="Remove Node from Cluster"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   );
@@ -453,9 +466,11 @@ export default function NodeConsole({
             </div>
 
             <div className="relative">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleCopySql}
-                className="absolute right-3 top-3 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 p-1.5 text-slate-300 transition flex items-center gap-1 text-[10px] font-semibold"
+                className="absolute right-3 top-3 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 text-[10px]"
                 title="Copy SQL Script"
               >
                 {copied ? (
@@ -469,9 +484,9 @@ export default function NodeConsole({
                     Copy SQL
                   </>
                 )}
-              </button>
+              </Button>
               
-              <pre className="rounded-lg bg-slate-950 p-4 font-mono text-[9px] text-slate-400 border border-slate-850 h-[360px] overflow-y-auto leading-relaxed select-all">
+              <pre className="rounded-lg bg-slate-950 p-4 font-mono text-[9px] text-slate-400 border border-slate-800 h-[360px] overflow-y-auto leading-relaxed select-all">
                 {SCHEMA_SQL}
               </pre>
             </div>

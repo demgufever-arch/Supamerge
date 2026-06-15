@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { SupabaseNode, ClusterMetrics } from '../types';
 import { buildHashRing, getNodeForKey, HashRingNode } from '../utils/hash';
 import { Database, HardDrive, Cpu, Activity, Signal, RefreshCw, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface DashboardProps {
   nodes: SupabaseNode[];
@@ -156,101 +164,107 @@ export default function Dashboard({
         </div>
       </div>
 
-      {/* Cluster Metrics Cards */}
+        {/* Cluster Metrics Cards */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {/* DB Capacity Card */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/20 p-5 backdrop-blur-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Pooled PostgreSQL Space
-              </p>
-              <h3 className="mt-1 text-2xl font-bold text-slate-100">
-                {formatBytes(metrics.usedDbBytes)}
-              </h3>
-              <p className="mt-0.5 text-xs text-slate-400">
-                of {formatBytes(metrics.totalDbCapacityBytes)} combined limit
-              </p>
+        <Card size="sm" className="border-slate-800 bg-slate-900/20 card-lift">
+          <CardContent className="space-y-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Pooled PostgreSQL Space
+                </CardDescription>
+                <CardTitle className="mt-1 text-2xl font-bold text-slate-100 font-sans">
+                  {formatBytes(metrics.usedDbBytes)}
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  of {formatBytes(metrics.totalDbCapacityBytes)} combined limit
+                </p>
+              </div>
+              <div className="rounded-lg bg-emerald-500/10 p-2.5 text-emerald-400 border border-emerald-500/25">
+                <Database className="h-5 w-5" />
+              </div>
             </div>
-            <div className="rounded-lg bg-emerald-500/10 p-2.5 text-emerald-400 border border-emerald-500/25">
-              <Database className="h-5 w-5" />
+            <div className="mt-4">
+              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                  style={{ width: `${Math.min(100, dbPercentage)}%` }}
+                />
+              </div>
+              <div className="mt-2 flex justify-between text-xs text-slate-400">
+                <span>{dbPercentage.toFixed(1)}% Allocated</span>
+                <span>{formatBytes(metrics.totalDbCapacityBytes - metrics.usedDbBytes)} Free</span>
+              </div>
             </div>
-          </div>
-          <div className="mt-4">
-            <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
-                style={{ width: `${Math.min(100, dbPercentage)}%` }}
-              />
-            </div>
-            <div className="mt-2 flex justify-between text-xs text-slate-400">
-              <span>{dbPercentage.toFixed(1)}% Allocated</span>
-              <span>{formatBytes(metrics.totalDbCapacityBytes - metrics.usedDbBytes)} Free</span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* File Storage Card */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/20 p-5 backdrop-blur-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Pooled Storage Capacity
-              </p>
-              <h3 className="mt-1 text-2xl font-bold text-slate-100">
-                {formatBytes(metrics.usedStorageBytes)}
-              </h3>
-              <p className="mt-0.5 text-xs text-slate-400">
-                of {formatBytes(metrics.totalStorageCapacityBytes)} combined limit
-              </p>
+        <Card size="sm" className="border-slate-800 bg-slate-900/20 card-lift">
+          <CardContent className="space-y-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Pooled Storage Capacity
+                </CardDescription>
+                <CardTitle className="mt-1 text-2xl font-bold text-slate-100 font-sans">
+                  {formatBytes(metrics.usedStorageBytes)}
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  of {formatBytes(metrics.totalStorageCapacityBytes)} combined limit
+                </p>
+              </div>
+              <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-400 border border-blue-500/25">
+                <HardDrive className="h-5 w-5" />
+              </div>
             </div>
-            <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-400 border border-blue-500/25">
-              <HardDrive className="h-5 w-5" />
+            <div className="mt-4">
+              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-400 transition-all duration-500"
+                  style={{ width: `${Math.min(100, storagePercentage)}%` }}
+                />
+              </div>
+              <div className="mt-2 flex justify-between text-xs text-slate-400">
+                <span>{storagePercentage.toFixed(1)}% Allocated</span>
+                <span>{formatBytes(metrics.totalStorageCapacityBytes - metrics.usedStorageBytes)} Free</span>
+              </div>
             </div>
-          </div>
-          <div className="mt-4">
-            <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-400 transition-all duration-500"
-                style={{ width: `${Math.min(100, storagePercentage)}%` }}
-              />
-            </div>
-            <div className="mt-2 flex justify-between text-xs text-slate-400">
-              <span>{storagePercentage.toFixed(1)}% Allocated</span>
-              <span>{formatBytes(metrics.totalStorageCapacityBytes - metrics.usedStorageBytes)} Free</span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* High-Availability Metrics */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/20 p-5 backdrop-blur-sm sm:col-span-2 lg:col-span-1">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Cluster High-Availability
-              </p>
-              <h3 className="mt-1 text-2xl font-bold text-slate-100">
-                {metrics.activeNodes > 1 ? 'High (2x Redundancy)' : 'No Redundancy'}
-              </h3>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Active Replication Factor: <span className="text-emerald-400 font-semibold">2x</span>
-              </p>
+        <Card size="sm" className="border-slate-800 bg-slate-900/20 card-lift sm:col-span-2 lg:col-span-1">
+          <CardContent className="space-y-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Cluster High-Availability
+                </CardDescription>
+                <CardTitle className="mt-1 text-2xl font-bold text-slate-100 font-sans">
+                  {metrics.activeNodes > 1 ? 'High (2x Redundancy)' : 'No Redundancy'}
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Active Replication Factor: <span className="text-emerald-400 font-semibold">2x</span>
+                </p>
+              </div>
+              <div className="rounded-lg bg-purple-500/10 p-2.5 text-purple-400 border border-purple-500/25">
+                <Cpu className="h-5 w-5" />
+              </div>
             </div>
-            <div className="rounded-lg bg-purple-500/10 p-2.5 text-purple-400 border border-purple-500/25">
-              <Cpu className="h-5 w-5" />
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
+                <span className="block text-slate-500">Read Quorum</span>
+                <span className="font-semibold text-slate-300">1 Node (Fastest)</span>
+              </div>
+              <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
+                <span className="block text-slate-500">Write Quorum</span>
+                <span className="font-semibold text-slate-300">2 Nodes (Sync)</span>
+              </div>
             </div>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
-              <span className="block text-slate-500">Read Quorum</span>
-              <span className="font-semibold text-slate-300">1 Node (Fastest)</span>
-            </div>
-            <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
-              <span className="block text-slate-500">Write Quorum</span>
-              <span className="font-semibold text-slate-300">2 Nodes (Sync)</span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Topology and Hash Ring Section */}
@@ -571,7 +585,7 @@ export default function Dashboard({
             
             <div className="space-y-2.5 text-xs text-slate-400">
               <p>
-                In a standard cluster, node failures cause data loss. SupaSurg overcomes this with a **Replication Factor (RF) of 2x**.
+                In a standard cluster, node failures cause data loss. SupaMerge overcomes this with a **Replication Factor (RF) of 2x**.
               </p>
               
               <div className="rounded-lg bg-slate-950/40 border border-slate-800/80 p-3 space-y-2">
@@ -618,9 +632,9 @@ export default function Dashboard({
             const storagePercent = (node.storageUsageBytes / node.storageLimitBytes) * 100;
             
             return (
-              <div
-                key={node.id}
-                className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
+              <Card
+                size="sm"
+                className={`relative overflow-hidden border transition-all duration-300 card-lift ${
                   isOnline
                     ? 'border-slate-800 bg-slate-900/15 hover:border-slate-700'
                     : 'border-rose-950/50 bg-rose-950/5 opacity-70'
@@ -634,7 +648,7 @@ export default function Dashboard({
                   />
                 )}
 
-                <div className="p-5 space-y-4">
+                <CardContent className="space-y-4 p-5">
                   {/* Header */}
                   <div className="flex items-start justify-between">
                     <div>
@@ -649,11 +663,10 @@ export default function Dashboard({
                     </div>
 
                     <div className="flex flex-col items-end">
-                      <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                          isOnline
-                            ? 'bg-emerald-500/10 text-emerald-400'
-                            : 'bg-rose-500/10 text-rose-400'
+                      <Badge
+                        variant={isOnline ? 'default' : 'destructive'}
+                        className={`gap-1.5 px-2 py-0.5 text-xs font-semibold ${
+                          isOnline ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15' : ''
                         }`}
                       >
                         <span
@@ -662,7 +675,7 @@ export default function Dashboard({
                           }`}
                         />
                         {isOnline ? 'Online' : 'Offline'}
-                      </span>
+                      </Badge>
                       {isOnline && (
                         <span className="text-[10px] text-slate-400 mt-1 font-mono">
                           {node.latency}ms
@@ -729,8 +742,8 @@ export default function Dashboard({
                       This node is offline. Hash routing will automatically bypass it and route requests to the next clockwise neighbor.
                     </div>
                   )}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>

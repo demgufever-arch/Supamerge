@@ -2,11 +2,22 @@ import React, { useState } from 'react';
 import { SupabaseNode, KVRecord } from '../types';
 import { getNodeForKey, buildHashRing } from '../utils/hash';
 import { Search, Database, RefreshCw, Plus, Edit2, Trash2, Key, HelpCircle, Eye, ShieldAlert, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface KVStoreProps {
   nodes: SupabaseNode[];
   records: KVRecord[];
-  onAddRecord: (key: string, value: any, tags: string[]) => Promise<{ primary: string; replica: string }>;
+  onAddRecord: (key: string, value: unknown, tags: string[]) => Promise<{ primary: string; replica: string }>;
   onDeleteRecord: (key: string) => Promise<void>;
   isSandbox: boolean;
 }
@@ -60,8 +71,8 @@ export default function KVStore({
       }
       JSON.parse(val);
       setJsonError(null);
-    } catch (e: any) {
-      setJsonError(e.message);
+    } catch (e) {
+      setJsonError(e instanceof Error ? e.message : 'Invalid JSON');
     }
   };
 
@@ -145,8 +156,8 @@ export default function KVStore({
         setWriteVisual(null);
         setActiveTab('explore');
       }, 1500);
-    } catch (err: any) {
-      setWriteLogs((prev) => [...prev, `[ERROR] Write failed: ${err.message}`]);
+    } catch (err) {
+      setWriteLogs((prev) => [...prev, `[ERROR] Write failed: ${err instanceof Error ? err.message : 'Unknown error'}`]);
       setIsWriting(false);
     }
   };
@@ -172,7 +183,7 @@ export default function KVStore({
           <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
             <Key className="h-6 w-6 text-emerald-400" />
             Sharded Key-Value Store
-            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-750">
+            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
@@ -181,27 +192,23 @@ export default function KVStore({
           </p>
         </div>
 
-        <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-1 self-start sm:self-center">
-          <button
+        <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-0.5 self-start sm:self-center">
+          <Button
+            variant={activeTab === 'explore' ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setActiveTab('explore')}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-              activeTab === 'explore'
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'explore' ? 'bg-slate-700 text-white' : ''}`}
           >
             Explore Records ({filteredRecords.length})
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={activeTab === 'write' ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setActiveTab('write')}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-              activeTab === 'write'
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'write' ? 'bg-slate-700 text-white' : ''}`}
           >
             Write New Key
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -211,138 +218,141 @@ export default function KVStore({
           <div className="lg:col-span-2 space-y-4">
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-500" />
-              <input
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+              <Input
                 type="text"
                 placeholder="Search by key name or tag (e.g., 'user', 'config')..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-2 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full pl-10 bg-slate-900/40 border-slate-800"
               />
             </div>
 
             {/* KV List Table */}
             <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/10 backdrop-blur-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-sm text-slate-400">
-                  <thead className="border-b border-slate-800 bg-slate-900/50 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    <tr>
-                      <th className="px-4 py-3">Key Name</th>
-                      <th className="px-4 py-3">Primary Node</th>
-                      <th className="px-4 py-3">Replica Node</th>
-                      <th className="px-4 py-3 text-right">Size</th>
-                      <th className="px-4 py-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60 font-mono text-xs">
-                    {filteredRecords.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="px-4 py-8 text-center text-slate-500 font-sans">
-                          <Database className="h-8 w-8 text-slate-600 mx-auto mb-2" />
-                          No records found matching your search.
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredRecords.map((rec) => {
-                        const primaryNode = nodes.find((n) => n.id === rec.nodeId);
-                        const replicaNode = rec.replicaNodeId ? nodes.find((n) => n.id === rec.replicaNodeId) : null;
-                        
-                        const isPrimaryOnline = primaryNode?.status === 'connected';
-                        const isReplicaOnline = replicaNode ? replicaNode.status === 'connected' : false;
-                        const sizeBytes = getRecordSize(rec);
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-slate-800 hover:bg-transparent">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3">Key Name</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3">Primary Node</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3">Replica Node</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3 text-right">Size</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredRecords.length === 0 ? (
+                    <TableRow className="border-slate-800/60 hover:bg-transparent">
+                      <TableCell colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                        <Database className="h-8 w-8 text-slate-600 mx-auto mb-2" />
+                        No records found matching your search.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredRecords.map((rec) => {
+                      const primaryNode = nodes.find((n) => n.id === rec.nodeId);
+                      const replicaNode = rec.replicaNodeId ? nodes.find((n) => n.id === rec.replicaNodeId) : null;
+                      
+                      const isPrimaryOnline = primaryNode?.status === 'connected';
+                      const isReplicaOnline = replicaNode ? replicaNode.status === 'connected' : false;
+                      const sizeBytes = getRecordSize(rec);
 
-                        return (
-                          <tr
-                            key={rec.key}
-                            className={`group hover:bg-slate-800/30 transition ${
-                              selectedRecord?.key === rec.key ? 'bg-slate-800/20' : ''
-                            }`}
-                          >
-                            <td className="px-4 py-3.5 font-bold text-slate-200 select-all max-w-[180px] truncate">
-                              {rec.key}
-                              <div className="mt-1 flex flex-wrap gap-1">
-                                {rec.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="rounded-full bg-slate-950 px-1.5 py-0.5 text-[9px] font-sans text-slate-400 border border-slate-800"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3.5">
-                              <span
-                                className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-bold ${getNodeColorClass(
-                                  rec.nodeId
-                                )}`}
+                      return (
+                        <TableRow
+                          key={rec.key}
+                          className={`border-slate-800/60 font-mono text-xs ${
+                            selectedRecord?.key === rec.key ? 'bg-slate-800/20' : ''
+                          }`}
+                        >
+                          <TableCell className="px-4 py-3.5 font-bold text-slate-200 select-all max-w-[180px] truncate">
+                            {rec.key}
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {rec.tags.map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="outline"
+                                  className="bg-slate-950 text-slate-400 border-slate-800 text-[9px] font-sans px-1.5 py-0.5 h-auto"
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3.5">
+                            <Badge
+                              variant={isPrimaryOnline ? 'default' : 'destructive'}
+                              className={`gap-1 px-2 py-0.5 font-bold ${
+                                isPrimaryOnline
+                                  ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+                                  : ''
+                              }`}
+                            >
+                              <span className={`h-1.5 w-1.5 rounded-full ${isPrimaryOnline ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                              {getNodeName(rec.nodeId)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="px-4 py-3.5">
+                            {rec.replicaNodeId ? (
+                              <Badge
+                                variant={isReplicaOnline ? 'default' : 'destructive'}
+                                className={`gap-1 px-2 py-0.5 font-bold ${
+                                  isReplicaOnline
+                                    ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+                                    : ''
+                                }`}
                               >
-                                <span
-                                  className={`h-1.5 w-1.5 rounded-full ${
-                                    isPrimaryOnline ? 'bg-emerald-400' : 'bg-rose-400'
-                                  }`}
-                                />
-                                {getNodeName(rec.nodeId)}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3.5">
-                              {rec.replicaNodeId ? (
-                                <span
-                                  className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-bold ${getNodeColorClass(
-                                    rec.replicaNodeId
-                                  )}`}
-                                >
-                                  <span
-                                    className={`h-1.5 w-1.5 rounded-full ${
-                                      isReplicaOnline ? 'bg-emerald-400' : 'bg-rose-400'
-                                    }`}
-                                  />
-                                  {getNodeName(rec.replicaNodeId)}
-                                </span>
-                              ) : (
-                                <span className="text-slate-600 font-sans italic">None</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3.5 text-right font-semibold text-slate-300">
-                              {sizeBytes} B
-                            </td>
-                            <td className="px-4 py-3.5 text-right font-sans">
-                              <div className="flex justify-end gap-1.5">
-                                <button
-                                  onClick={() => setSelectedRecord(rec)}
-                                  className="rounded p-1 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition"
-                                  title="Inspect JSON"
-                                >
-                                  <Eye className="h-4.5 w-4.5" />
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setNewKey(rec.key);
-                                    setNewValue(JSON.stringify(rec.value, null, 2));
-                                    setNewTags(rec.tags.join(', '));
-                                    setActiveTab('write');
-                                  }}
-                                  className="rounded p-1 text-slate-500 hover:text-blue-400 hover:bg-blue-500/10 transition"
-                                  title="Edit Value"
-                                >
-                                  <Edit2 className="h-4.5 w-4.5" />
-                                </button>
-                                <button
-                                  onClick={() => onDeleteRecord(rec.key)}
-                                  className="rounded p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
-                                  title="Delete Record"
-                                >
-                                  <Trash2 className="h-4.5 w-4.5" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                                <span className={`h-1.5 w-1.5 rounded-full ${isReplicaOnline ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                                {getNodeName(rec.replicaNodeId)}
+                              </Badge>
+                            ) : (
+                              <span className="text-slate-600 italic">None</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="px-4 py-3.5 text-right font-semibold text-slate-300">
+                            {sizeBytes} B
+                          </TableCell>
+                          <TableCell className="px-4 py-3.5 text-right">
+                            <div className="flex justify-end gap-1.5">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setSelectedRecord(rec)}
+                                className="text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                                title="Inspect JSON"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setNewKey(rec.key);
+                                  setNewValue(JSON.stringify(rec.value, null, 2));
+                                  setNewTags(rec.tags.join(', '));
+                                  setActiveTab('write');
+                                }}
+                                className="text-slate-500 hover:text-blue-400 hover:bg-blue-500/10"
+                                title="Edit Value"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => onDeleteRecord(rec.key)}
+                                className="text-slate-500 hover:text-rose-400 hover:bg-rose-500/10"
+                                title="Delete Record"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
             </div>
           </div>
 
@@ -446,14 +456,13 @@ export default function KVStore({
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   Key (Namespace identifier)
                 </label>
-                <input
+                <Input
                   type="text"
                   required
                   placeholder="e.g. user:profile:1001"
                   value={newKey}
                   onChange={(e) => setNewKey(e.target.value)}
                   disabled={isWriting}
-                  className="w-full rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
                 />
                 <span className="text-[10px] text-slate-500 mt-1 block">
                   Spaces are not recommended. Use colons `:` to create logical namespaces.
@@ -479,7 +488,7 @@ export default function KVStore({
                   onChange={(e) => handleJsonChange(e.target.value)}
                   disabled={isWriting}
                   className={`w-full font-mono text-xs rounded-lg border bg-slate-950 px-3 py-2 text-slate-200 placeholder-slate-600 focus:outline-none ${
-                    jsonError ? 'border-rose-800 focus:border-rose-500' : 'border-slate-850 focus:border-emerald-500'
+                    jsonError ? 'border-rose-800 focus:border-rose-500' : 'border-slate-800 focus:border-emerald-500'
                   }`}
                 />
               </div>
@@ -488,20 +497,19 @@ export default function KVStore({
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   Tags (Comma separated)
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder="e.g. config, staging, v1"
                   value={newTags}
                   onChange={(e) => setNewTags(e.target.value)}
                   disabled={isWriting}
-                  className="w-full rounded-lg border border-slate-850 bg-slate-950 px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isWriting || !!jsonError || !newKey.trim()}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 py-2.5 text-sm font-semibold text-white transition disabled:opacity-50"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white"
               >
                 {isWriting ? (
                   <>
@@ -514,7 +522,7 @@ export default function KVStore({
                     Write to Unified Cluster
                   </>
                 )}
-              </button>
+              </Button>
             </form>
           </div>
 

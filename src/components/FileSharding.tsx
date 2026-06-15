@@ -1,7 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { SupabaseNode, FileMetadata, FileChunk } from '../types';
 import { getNodeForKey, buildHashRing } from '../utils/hash';
-import { HardDrive, Upload, Download, Trash2, FileText, FileImage, FileCode, File, CheckCircle2, ShieldCheck, RefreshCw, Layers } from 'lucide-react';
+import { HardDrive, Upload, Download, Trash2, FileText, FileImage, FileCode, File, CheckCircle2, ShieldCheck, RefreshCw, Layers, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface FileShardingProps {
   nodes: SupabaseNode[];
@@ -168,8 +177,8 @@ export default function FileSharding({
         if (fileInputRef.current) fileInputRef.current.value = '';
       }, 1500);
 
-    } catch (err: any) {
-      alert(`Upload failed: ${err.message}`);
+    } catch (err) {
+      alert(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setIsUploading(false);
       setUploadProgress(0);
       setUploadStatus('');
@@ -270,8 +279,8 @@ export default function FileSharding({
         setIsDownloading(null);
       }, 1000);
 
-    } catch (err: any) {
-      log(`❌ CRITICAL FAILURE: ${err.message}`);
+    } catch (err) {
+      log(`❌ CRITICAL FAILURE: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setIsDownloading(null);
     }
   };
@@ -284,7 +293,7 @@ export default function FileSharding({
           <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
             <Layers className="h-6 w-6 text-emerald-400" />
             Distributed File Sharding
-            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-750">
+            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
@@ -309,19 +318,21 @@ export default function FileSharding({
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[64, 128, 256].map((size) => (
-                  <button
+                  <Button
                     key={size}
                     type="button"
+                    variant={chunkSizeKb === size ? 'default' : 'outline'}
+                    size="sm"
                     disabled={isUploading}
                     onClick={() => setChunkSizeKb(size)}
-                    className={`rounded-lg py-2 text-xs font-mono font-bold border transition ${
+                    className={`font-mono font-bold ${
                       chunkSizeKb === size
-                        ? 'bg-emerald-600/10 text-emerald-400 border-emerald-500/45 shadow-sm shadow-emerald-950/40'
-                        : 'bg-slate-950 text-slate-400 border-slate-850 hover:text-slate-200'
+                        ? 'bg-emerald-600/10 text-emerald-400 border-emerald-500/45 hover:bg-emerald-600/15'
+                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
                     }`}
                   >
                     {size} KB
-                  </button>
+                  </Button>
                 ))}
               </div>
               <span className="text-[10px] text-slate-500 mt-1.5 block leading-normal">
@@ -361,7 +372,7 @@ export default function FileSharding({
 
             {/* Upload Progress Bar */}
             {isUploading && (
-              <div className="rounded-lg bg-slate-950 border border-slate-850 p-4 space-y-3">
+              <div className="rounded-lg bg-slate-950 border border-slate-800 p-4 space-y-3">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-emerald-400 flex items-center gap-1.5">
                     <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -397,7 +408,7 @@ export default function FileSharding({
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-850">
+                <tbody className="divide-y divide-slate-800">
                   {files.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="px-4 py-12 text-center text-slate-500 font-sans">
@@ -410,7 +421,7 @@ export default function FileSharding({
                     files.map((file) => (
                       <tr key={file.id} className="hover:bg-slate-900/40 transition">
                         <td className="px-4 py-3.5 flex items-center gap-3">
-                          <div className="rounded-lg bg-slate-900 p-2 border border-slate-850">
+                          <div className="rounded-lg bg-slate-900 p-2 border border-slate-800">
                             {getFileIcon(file.type)}
                           </div>
                           <div className="min-w-0 max-w-[150px] sm:max-w-[200px]">
@@ -471,22 +482,26 @@ export default function FileSharding({
                         </td>
                         <td className="px-4 py-3.5 text-right">
                           <div className="flex justify-end gap-2">
-                            <button
+                            <Button
+                              variant="outline"
+                              size="icon"
                               onClick={() => handleDownload(file)}
                               disabled={isDownloading !== null}
-                              className="rounded-lg bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/25 hover:border-emerald-500 p-1.5 text-emerald-400 hover:text-white transition disabled:opacity-40"
+                              className="bg-emerald-600/10 hover:bg-emerald-600 border-emerald-500/25 hover:border-emerald-500 text-emerald-400 hover:text-white"
                               title="Download & Reassemble File"
                             >
                               <Download className="h-4 w-4" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="icon"
                               onClick={() => onDeleteFile(file.id)}
                               disabled={isDownloading !== null}
-                              className="rounded-lg bg-slate-900 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/30 p-1.5 text-slate-500 hover:text-rose-400 transition"
+                              className="bg-slate-900 hover:bg-rose-500/10 border-slate-800 hover:border-rose-500/30 text-slate-500 hover:text-rose-400"
                               title="Delete File Shards"
                             >
                               <Trash2 className="h-4 w-4" />
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -500,72 +515,64 @@ export default function FileSharding({
       </div>
 
       {/* Diagnostics Logs Modal */}
-      {showDiagnosticsModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2 uppercase tracking-wide">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+      <Dialog open={showDiagnosticsModal} onOpenChange={(open) => { if (!isDownloading) setShowDiagnosticsModal(open); }}>
+        <DialogContent className="max-w-lg border-slate-800 bg-slate-900 text-slate-200">
+          <DialogHeader>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <DialogTitle className="text-sm font-bold text-slate-200 uppercase tracking-wide">
                 Distributed Stream Diagnostics
-              </h3>
-              <button
-                onClick={() => {
-                  if (isDownloading === null) {
-                    setShowDiagnosticsModal(false);
-                  }
-                }}
-                disabled={isDownloading !== null}
-                className="text-xs text-slate-400 hover:text-slate-200 disabled:opacity-30"
+              </DialogTitle>
+            </div>
+            <DialogDescription className="hidden" />
+          </DialogHeader>
+
+          <div className="bg-slate-950 rounded-lg p-4 font-mono text-[10px] text-slate-300 border border-slate-800 h-64 overflow-y-auto space-y-1.5">
+            {downloadDiagnostics.map((line, idx) => (
+              <div
+                key={idx}
+                className={`${
+                  line.includes('✓')
+                    ? 'text-emerald-400 font-semibold'
+                    : line.includes('⚠️')
+                    ? 'text-amber-400 font-semibold'
+                    : line.includes('❌')
+                    ? 'text-rose-400 font-bold'
+                    : 'text-slate-400'
+                }`}
               >
-                Close
-              </button>
-            </div>
-
-            <div className="bg-slate-950 rounded-lg p-4 font-mono text-[10px] text-slate-300 border border-slate-850 h-64 overflow-y-auto space-y-1.5">
-              {downloadDiagnostics.map((line, idx) => (
-                <div
-                  key={idx}
-                  className={`${
-                    line.includes('✓')
-                      ? 'text-emerald-400 font-semibold'
-                      : line.includes('⚠️')
-                      ? 'text-amber-400 font-semibold'
-                      : line.includes('❌')
-                      ? 'text-rose-400 font-bold'
-                      : 'text-slate-400'
-                  }`}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center gap-1.5 text-slate-400">
-                {isDownloading ? (
-                  <>
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-400" />
-                    <span>Assembling chunks in real-time...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400" />
-                    <span className="text-emerald-400 font-semibold">Download cycle completed.</span>
-                  </>
-                )}
+                {line}
               </div>
-
-              <button
-                onClick={() => setShowDiagnosticsModal(false)}
-                disabled={isDownloading !== null}
-                className="rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-1.5 text-xs font-semibold text-slate-200 transition disabled:opacity-50"
-              >
-                Close Logs
-              </button>
-            </div>
+            ))}
           </div>
-        </div>
-      )}
+
+          <div className="flex justify-between items-center text-xs pt-2">
+            <div className="flex items-center gap-1.5 text-slate-400">
+              {isDownloading ? (
+                <>
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-400" />
+                  <span>Assembling chunks in real-time...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                  <span className="text-emerald-400 font-semibold">Download cycle completed.</span>
+                </>
+              )}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowDiagnosticsModal(false)}
+              disabled={isDownloading !== null}
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
+            >
+              Close Logs
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

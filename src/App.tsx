@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { SupabaseNode, KVRecord, FileMetadata, FileChunk, VectorMemory, ActiveTab } from './types';
 import { buildHashRing, getNodeForKey } from './utils/hash';
 import { generateMockEmbedding } from './utils/embedding';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Import Components
 import Dashboard from './components/Dashboard';
@@ -10,12 +10,14 @@ import KVStore from './components/KVStore';
 import FileSharding from './components/FileSharding';
 import VectorMemoryComponent from './components/VectorMemory';
 import NodeConsole from './components/NodeConsole';
+import LandingPage from './components/LandingPage';
 
 // Icons
-import { Activity, Key, Layers, Brain, Terminal, Database, ShieldAlert, Cpu, RefreshCw } from 'lucide-react';
+import { Activity, Key, Layers, Brain, Terminal, Database, ShieldAlert, Cpu, RefreshCw, HelpCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Live Supabase Client Cache
-const supabaseClientCache: { [nodeId: string]: any } = {};
+const supabaseClientCache: Record<string, SupabaseClient> = {};
 
 function getSupabaseClient(node: SupabaseNode) {
   if (!supabaseClientCache[node.id]) {
@@ -27,16 +29,17 @@ function getSupabaseClient(node: SupabaseNode) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [showLanding, setShowLanding] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    const hash = window.location.hash.replace('#', '') as ActiveTab;
+    return ['dashboard', 'kv', 'files', 'vector', 'console'].includes(hash) ? hash : 'dashboard';
+  });
   const [nodes, setNodes] = useState<SupabaseNode[]>([]);
   const [kvRecords, setKvRecords] = useState<KVRecord[]>([]);
   const [files, setFiles] = useState<FileMetadata[]>([]);
   const [memories, setMemories] = useState<VectorMemory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [clusterLogs, setClusterLogs] = useState<string[]>([]);
-  const [showWelcomeModal, setShowWelcomeModal] = useState<boolean>(() => {
-    return localStorage.getItem('supamerge_onboarding_seen') !== 'true';
-  });
 
   // Initialize and load data on mount
   useEffect(() => {
@@ -44,7 +47,6 @@ export default function App() {
   }, []);
 
   const addLog = (msg: string) => {
-    console.log(`[CLUSTER] ${msg}`);
     setClusterLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 49)]);
   };
 
@@ -52,8 +54,17 @@ export default function App() {
     setLoading(true);
     addLog("Initializing live cluster...");
 
-    const storedNodes = localStorage.getItem('sb_live_nodes');
-    const loadedNodes: SupabaseNode[] = storedNodes ? JSON.parse(storedNodes) : [];
+    let loadedNodes: SupabaseNode[] = [];
+    try {
+      const storedNodes = localStorage.getItem('sb_live_nodes');
+      if (storedNodes) {
+        const parsed = JSON.parse(storedNodes);
+        if (Array.isArray(parsed)) loadedNodes = parsed;
+      }
+    } catch {
+      addLog('WARNING: Corrupted localStorage data — resetting node configuration.');
+      localStorage.removeItem('sb_live_nodes');
+    }
     setNodes(loadedNodes);
 
     if (loadedNodes.length === 0) {
@@ -97,7 +108,7 @@ export default function App() {
           // 2. Query Key-Value Records
           const { data: kvData } = await supabase.from('unified_kv').select('*');
           if (kvData) {
-            kvData.forEach((row: any) => {
+            kvData.forEach((row: { key: string; value: unknown; tags: string[] | null; updated_at: string }) => {
               allKV.push({
                 key: row.key,
                 value: row.value,
@@ -111,7 +122,7 @@ export default function App() {
           // 3. Query File Chunks
           const { data: chunksData } = await supabase.from('unified_chunks').select('chunk_id, file_name, file_type, chunk_index, total_chunks, size_bytes');
           if (chunksData) {
-            chunksData.forEach((row: any) => {
+            chunksData.forEach((row: { chunk_id: string; file_name: string; file_type: string; chunk_index: number; total_chunks: number; size_bytes: number }) => {
               allChunks.push({
                 chunkId: row.chunk_id,
                 fileName: row.file_name,
@@ -127,7 +138,7 @@ export default function App() {
           // 4. Query Vector Memories
           const { data: vectorsData } = await supabase.from('unified_vector').select('*');
           if (vectorsData) {
-            vectorsData.forEach((row: any) => {
+            vectorsData.forEach((row: { id: string; content: string; embedding: string | null; metadata: Record<string, unknown> | null }) => {
               allVectors.push({
                 id: row.id,
                 content: row.content,
@@ -138,8 +149,8 @@ export default function App() {
             });
           }
 
-        } catch (err: any) {
-          addLog(`ERROR: Failed to connect to node [${node.name}]: ${err.message}`);
+        } catch {
+          addLog(`ERROR: Connection failed for node [${node.name}]`);
           node.status = 'disconnected';
           node.latency = undefined;
         }
@@ -200,14 +211,16 @@ export default function App() {
         try {
           const { data } = await supabase.from('unified_chunks').select('file_name, chunk_index');
           if (data) {
-            data.forEach((row: any) => {
+            data.forEach((row: { file_name: string; chunk_index: number }) => {
               if (!liveChunksDistribution[row.file_name]) {
                 liveChunksDistribution[row.file_name] = {};
               }
               liveChunksDistribution[row.file_name][row.chunk_index] = node.id;
             });
           }
-        } catch (e) {}
+        } catch {
+          addLog(`WARNING: Failed to fetch chunk distribution from [${node.name}]`);
+        }
       })
     );
 
@@ -253,7 +266,7 @@ export default function App() {
   };
 
   // KV Operations
-  const handleAddKVRecord = async (key: string, value: any, tags: string[]): Promise<{ primary: string; replica: string }> => {
+  const handleAddKVRecord = async (key: string, value: unknown, tags: string[]): Promise<{ primary: string; replica: string }> => {
     const activeNodes = nodes.filter((n) => n.status === 'connected');
     if (activeNodes.length === 0) {
       throw new Error('No active database nodes available to write to!');
@@ -509,7 +522,7 @@ export default function App() {
           });
 
           if (data) {
-            data.forEach((row: any) => {
+            data.forEach((row: { id: string; content: string; metadata: Record<string, unknown> | null; similarity: number | null }) => {
               allResults.push({
                 id: row.id,
                 content: row.content,
@@ -520,8 +533,8 @@ export default function App() {
               });
             });
           }
-        } catch (e: any) {
-          addLog(`WARNING: RPC search failed on node [${node.name}]: ${e.message}.`);
+        } catch {
+          addLog(`WARNING: Vector search RPC failed on node [${node.name}]`);
         }
       })
     );
@@ -558,19 +571,32 @@ export default function App() {
     await loadClusterData();
   };
 
-  const handleDismissWelcome = () => {
-    localStorage.setItem('supamerge_onboarding_seen', 'true');
-    setShowWelcomeModal(false);
-  };
+  if (showLanding) {
+    return <LandingPage onLaunch={() => setShowLanding(false)} />;
+  }
+
+  const renderSkeleton = () => (
+    <div className="animate-pulse space-y-6 p-6">
+      <div className="h-6 w-48 rounded-lg bg-slate-800/50" />
+      <div className="h-4 w-96 rounded-lg bg-slate-800/30" />
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-8">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-slate-800/40 bg-slate-900/10 p-6 space-y-4">
+            <div className="h-10 w-10 rounded-lg bg-slate-800/50" />
+            <div className="h-4 w-3/4 rounded-lg bg-slate-800/40" />
+            <div className="space-y-2">
+              <div className="h-3 w-full rounded-lg bg-slate-800/30" />
+              <div className="h-3 w-5/6 rounded-lg bg-slate-800/30" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const renderTabContent = () => {
     if (loading) {
-      return (
-        <div className="flex min-h-[400px] flex-col items-center justify-center space-y-4">
-          <RefreshCw className="h-8 w-8 animate-spin text-emerald-500" />
-          <div className="text-sm text-slate-400 font-mono">Assembling virtual cluster topology...</div>
-        </div>
-      );
+      return renderSkeleton();
     }
 
     switch (activeTab) {
@@ -622,65 +648,29 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#020617] text-slate-100">
-      {/* Welcome Onboarding Modal */}
-      {showWelcomeModal && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-[9999]">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-800 bg-[#070d1e] p-8 shadow-2xl space-y-6 text-center relative overflow-hidden">
-            <div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-emerald-500/10 blur-3xl" />
-            <div className="absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-blue-500/10 blur-3xl" />
-
-            <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-950/40 border border-emerald-400/20">
-              <Cpu className="h-8 w-8 text-slate-950 stroke-[2.5]" />
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                Welcome to SupaMerge
-              </h1>
-              <p className="text-emerald-400 font-mono text-xs font-bold tracking-wider uppercase">
-                Unified Multi-Database Cluster & AI Memory
-              </p>
-            </div>
-
-            <p className="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
-              SupaMerge pools multiple independent **Supabase Free Tier** databases into a single, unified virtual cluster. It shards key-value data, splits files into distributed blocks, and merges semantic AI memories across nodes using consistent hashing.
-            </p>
-
-            <button
-              onClick={handleDismissWelcome}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 py-2.5 text-sm font-semibold text-white transition shadow-lg shadow-emerald-950/40"
-            >
-              Configure Live Cluster
-            </button>
-
-            <div className="pt-2 text-xs text-slate-500">
-              Your keys and URLs are stored strictly inside your browser's local storage.
-            </div>
-          </div>
-        </div>
-      )}
-
+    <div className="flex min-h-screen bg-[#020617] text-slate-100 bg-mesh bg-noise">
+      {/* Content wrapper to stack above fixed bg layers */}
+      <div className="relative z-10 flex w-full">
       {/* Sidebar Navigation */}
-      <aside className="w-64 border-r border-slate-900 bg-[#070d1e]/85 flex flex-col justify-between shrink-0 font-sans">
-        <div className="p-5 space-y-6">
+      <aside className="w-64 border-r border-slate-800/50 bg-[#070d1e]/70 backdrop-blur-md flex flex-col justify-between shrink-0 font-sans">
+        <div className="p-6 space-y-6">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 px-1">
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-md shadow-emerald-950/40 border border-emerald-400/25">
-              <Cpu className="h-4.5 w-4.5 text-slate-950 stroke-[2.5]" />
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-950/30">
+              <Cpu className="h-5 w-5 text-slate-950" />
             </div>
             <div>
-              <h2 className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent font-sans">
+              <h2 className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
                 SUPAMERGE
               </h2>
-              <span className="text-[10px] text-emerald-400 font-mono font-bold leading-none block">
+              <span className="text-[10px] text-emerald-400/80 font-bold leading-none block tracking-wider">
                 UNIFIED CLUSTER
               </span>
             </div>
           </div>
 
           {/* Nav Links */}
-          <nav className="space-y-1.5">
+          <nav className="space-y-1">
             {[
               { id: 'dashboard', label: 'Cluster Topology', icon: Activity },
               { id: 'kv', label: 'Sharded KV Store', icon: Key },
@@ -695,13 +685,16 @@ export default function App() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as ActiveTab)}
-                  className={`w-full flex items-center gap-3 rounded-xl px-4 py-2.5 text-xs font-semibold transition duration-200 ${
+                  className={`w-full flex items-center gap-3 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all duration-200 relative ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-600/20 to-teal-600/10 text-emerald-400 border border-emerald-500/20 shadow-inner'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 border border-transparent'
+                      ? 'text-emerald-400 bg-emerald-500/8 shadow-sm shadow-emerald-950/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'
                   }`}
                 >
-                  <Icon className={`h-4.5 w-4.5 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  )}
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
                   {tab.label}
                 </button>
               );
@@ -710,28 +703,35 @@ export default function App() {
         </div>
 
         {/* Console System Logs in Sidebar footer */}
-        <div className="p-4 border-t border-slate-900 space-y-3 bg-[#020617]/40">
+        <div className="p-6 border-t border-slate-800/40 space-y-4 bg-[#020617]/30">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              System Log Feed
+              Cluster Logs
             </span>
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="flex items-center gap-2">
+              {clusterLogs.length > 0 && (
+                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                  {clusterLogs.length}
+                </span>
+              )}
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
           </div>
           
-          <div className="h-28 overflow-y-auto font-mono text-[9px] text-slate-500 space-y-1.5 scrollbar-thin">
+          <div className="max-h-32 overflow-y-auto font-mono text-[10px] text-slate-500 space-y-1.5 scrollbar-thin">
             {clusterLogs.length === 0 ? (
               <div className="text-slate-600 italic">No events recorded.</div>
             ) : (
-              clusterLogs.map((log, i) => (
-                <div key={i} className="leading-normal border-b border-slate-900/30 pb-1 last:border-0 select-all">
+              clusterLogs.slice(0, 15).map((log, i) => (
+                <div key={i} className="leading-relaxed border-b border-slate-900/30 pb-1 last:border-0">
                   {log}
                 </div>
               ))
             )}
           </div>
 
-          <div className="rounded bg-slate-950/60 p-2 border border-slate-900 text-[10px] text-slate-400 flex items-center gap-1.5">
-            <Database className="h-3.5 w-3.5 text-slate-500" />
+          <div className="rounded-lg bg-slate-950/60 p-3 border border-slate-800/50 text-[10px] text-slate-400 flex items-center gap-2">
+            <Database className="h-3.5 w-3.5 text-slate-500 shrink-0" />
             <span>
               Mode: <strong className="text-emerald-400 font-mono">Live</strong>
             </span>
@@ -740,37 +740,47 @@ export default function App() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#090d1e]/40">
+      <main className="flex-1 flex flex-col min-w-0 bg-grid">
         {/* Top Header */}
-        <header className="h-14 border-b border-slate-900 px-6 bg-[#070d1e]/30 backdrop-blur-sm flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400 font-medium">Active Environment:</span>
-            <span className="rounded-full px-2.5 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+        <header className="h-14 border-b border-slate-800/50 px-6 bg-[#070d1e]/30 backdrop-blur-md flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3 text-xs">
+            <span className="text-slate-500 font-medium">Environment:</span>
+            <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20">
               Production Unified Pool
             </span>
           </div>
 
           <div className="flex items-center gap-4 text-xs">
             {nodes.length === 0 && (
-              <div className="hidden sm:flex items-center gap-1.5 text-rose-400 bg-rose-500/10 border border-rose-500/25 rounded px-2.5 py-1 font-semibold">
+              <div className="hidden sm:flex items-center gap-1.5 text-rose-400/90 bg-rose-500/8 border border-rose-500/20 rounded-lg px-3 py-1 font-semibold">
                 <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                <span>No projects connected! Add them in Cluster Console.</span>
+                <span>No projects connected. Add them in Cluster Console.</span>
               </div>
             )}
 
-            <div className="text-slate-400">
-              Combined DB Capacity: <strong className="text-slate-200 font-mono">
-                {`${(nodes.length * 0.5).toFixed(1)} GB`}
+            <div className="text-slate-500">
+              Combined Capacity:{' '}
+              <strong className="text-slate-200 font-mono bg-slate-800/40 px-2 py-0.5 rounded">
+                {(nodes.length * 0.5).toFixed(1)} GB
               </strong>
             </div>
+
+            <button
+              onClick={() => setShowLanding(true)}
+              className="flex items-center gap-1.5 text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-lg hover:bg-slate-800/30"
+              title="About SupaMerge"
+            >
+              <HelpCircle className="h-4 w-4" />
+            </button>
           </div>
         </header>
 
         {/* Tab Content Page */}
-        <div className="flex-1 overflow-y-auto p-6 max-w-7xl w-full mx-auto">
+        <div className="flex-1 overflow-y-auto p-6 max-w-7xl w-full mx-auto tab-enter" key={activeTab}>
           {renderTabContent()}
         </div>
       </main>
+      </div>
     </div>
   );
 }
