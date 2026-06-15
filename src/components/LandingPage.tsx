@@ -109,9 +109,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-950/30">
-              <Cpu className="h-4.5 w-4.5 text-slate-950" />
-            </div>
+            <img src="/logo.png" alt="SupaMerge" className="h-9 w-9 rounded-lg" />
             <span className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
               SUPAMERGE
             </span>
@@ -347,9 +345,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             <div className="absolute -left-20 -bottom-20 h-60 w-60 rounded-full bg-blue-500/6 blur-3xl" />
 
             <div className="relative z-10 space-y-6">
-              <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-xl shadow-emerald-950/30 border border-emerald-400/20">
-                <Cpu className="h-7 w-7 text-slate-950" />
-              </div>
+              <img src="/logo.png" alt="SupaMerge" className="mx-auto h-14 w-14 rounded-2xl" />
 
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
                 Ready to Max Out Your{' '}

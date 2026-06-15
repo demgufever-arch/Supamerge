@@ -1,5 +1,8 @@
 <div align="center">
   <br />
+  <img src="logo.png" alt="SupaMerge" width="120" style="border-radius: 24px;" />
+  <br />
+  <br />
   <img src="https://img.shields.io/badge/React-19-10b981?logo=react" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-7-10b981?logo=vite" alt="Vite 7" />
   <img src="https://img.shields.io/badge/TypeScript-5.9-10b981?logo=typescript" alt="TypeScript 5.9" />
@@ -7,7 +10,7 @@
   <img src="https://img.shields.io/badge/license-MIT-10b981" alt="MIT License" />
   <br />
   <br />
-  <h1 align="center" style="border-bottom: none;">⚡ SupaMerge</h1>
+  <h1 align="center" style="border-bottom: none;">SupaMerge</h1>
   <h3 align="center">Unify Your Supabase Free Tier Databases</h3>
   <p align="center">
     Pool multiple Supabase Free Tier projects into a single virtual cluster —<br />
