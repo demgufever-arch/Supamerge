@@ -1,6 +1,6 @@
 <div align="center">
   <br />
-  <img src="logo.png" alt="SupaMerge" width="120" style="border-radius: 24px;" />
+  <img src="https://raw.githubusercontent.com/demgufever-arch/Supamerge/main/src/assets/logo.png" alt="SupaMerge" width="120" style="border-radius: 24px;" />
   <br />
   <br />
   <img src="https://img.shields.io/badge/React-19-10b981?logo=react" alt="React 19" />

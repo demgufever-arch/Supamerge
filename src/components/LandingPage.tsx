@@ -5,6 +5,7 @@ import {
   CheckCircle2, Menu, X, Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import logoSrc from '../assets/logo.png';
 
 interface LandingPageProps {
   onLaunch: () => void;
@@ -109,7 +110,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="SupaMerge" className="h-9 w-9 rounded-lg" />
+            <img src={logoSrc} alt="SupaMerge" className="h-9 w-9 rounded-lg" />
             <span className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
               SUPAMERGE
             </span>
@@ -345,7 +346,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             <div className="absolute -left-20 -bottom-20 h-60 w-60 rounded-full bg-blue-500/6 blur-3xl" />
 
             <div className="relative z-10 space-y-6">
-              <img src="/logo.png" alt="SupaMerge" className="mx-auto h-14 w-14 rounded-2xl" />
+              <img src={logoSrc} alt="SupaMerge" className="mx-auto h-14 w-14 rounded-2xl" />
 
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
                 Ready to Max Out Your{' '}

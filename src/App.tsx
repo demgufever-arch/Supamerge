@@ -13,8 +13,9 @@ import NodeConsole from './components/NodeConsole';
 import LandingPage from './components/LandingPage';
 
 // Icons
-import { Activity, Key, Layers, Brain, Terminal, Database, ShieldAlert, Cpu, RefreshCw, HelpCircle } from 'lucide-react';
+import { Activity, Key, Layers, Brain, Terminal, Database, ShieldAlert, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import logoSrc from './assets/logo.png';
 
 // Live Supabase Client Cache
 const supabaseClientCache: Record<string, SupabaseClient> = {};
@@ -656,7 +657,7 @@ export default function App() {
         <div className="p-6 space-y-6">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="SupaMerge" className="h-10 w-10 rounded-lg" />
+            <img src={logoSrc} alt="SupaMerge" className="h-10 w-10 rounded-lg" />
             <div>
               <h2 className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
                 SUPAMERGE
