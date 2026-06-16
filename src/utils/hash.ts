@@ -73,12 +73,4 @@ export function getNodeForKey(key: string, ring: HashRingNode[]): { nodeId: stri
   };
 }
 
-/**
- * Simple Modulo-N hashing for comparison.
- */
-export function getModuloNode(key: string, nodes: { id: string }[]): string | null {
-  if (nodes.length === 0) return null;
-  const hash = fnv1a(key);
-  const index = hash % nodes.length;
-  return nodes[index].id;
-}
+

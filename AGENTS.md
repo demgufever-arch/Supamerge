@@ -36,7 +36,7 @@ npm run test      # Run vitest smoke tests (headless)
 
 - **Two-phase UI**: Landing page (marketing) → App (tool). Toggle via `showLanding` state + `?` header button.
 - **Browser-only SPA**: No server. Supabase nodes are configured in the UI and stored in `localStorage` under `sb_live_nodes`. Each node URL + anon key is kept client-side.
-- **Single-file build**: `vite-plugin-singlefile` inlines all assets into one HTML file (~900 KB gzipped ~300 KB).
+- **Single-file build**: `vite-plugin-singlefile` inlines all assets into one HTML file (~1.25 MB raw, ~570 KB gzipped).
 - **Supabase tables expected**: `unified_kv`, `unified_chunks`, `unified_vector`. Vector search requires a `match_unified_vectors` RPC function in each Supabase project.
 - **Path alias**: `@/*` maps to `src/*` (configured in both `tsconfig.json` and `vite.config.ts`).
 

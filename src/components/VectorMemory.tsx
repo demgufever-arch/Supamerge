@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useToast } from './Toast';
 
 interface VectorMemoryProps {
   nodes: SupabaseNode[];
@@ -43,6 +44,7 @@ export default function VectorMemoryComponent({
   onDeleteMemory,
   isSandbox,
 }: VectorMemoryProps) {
+  const { toast } = useToast();
   const [newContent, setNewContent] = useState('');
   const [newCategory, setNewCategory] = useState('user_preferences');
   const [newAgentName, setNewAgentName] = useState('SupaBot-UX');
@@ -83,7 +85,7 @@ export default function VectorMemoryComponent({
         handleSearch(new Event('submit') as any);
       }
     } catch (err) {
-      alert(`Failed to add memory: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      toast(`Failed to add memory: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error');
     } finally {
       setIsAdding(false);
     }
@@ -109,7 +111,7 @@ export default function VectorMemoryComponent({
         timeMs: Math.round(end - start),
       });
     } catch (err) {
-      alert(`Search failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      toast(`Search failed: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error');
     } finally {
       setIsSearching(false);
     }

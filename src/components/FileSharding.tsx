@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { SupabaseNode, FileMetadata, FileChunk } from '../types';
 import { getNodeForKey, buildHashRing } from '../utils/hash';
 import { HardDrive, Upload, Download, Trash2, FileText, FileImage, FileCode, File, CheckCircle2, ShieldCheck, RefreshCw, Layers, X } from 'lucide-react';
+import { useToast } from './Toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -35,6 +36,7 @@ export default function FileSharding({
   onDeleteFile,
   isSandbox,
 }: FileShardingProps) {
+  const { toast } = useToast();
   const [chunkSizeKb, setChunkSizeKb] = useState<number>(256); // Default 256KB chunks
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState<string | null>(null); // File ID being downloaded
@@ -178,7 +180,7 @@ export default function FileSharding({
       }, 1500);
 
     } catch (err) {
-      alert(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      toast(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error');
       setIsUploading(false);
       setUploadProgress(0);
       setUploadStatus('');

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import {
   Cpu, Database, Key, Layers, Brain, Terminal,
   ChevronRight, ArrowRight, Server, Network, Zap,
-  CheckCircle2, Menu, X, Shield,
+  CheckCircle2, Menu, X, Shield, Sun, Moon, Monitor,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '../hooks/useTheme';
 import logoSrc from '../assets/logo.png';
 
 interface LandingPageProps {
@@ -83,6 +84,7 @@ const STEPS = [
 ];
 
 export default function LandingPage({ onLaunch }: LandingPageProps) {
+  const { effective, setTheme, theme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -99,7 +101,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 font-sans">
+    <div className="min-h-screen font-sans" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
       {/* ── Navbar ── */}
       <nav
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
@@ -117,16 +119,43 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
           </div>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className="text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors tracking-wide uppercase"
+                className="text-xs font-semibold hover:text-slate-200 transition-colors tracking-wide uppercase"
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 {item.label}
               </button>
             ))}
+            <div className="flex items-center gap-2 rounded-lg border p-0.5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+              <button
+                onClick={() => setTheme('dark')}
+                className={`rounded-md p-1.5 transition-all ${effective === 'dark' ? 'bg-slate-700 text-emerald-400 shadow-sm' : ''}`}
+                style={{ color: effective === 'dark' ? undefined : 'var(--color-text-muted)' }}
+                title="Dark mode"
+              >
+                <Moon className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setTheme('light')}
+                className={`rounded-md p-1.5 transition-all ${effective === 'light' ? 'bg-slate-700 text-emerald-400 shadow-sm' : ''}`}
+                style={{ color: effective === 'light' ? undefined : 'var(--color-text-muted)' }}
+                title="Light mode"
+              >
+                <Sun className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setTheme('system')}
+                className={`rounded-md p-1.5 transition-all ${theme === 'system' ? 'bg-slate-700 text-emerald-400 shadow-sm' : ''}`}
+                style={{ color: theme === 'system' ? undefined : 'var(--color-text-muted)' }}
+                title="Follow system"
+              >
+                <Monitor className="h-3.5 w-3.5" />
+              </button>
+            </div>
             <Button
               onClick={onLaunch}
               size="sm"

@@ -11,10 +11,10 @@ import FileSharding from './components/FileSharding';
 import VectorMemoryComponent from './components/VectorMemory';
 import NodeConsole from './components/NodeConsole';
 import LandingPage from './components/LandingPage';
+import ThemeToggle from './components/ThemeToggle';
 
 // Icons
 import { Activity, Key, Layers, Brain, Terminal, Database, ShieldAlert, HelpCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import logoSrc from './assets/logo.png';
 
 // Live Supabase Client Cache
@@ -649,11 +649,11 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#020617] text-slate-100 bg-mesh bg-noise">
+    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
       {/* Content wrapper to stack above fixed bg layers */}
       <div className="relative z-10 flex w-full">
       {/* Sidebar Navigation */}
-      <aside className="w-64 border-r border-slate-800/50 bg-[#070d1e]/70 backdrop-blur-md flex flex-col justify-between shrink-0 font-sans">
+      <aside className="w-64 border-r flex flex-col justify-between shrink-0 font-sans backdrop-blur-md" style={{ backgroundColor: 'var(--color-sidebar-bg)', borderColor: 'var(--color-border)' }}>
         <div className="p-6 space-y-6">
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -741,7 +741,7 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 bg-grid">
         {/* Top Header */}
-        <header className="h-14 border-b border-slate-800/50 px-6 bg-[#070d1e]/30 backdrop-blur-md flex items-center justify-between shrink-0">
+        <header className="h-14 border-b px-6 flex items-center justify-between shrink-0 backdrop-blur-md" style={{ backgroundColor: 'var(--color-header-bg)', borderColor: 'var(--color-border)' }}>
           <div className="flex items-center gap-3 text-xs">
             <span className="text-slate-500 font-medium">Environment:</span>
             <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20">
@@ -764,9 +764,12 @@ export default function App() {
               </strong>
             </div>
 
+            <ThemeToggle />
+
             <button
               onClick={() => setShowLanding(true)}
-              className="flex items-center gap-1.5 text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-lg hover:bg-slate-800/30"
+              className="flex items-center gap-1.5 transition-colors p-1 rounded-lg hover:bg-slate-800/30"
+              style={{ color: 'var(--color-text-muted)' }}
               title="About SupaMerge"
             >
               <HelpCircle className="h-4 w-4" />
