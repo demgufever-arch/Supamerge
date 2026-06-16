@@ -10,6 +10,8 @@
   <img src="https://img.shields.io/badge/license-MIT-10b981" alt="MIT License" />
   <br />
   <br />
+  <p align="center"><strong>by Parithosh Varma</strong></p>
+  <br />
   <h1 align="center" style="border-bottom: none;">SupaMerge</h1>
   <h3 align="center">Unify Your Supabase Free Tier Databases</h3>
   <p align="center">
@@ -182,6 +184,11 @@ src/
 
 **React 19** · **Vite 7** · **TypeScript 5.9** · **Tailwind CSS 4** · **Supabase JS** · **Lucide Icons** · **shadcn/ui** · **Geist Font** · **vitest** + **@testing-library/react**
 
-## License
+---
 
-MIT
+<div align="center">
+  Built by <strong>Parithosh Varma</strong>
+  <br />
+  <br />
+  MIT &copy; 2026
+</div>
