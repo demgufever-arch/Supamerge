@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { SupabaseNode, ClusterMetrics } from '../types';
 import { buildHashRing, getNodeForKey, HashRingNode } from '../utils/hash';
-import { Database, HardDrive, Cpu, Activity, Signal, RefreshCw, Zap } from 'lucide-react';
+import { Database, HardDrive, Cpu, Activity, Signal, RefreshCw, Zap, Plus, Terminal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -188,14 +188,7 @@ export default function Dashboard({
       }
     }
     if (dots.length === 0) {
-      return [
-        { start: { lat: 64.2008, lng: -149.4937 }, end: { lat: 34.0522, lng: -118.2437 } },
-        { start: { lat: 64.2008, lng: -149.4937 }, end: { lat: -15.7975, lng: -47.8919 } },
-        { start: { lat: -15.7975, lng: -47.8919 }, end: { lat: 38.7223, lng: -9.1393 } },
-        { start: { lat: 51.5074, lng: -0.1278 }, end: { lat: 28.6139, lng: 77.209 } },
-        { start: { lat: 28.6139, lng: 77.209 }, end: { lat: 43.1332, lng: 131.9113 } },
-        { start: { lat: 28.6139, lng: 77.209 }, end: { lat: -1.2921, lng: 36.8219 } },
-      ];
+      return [];
     }
     return dots;
   }, [nodes]);
@@ -246,7 +239,50 @@ export default function Dashboard({
         </div>
       </div>
 
-        {/* Cluster Metrics Cards */}
+      {connected.length === 0 && (
+        <div className="rounded-xl border backdrop-blur-sm p-8 text-center" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+          <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
+            <Database className="h-7 w-7 text-emerald-400" />
+          </div>
+          <h2 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>
+            Get Started — Connect Your First Supabase Project
+          </h2>
+          <p className="mt-2 text-sm max-w-lg mx-auto leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+            Add your Supabase project URL and anon key in the Cluster Console to start sharding data across databases.
+          </p>
+          <div className="mt-8 grid gap-6 sm:grid-cols-3 max-w-2xl mx-auto text-left">
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+              <div className="rounded-lg bg-emerald-500/10 w-8 h-8 flex items-center justify-center mb-3">
+                <Terminal className="h-4 w-4 text-emerald-400" />
+              </div>
+              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>1. Add Project</h4>
+              <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                Go to Cluster Console and enter your Supabase project URL and anon key.
+              </p>
+            </div>
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+              <div className="rounded-lg bg-emerald-500/10 w-8 h-8 flex items-center justify-center mb-3">
+                <Database className="h-4 w-4 text-emerald-400" />
+              </div>
+              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>2. Connect</h4>
+              <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                The app pings your project, creates tables, and pulls live metrics automatically.
+              </p>
+            </div>
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+              <div className="rounded-lg bg-emerald-500/10 w-8 h-8 flex items-center justify-center mb-3">
+                <Zap className="h-4 w-4 text-emerald-400" />
+              </div>
+              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>3. Start Sharding</h4>
+              <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                Write KV records, upload files, or add vector memories. Everything replicates automatically.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cluster Metrics Cards */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {/* DB Capacity Card */}
         <Card size="sm" className="card-lift" style={{ borderColor: 'var(--color-border)', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.2)' }}>

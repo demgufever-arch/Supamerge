@@ -69,11 +69,10 @@ export default function App() {
     setNodes(loadedNodes);
 
     if (loadedNodes.length === 0) {
-      addLog("WARNING: No live Supabase nodes provisioned! Redirecting to Console.");
+      addLog("No Supabase nodes provisioned! Add a project in Cluster Console to get started.");
       setKvRecords([]);
       setFiles([]);
       setMemories([]);
-      setActiveTab('console');
       setLoading(false);
       return;
     }
