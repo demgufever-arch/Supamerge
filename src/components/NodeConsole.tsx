@@ -207,7 +207,7 @@ export default function NodeConsole({
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 backdrop-blur-xl">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
+        <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
           Cluster Environment Control
         </h2>
         <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-normal">
@@ -219,7 +219,7 @@ export default function NodeConsole({
         {/* Left Side: Node Administration */}
         <div className="lg:col-span-3 space-y-6">
           <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
-            <h3 className="text-base font-bold text-slate-200 flex items-center gap-1.5">
+            <h3 className="text-base font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
               <Plus className="h-5 w-5 text-emerald-400" />
               Add Real Supabase Node
             </h3>
@@ -338,7 +338,7 @@ export default function NodeConsole({
                 <p className="mt-1 leading-relaxed">{testResult.message}</p>
                 {testResult.latency && (
                   <div className="mt-2 font-mono text-[10px]">
-                    Measured Latency: <strong className="text-white">{testResult.latency} ms</strong>
+                    Measured Latency: <strong>{testResult.latency} ms</strong>
                   </div>
                 )}
               </div>
@@ -347,7 +347,7 @@ export default function NodeConsole({
 
           <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+              <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
                 Cluster Provisioned Nodes ({nodes.length})
               </h3>
               <Button
@@ -456,7 +456,7 @@ export default function NodeConsole({
         <div className="lg:col-span-2 space-y-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5">
+              <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                 <Terminal className="h-4 w-4 text-emerald-400" />
                 PostgreSQL Schema Setup
               </h3>
@@ -491,10 +491,10 @@ export default function NodeConsole({
               </pre>
             </div>
 
-            <div className="rounded-lg bg-amber-500/5 border border-amber-500/10 p-3 text-[11px] text-amber-300 flex gap-2 leading-relaxed">
-              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <div className="rounded-lg border p-3 text-[11px] flex gap-2 leading-relaxed" style={{ backgroundColor: 'color-mix(in srgb, #f59e0b 10%, transparent)', borderColor: 'color-mix(in srgb, #f59e0b 20%, transparent)', color: 'var(--color-text-muted)' }}>
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
               <div>
-                <strong className="block text-amber-200">Security Warning</strong>
+                <strong className="block" style={{ color: 'var(--color-text)' }}>Security Warning</strong>
                 Your Supabase project keys are stored securely client-side in your browser's local storage and never transit any backend. Ensure you do not expose your credentials in shared public environments.
               </div>
             </div>

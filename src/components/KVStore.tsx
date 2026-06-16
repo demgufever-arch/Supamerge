@@ -180,7 +180,7 @@ export default function KVStore({
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
             <Key className="h-6 w-6 text-emerald-400" />
             Sharded Key-Value Store
             <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
@@ -264,7 +264,7 @@ export default function KVStore({
                             selectedRecord?.key === rec.key ? 'bg-slate-800/20' : ''
                           }`}
                         >
-                          <TableCell className="px-4 py-3.5 font-bold text-slate-200 select-all max-w-[180px] truncate">
+                          <TableCell className="px-4 py-3.5 font-bold select-all max-w-[180px] truncate" style={{ color: 'var(--color-text)' }}>
                             {rec.key}
                             <div className="mt-1 flex flex-wrap gap-1">
                               {rec.tags.map((tag) => (
@@ -308,7 +308,7 @@ export default function KVStore({
                               <span className="text-slate-600 italic">None</span>
                             )}
                           </TableCell>
-                          <TableCell className="px-4 py-3.5 text-right font-semibold text-slate-300">
+                          <TableCell className="px-4 py-3.5 text-right font-semibold" style={{ color: 'var(--color-text-muted)' }}>
                             {sizeBytes} B
                           </TableCell>
                           <TableCell className="px-4 py-3.5 text-right">
@@ -360,7 +360,7 @@ export default function KVStore({
           <div className="space-y-4">
             {/* Record Inspector */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm">
-              <h3 className="text-sm font-bold text-slate-200 mb-3 flex items-center gap-1.5">
+              <h3 className="text-sm font-bold mb-3 flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                 <Eye className="h-4 w-4 text-emerald-400" />
                 Record Inspector
               </h3>
@@ -427,8 +427,8 @@ export default function KVStore({
             </div>
 
             {/* Educational Sharding Info */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm text-xs text-slate-400 space-y-2.5">
-              <h4 className="font-bold text-slate-300 uppercase tracking-wider text-[10px]">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm text-xs space-y-2.5" style={{ color: 'var(--color-text-muted)' }}>
+              <h4 className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-text)' }}>
                 How KV Sharding Works
               </h4>
               <p className="leading-relaxed">
@@ -446,7 +446,7 @@ export default function KVStore({
         <div className="grid gap-6 md:grid-cols-2">
           {/* Form Column */}
           <div className="rounded-xl border border-slate-800 bg-slate-900/15 p-6 backdrop-blur-sm">
-            <h3 className="text-base font-bold text-slate-200 mb-4 flex items-center gap-1.5">
+            <h3 className="text-base font-bold mb-4 flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
               <Plus className="h-5 w-5 text-emerald-400" />
               Store Key-Value Pair
             </h3>
@@ -529,7 +529,7 @@ export default function KVStore({
           {/* Sharding Log Column */}
           <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-6 flex flex-col justify-between">
             <div>
-              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wide mb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--color-text)' }}>
                 Distributed Consensus Log
               </h3>
               

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
-  Cpu, Database, Key, Layers, Brain, Terminal,
+  Cpu, Database, Key, Layers, Brain, Terminal as TerminalIcon,
   ChevronRight, ArrowRight, Server, Network, Zap,
-  CheckCircle2, Menu, X, Shield, Sun, Moon, Monitor,
+  CheckCircle2, Menu, X, Shield, Moon, Sun, Monitor,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Terminal } from '@/components/ui/terminal';
+import { TextHoverEffect } from '@/components/ui/text-hover-effect';
 import { useTheme } from '../hooks/useTheme';
 import logoSrc from '../assets/logo.png';
 
@@ -40,7 +42,7 @@ const FEATURES = [
     shadow: 'shadow-purple-500/10',
   },
   {
-    icon: Terminal,
+    icon: TerminalIcon,
     title: 'Live Node Console',
     desc: 'Add, remove, and monitor Supabase projects with real-time health checks, latency, and storage metrics.',
     color: 'from-amber-400 to-orange-500',
@@ -84,7 +86,7 @@ const STEPS = [
 ];
 
 export default function LandingPage({ onLaunch }: LandingPageProps) {
-  const { effective, setTheme, theme } = useTheme();
+  const { setTheme, theme, effective } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -101,19 +103,20 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen font-sans" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
+    <div className="min-h-screen font-sans bg-mesh" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
       {/* ── Navbar ── */}
       <nav
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-[#020617]/80 backdrop-blur-xl border-b border-slate-800/50 shadow-lg shadow-black/10'
+            ? 'backdrop-blur-xl border-b shadow-lg shadow-black/10'
             : 'bg-transparent'
         }`}
+        style={scrolled ? { backgroundColor: 'var(--color-canvas)', borderColor: 'var(--color-border)' } : {}}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <img src={logoSrc} alt="SupaMerge" className="h-9 w-9 rounded-lg" />
-            <span className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+            <span className="text-sm font-extrabold tracking-wider" style={{ color: 'var(--color-logo-text)' }}>
               SUPAMERGE
             </span>
           </div>
@@ -156,6 +159,16 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
                 <Monitor className="h-3.5 w-3.5" />
               </button>
             </div>
+            <a
+              href="https://github.com/demgufever-arch/Supamerge"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all hover:-translate-y-0.5"
+              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+            >
+              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111432.png" alt="GitHub" className="h-3.5 w-3.5 dark:brightness-0 dark:invert" />
+              GitHub
+            </a>
             <Button
               onClick={onLaunch}
               size="sm"
@@ -169,7 +182,8 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-400 hover:text-slate-200 transition-colors"
+            className="md:hidden p-2 transition-colors"
+            style={{ color: 'var(--color-text-muted)' }}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -178,17 +192,28 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-800/50 bg-[#020617]/95 backdrop-blur-xl">
+          <div className="md:hidden border-t backdrop-blur-xl" style={{ backgroundColor: 'var(--color-canvas)', borderColor: 'var(--color-border)' }}>
             <div className="px-6 py-4 space-y-3">
               {NAV_ITEMS.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className="block w-full text-left text-sm font-semibold text-slate-400 hover:text-slate-200 py-2 transition-colors"
+                  className="block w-full text-left text-sm font-semibold py-2 transition-colors"
+                  style={{ color: 'var(--color-text-muted)' }}
                 >
                   {item.label}
                 </button>
               ))}
+              <a
+                href="https://github.com/demgufever-arch/Supamerge"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full rounded-lg border py-2 text-sm font-semibold transition-colors mt-2"
+                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+              >
+                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111432.png" alt="GitHub" className="h-4 w-4 dark:brightness-0 dark:invert" />
+                GitHub
+              </a>
               <Button
                 onClick={onLaunch}
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white mt-2"
@@ -220,7 +245,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
 
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
-              <span className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(to right, var(--color-logo-text), var(--color-text-secondary))' }}>
                 Unify Your Supabase
               </span>
               <br />
@@ -230,7 +255,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             </h1>
 
             {/* Description */}
-            <p className="mt-6 text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl">
+            <p className="mt-6 text-base sm:text-lg leading-relaxed max-w-2xl" style={{ color: 'var(--color-text-secondary)' }}>
               Pool multiple Supabase Free Tier projects into a single virtual cluster. Shard key-value data,
               distribute file storage, and merge AI vector memories across nodes — all in your browser.
             </p>
@@ -249,7 +274,8 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
                 onClick={() => scrollTo('features')}
                 size="lg"
                 variant="outline"
-                className="h-12 px-8 border-slate-700 text-slate-300 hover:bg-slate-800/50 hover:text-white text-sm font-semibold"
+                className="h-12 px-8 text-sm font-semibold hover:bg-slate-800/50"
+                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
               >
                 Explore Features
                 <ChevronRight className="h-4 w-4" />
@@ -257,16 +283,16 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             </div>
 
             {/* Stats bar */}
-            <div className="mt-16 flex flex-wrap items-center gap-8 text-sm">
-              <div className="flex items-center gap-2 text-slate-500">
+            <div className="mt-16 flex flex-wrap items-center gap-8 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                 <span>No backend server</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-500">
+              <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                 <span>Browser-only SPA</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-500">
+              <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                 <span>Consistent hashing</span>
               </div>
@@ -283,13 +309,13 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-400">
               Core Capabilities
             </span>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-logo-text)' }}>
               Everything You Need to{' '}
               <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
                 Scale Beyond Free
               </span>
             </h2>
-            <p className="mt-4 text-sm sm:text-base text-slate-400 leading-relaxed">
+            <p className="mt-4 text-sm sm:text-base leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
               Six integrated systems that turn your collection of Free Tier databases into a unified distributed cluster.
             </p>
           </div>
@@ -301,7 +327,8 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
               return (
                 <div
                   key={feature.title}
-                  className="group relative rounded-xl border border-slate-800/60 bg-[#070d1e]/60 backdrop-blur-sm p-6 transition-all duration-200 hover:-translate-y-1 hover:border-slate-700/80 hover:shadow-2xl hover:shadow-black/30"
+                  className="group relative rounded-xl border backdrop-blur-sm p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl"
+                  style={{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-border)' }}
                 >
                   {/* Gradient border effect on hover */}
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-800/0 via-slate-800/0 to-slate-800/0 group-hover:from-emerald-500/[0.02] group-hover:via-slate-800/10 group-hover:to-emerald-500/[0.02] transition-all duration-500 pointer-events-none" />
@@ -312,10 +339,10 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
                     >
                       <Icon className="h-5 w-5 text-slate-950" />
                     </div>
-                    <h3 className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors">
+                    <h3 className="text-sm font-bold transition-colors" style={{ color: 'var(--color-text)' }}>
                       {feature.title}
                     </h3>
-                    <p className="text-xs text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors">
+                    <p className="text-xs leading-relaxed transition-colors" style={{ color: 'var(--color-text-muted)' }}>
                       {feature.desc}
                     </p>
                   </div>
@@ -326,20 +353,91 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
         </div>
       </section>
 
+      {/* ── Interactive Terminal Section ── */}
+      <section className="relative py-24 sm:py-32 border-t" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="max-w-2xl mx-auto text-center mb-12">
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-400">
+              Developer Experience
+            </span>
+            <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-logo-text)' }}>
+              From Zero to{' '}
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                Distributed Cluster
+              </span>
+            </h2>
+            <p className="mt-4 text-sm sm:text-base leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+              Set up your first unified cluster in seconds. No backend, no infrastructure — just pure browser magic.
+            </p>
+          </div>
+
+          <div className="flex justify-center">
+            <Terminal
+              commands={[
+                "npx supamerge init",
+                "npm install @supamerge/core",
+                "supamerge add node us-east-1",
+                "supamerge add node eu-west-1",
+                "supamerge connect --replicate 2x",
+                "supamerge status --cluster",
+              ]}
+              outputs={{
+                0: [
+                  "✔ Created supamerge.json",
+                  "✔ Detected browser environment",
+                  "✔ Initialized virtual cluster (0 nodes)",
+                ],
+                1: ["+ @supamerge/core@2.0.1", "added 1 package in 1.2s"],
+                2: [
+                  "✔ Added node: us-east-1 (N. Virginia)",
+                  "  → Status: connected",
+                  "  → Latency: 23ms",
+                ],
+                3: [
+                  "✔ Added node: eu-west-1 (Ireland)",
+                  "  → Status: connected",
+                  "  → Latency: 41ms",
+                ],
+                4: [
+                  "✔ Replication factor set to 2x",
+                  "✔ Hash ring rebuilt with 8 virtual nodes",
+                  "✔ Cluster is now fault-tolerant",
+                ],
+                5: [
+                  "╔══════════════════════════════════════╗",
+                  "║  Unified Supabase Cluster Summary    ║",
+                  "╠══════════════════════════════════════╣",
+                  "║  Nodes:      2 connected              ║",
+                  "║  Capacity:   1024 MB pooled           ║",
+                  "║  Replication: 2x (active-passive)    ║",
+                  "║  Latency:    32ms average            ║",
+                  "╚══════════════════════════════════════╝",
+                ],
+              }}
+              username="dev@supamerge"
+              typingSpeed={40}
+              delayBetweenCommands={1200}
+              initialDelay={1500}
+              enableSound={false}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ── How It Works Section ── */}
-      <section id="how-it-works" className="relative py-24 sm:py-32 border-t border-slate-800/40">
+      <section id="how-it-works" className="relative py-24 sm:py-32 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl mx-auto text-center mb-16">
             <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-400">
               Simple Workflow
             </span>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-logo-text)' }}>
               Three Steps to a{' '}
               <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
                 Unified Cluster
               </span>
             </h2>
-            <p className="mt-4 text-sm sm:text-base text-slate-400 leading-relaxed">
+            <p className="mt-4 text-sm sm:text-base leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
               No complex infrastructure. Just add your Supabase projects and start pooling.
             </p>
           </div>
@@ -355,11 +453,11 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
                   <div className="relative z-10 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-xl shadow-emerald-950/30 border border-emerald-400/20">
                     <Icon className="h-6 w-6 text-slate-950" />
                   </div>
-                  <div className="mt-3 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-[11px] font-bold text-slate-400 border border-slate-700">
+                  <div className="mt-3 inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold border" style={{ backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-muted)', borderColor: 'var(--color-border)' }}>
                     {step.number}
                   </div>
-                  <h3 className="mt-4 text-base font-bold text-white">{step.title}</h3>
-                  <p className="mt-2 text-xs text-slate-400 leading-relaxed max-w-xs">{step.desc}</p>
+                  <h3 className="mt-4 text-base font-bold" style={{ color: 'var(--color-text)' }}>{step.title}</h3>
+                  <p className="mt-2 text-xs leading-relaxed max-w-xs" style={{ color: 'var(--color-text-muted)' }}>{step.desc}</p>
                 </div>
               );
             })}
@@ -368,22 +466,22 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
       </section>
 
       {/* ── CTA Section ── */}
-      <section className="relative py-24 sm:py-32 border-t border-slate-800/40">
+      <section className="relative py-24 sm:py-32 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <div className="relative rounded-2xl border border-slate-800/60 bg-[#070d1e]/60 backdrop-blur-sm p-8 sm:p-12 shadow-2xl overflow-hidden">
+          <div className="relative rounded-2xl border backdrop-blur-sm p-8 sm:p-12 shadow-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-border)' }}>
             <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-emerald-500/8 blur-3xl" />
             <div className="absolute -left-20 -bottom-20 h-60 w-60 rounded-full bg-blue-500/6 blur-3xl" />
 
             <div className="relative z-10 space-y-6">
               <img src={logoSrc} alt="SupaMerge" className="mx-auto h-14 w-14 rounded-2xl" />
 
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-logo-text)' }}>
                 Ready to Max Out Your{' '}
                 <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
                   Free Tier?
                 </span>
               </h2>
-              <p className="text-sm sm:text-base text-slate-400 max-w-lg mx-auto leading-relaxed">
+              <p className="text-sm sm:text-base max-w-lg mx-auto leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 Connect multiple Supabase projects and build without limits.
                 Your data, your keys, your cluster.
               </p>
@@ -400,14 +498,33 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
         </div>
       </section>
 
+      {/* ── Hover Effect Divider ── */}
+      <section className="relative border-t py-12 sm:py-20 overflow-hidden" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="h-40 sm:h-48">
+            <TextHoverEffect text="SUPAMERGE" duration={0.3} />
+          </div>
+        </div>
+      </section>
+
       {/* ── Footer ── */}
-      <footer className="border-t border-slate-800/40 py-8">
+      <footer className="border-t py-8" style={{ borderColor: 'var(--color-border)' }}>
         <div className="mx-auto max-w-7xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Cpu className="h-3.5 w-3.5 text-slate-600" />
+          <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            <Cpu className="h-3.5 w-3.5" />
             SupaMerge &copy; {new Date().getFullYear()}
           </div>
-          <div className="text-xs text-slate-600">
+          <a
+            href="https://github.com/demgufever-arch/Supamerge"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs font-semibold transition-colors hover:text-emerald-400"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111432.png" alt="GitHub" className="h-3.5 w-3.5 dark:brightness-0 dark:invert" />
+            demgufever-arch/Supamerge
+          </a>
+          <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
             Built with React 19, Supabase, and Tailwind CSS
           </div>
         </div>

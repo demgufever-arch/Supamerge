@@ -12,6 +12,17 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 });
 
+class MockIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  value: MockIntersectionObserver,
+});
+
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {

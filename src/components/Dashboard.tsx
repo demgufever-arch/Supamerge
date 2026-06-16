@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { SupabaseNode, ClusterMetrics } from '../types';
 import { buildHashRing, getNodeForKey, HashRingNode } from '../utils/hash';
 import { Database, HardDrive, Cpu, Activity, Signal, RefreshCw, Zap } from 'lucide-react';
@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import WorldMap from '@/components/ui/world-map';
 
 interface DashboardProps {
   nodes: SupabaseNode[];
@@ -118,6 +119,87 @@ export default function Dashboard({
     return colors[nodeId] || 'text-amber-400 border-amber-500/30 bg-amber-500/10';
   };
 
+  const regionCoords: Record<string, [number, number]> = {
+    'us-east': [37, -78],
+    'us-east-1': [37, -78],
+    'us-east-2': [37, -78],
+    'useast': [37, -78],
+    'us-west': [37, -122],
+    'us-west-1': [37, -122],
+    'us-west-2': [37, -122],
+    'uswest': [37, -122],
+    'eu-west': [51, -0.1],
+    'eu-west-1': [51, -0.1],
+    'eu-west-2': [51, -0.1],
+    'eu-west-3': [51, -0.1],
+    'euwest': [51, -0.1],
+    'eu-central': [50, 8],
+    'eu-central-1': [50, 8],
+    'eu-central-2': [50, 8],
+    'eucentral': [50, 8],
+    'eu-north': [59, 18],
+    'eu-north-1': [59, 18],
+    'eunorth': [59, 18],
+    'ap-southeast': [-33, 151],
+    'ap-southeast-1': [-33, 151],
+    'ap-southeast-2': [-33, 151],
+    'apsoutheast': [-33, 151],
+    'ap-northeast': [35, 139],
+    'ap-northeast-1': [35, 139],
+    'ap-northeast-2': [35, 139],
+    'apnortheast': [35, 139],
+    'ap-south': [19, 73],
+    'ap-south-1': [19, 73],
+    'ap-south-2': [19, 73],
+    'apsouth': [19, 73],
+    'sa-east': [-23, -47],
+    'sa-east-1': [-23, -47],
+    'saeast': [-23, -47],
+    'ca-central': [45, -75],
+    'ca-central-1': [45, -75],
+    'cacentral': [45, -75],
+    'me-central': [25, 55],
+    'me-central-1': [25, 55],
+    'mecentral': [25, 55],
+    'af-south': [-34, 18],
+    'af-south-1': [-34, 18],
+    'afsouth': [-34, 18],
+  };
+
+  const getRegionCoords = (region: string): [number, number] => {
+    const key = region.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    if (regionCoords[key]) return regionCoords[key];
+    for (const [rk, coords] of Object.entries(regionCoords)) {
+      if (key.includes(rk) || rk.includes(key)) return coords;
+    }
+    return [0, 0];
+  };
+
+  const mapDots = useMemo(() => {
+    const connected = nodes.filter(n => n.status === 'connected');
+    const dots: { start: { lat: number; lng: number }; end: { lat: number; lng: number } }[] = [];
+    for (let i = 0; i < connected.length; i++) {
+      for (let j = i + 1; j < connected.length; j++) {
+        const [sLat, sLng] = getRegionCoords(connected[i].region);
+        const [eLat, eLng] = getRegionCoords(connected[j].region);
+        if (sLat !== 0 || sLng !== 0 || eLat !== 0 || eLng !== 0) {
+          dots.push({ start: { lat: sLat, lng: sLng }, end: { lat: eLat, lng: eLng } });
+        }
+      }
+    }
+    if (dots.length === 0) {
+      return [
+        { start: { lat: 64.2008, lng: -149.4937 }, end: { lat: 34.0522, lng: -118.2437 } },
+        { start: { lat: 64.2008, lng: -149.4937 }, end: { lat: -15.7975, lng: -47.8919 } },
+        { start: { lat: -15.7975, lng: -47.8919 }, end: { lat: 38.7223, lng: -9.1393 } },
+        { start: { lat: 51.5074, lng: -0.1278 }, end: { lat: 28.6139, lng: 77.209 } },
+        { start: { lat: 28.6139, lng: 77.209 }, end: { lat: 43.1332, lng: 131.9113 } },
+        { start: { lat: 28.6139, lng: 77.209 }, end: { lat: -1.2921, lng: 36.8219 } },
+      ];
+    }
+    return dots;
+  }, [nodes]);
+
   return (
     <div className="space-y-6">
       {/* Cluster Banner */}
@@ -133,7 +215,7 @@ export default function Dashboard({
               </span>
               <span className="text-xs text-slate-400">• Distributed Storage Broker</span>
             </div>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-100 md:text-3xl">
+            <h1 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--color-text)' }}>
               Unified Supabase Memory
             </h1>
             <p className="mt-1.5 text-sm text-slate-400 max-w-xl">
@@ -150,7 +232,7 @@ export default function Dashboard({
             </div>
             <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 text-center min-w-[90px]">
               <div className="text-xs text-slate-500">Nodes</div>
-              <div className="mt-1 text-lg font-bold text-slate-200">
+              <div className="mt-1 text-lg font-bold" style={{ color: 'var(--color-text)' }}>
                 {metrics.activeNodes} / {metrics.totalNodes}
               </div>
             </div>
@@ -174,7 +256,7 @@ export default function Dashboard({
                 <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Pooled PostgreSQL Space
                 </CardDescription>
-                <CardTitle className="mt-1 text-2xl font-bold text-slate-100 font-sans">
+                <CardTitle className="mt-1 text-2xl font-bold font-sans" style={{ color: 'var(--color-text)' }}>
                   {formatBytes(metrics.usedDbBytes)}
                 </CardTitle>
                 <p className="mt-0.5 text-xs text-slate-400">
@@ -208,7 +290,7 @@ export default function Dashboard({
                 <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Pooled Storage Capacity
                 </CardDescription>
-                <CardTitle className="mt-1 text-2xl font-bold text-slate-100 font-sans">
+                <CardTitle className="mt-1 text-2xl font-bold font-sans" style={{ color: 'var(--color-text)' }}>
                   {formatBytes(metrics.usedStorageBytes)}
                 </CardTitle>
                 <p className="mt-0.5 text-xs text-slate-400">
@@ -242,7 +324,7 @@ export default function Dashboard({
                 <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Cluster High-Availability
                 </CardDescription>
-                <CardTitle className="mt-1 text-2xl font-bold text-slate-100 font-sans">
+                <CardTitle className="mt-1 text-2xl font-bold font-sans" style={{ color: 'var(--color-text)' }}>
                   {metrics.activeNodes > 1 ? 'High (2x Redundancy)' : 'No Redundancy'}
                 </CardTitle>
                 <p className="mt-0.5 text-xs text-slate-400">
@@ -267,13 +349,16 @@ export default function Dashboard({
         </Card>
       </div>
 
+      {/* World Map */}
+      <WorldMap dots={mapDots} />
+
       {/* Topology and Hash Ring Section */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Interactive Hash Ring Visualization */}
         <div className="lg:col-span-2 rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
+              <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
                 <Activity className="h-4 w-4 text-emerald-400" />
                 Consistent Hashing Ring Topology
               </h3>
@@ -499,7 +584,7 @@ export default function Dashboard({
             {/* Trace Info Column */}
             <div className="md:col-span-2 space-y-4">
               <div className="rounded-lg bg-slate-950/60 border border-slate-800/80 p-4 space-y-3">
-                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">
+                <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text)' }}>
                   Routing Console
                 </h4>
                 
@@ -515,13 +600,13 @@ export default function Dashboard({
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <span className="text-slate-500 block">32-Bit Hash</span>
-                        <span className="font-mono text-slate-300 block font-semibold">
+                        <span className="font-mono block font-semibold" style={{ color: 'var(--color-text-muted)' }}>
                           0x{traceResult.keyHash.toString(16).toUpperCase()}
                         </span>
                       </div>
                       <div>
                         <span className="text-slate-500 block">Ring Angle</span>
-                        <span className="font-mono text-slate-300 block font-semibold">
+                        <span className="font-mono block font-semibold" style={{ color: 'var(--color-text-muted)' }}>
                           {Math.round(traceResult.keyAngle)}°
                         </span>
                       </div>
@@ -578,7 +663,7 @@ export default function Dashboard({
         {/* Distributed Resilience Guide */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm flex flex-col justify-between space-y-4">
           <div className="space-y-3">
-            <h3 className="text-base font-bold text-slate-200 flex items-center gap-2">
+            <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
               <Signal className="h-4 w-4 text-emerald-400" />
               Unified Replication Info
             </h3>
@@ -589,7 +674,7 @@ export default function Dashboard({
               </p>
               
               <div className="rounded-lg bg-slate-950/40 border border-slate-800/80 p-3 space-y-2">
-                <div className="flex items-center gap-1.5 font-semibold text-slate-300">
+                <div className="flex items-center gap-1.5 font-semibold" style={{ color: 'var(--color-text)' }}>
                   <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
                   Primary Node (Hash Routing)
                 </div>
@@ -597,7 +682,7 @@ export default function Dashboard({
                   Keys are hashed and saved to the primary node on the consistent hash ring.
                 </p>
                 
-                <div className="flex items-center gap-1.5 font-semibold text-slate-300">
+                <div className="flex items-center gap-1.5 font-semibold" style={{ color: 'var(--color-text)' }}>
                   <div className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse" />
                   Secondary Replica Node
                 </div>
@@ -619,7 +704,7 @@ export default function Dashboard({
 
       {/* Nodes Status Grid */}
       <div>
-        <h3 className="text-base font-bold text-slate-200 mb-4 flex items-center gap-2">
+        <h3 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
           <Database className="h-4 w-4 text-emerald-400" />
           Physical Nodes (Connected Supabase Projects)
         </h3>
@@ -653,7 +738,7 @@ export default function Dashboard({
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-slate-100 font-mono text-sm">
+                          <h4 className="font-bold font-mono text-sm" style={{ color: 'var(--color-text)' }}>
                           {node.name}
                         </h4>
                       </div>
@@ -703,7 +788,7 @@ export default function Dashboard({
                       <div>
                         <div className="flex justify-between text-xs mb-1">
                           <span className="text-slate-400">Database Space</span>
-                          <span className="text-slate-300 font-semibold font-mono">
+                          <span className="font-semibold font-mono" style={{ color: 'var(--color-text-muted)' }}>
                             {formatBytes(node.dbUsageBytes)} / {formatBytes(node.dbLimitBytes, 0)}
                           </span>
                         </div>
@@ -722,7 +807,7 @@ export default function Dashboard({
                       <div>
                         <div className="flex justify-between text-xs mb-1">
                           <span className="text-slate-400">Storage Buckets</span>
-                          <span className="text-slate-300 font-semibold font-mono">
+                          <span className="font-semibold font-mono" style={{ color: 'var(--color-text-muted)' }}>
                             {formatBytes(node.storageUsageBytes)} / {formatBytes(node.storageLimitBytes, 0)}
                           </span>
                         </div>

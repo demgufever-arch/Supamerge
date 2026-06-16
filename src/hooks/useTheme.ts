@@ -14,14 +14,14 @@ function getStoredTheme(): Theme {
 
 function getEffectiveTheme(theme: Theme): 'light' | 'dark' {
   if (theme === 'system') {
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   return theme;
 }
 
 function applyTheme(effective: 'light' | 'dark') {
   if (effective === 'dark') {
-    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'dark');
     document.documentElement.classList.add('dark');
   } else {
     document.documentElement.setAttribute('data-theme', 'light');
@@ -43,7 +43,7 @@ export function useTheme() {
     applyTheme(getEffectiveTheme(theme));
 
     if (theme === 'system') {
-      const mq = window.matchMedia('(prefers-color-scheme: light)');
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
       const handler = () => applyTheme(getEffectiveTheme('system'));
       mq.addEventListener('change', handler);
       return () => mq.removeEventListener('change', handler);

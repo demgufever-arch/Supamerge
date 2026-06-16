@@ -292,7 +292,7 @@ export default function FileSharding({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
             <Layers className="h-6 w-6 text-emerald-400" />
             Distributed File Sharding
             <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
@@ -308,7 +308,7 @@ export default function FileSharding({
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Upload Panel */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+          <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
             Shard New File
           </h3>
 
@@ -363,7 +363,7 @@ export default function FileSharding({
                 <div className="rounded-full bg-slate-900 p-3 text-slate-400 border border-slate-800 mb-3 group-hover:scale-110 transition">
                   <Upload className="h-6 w-6 text-emerald-400" />
                 </div>
-                <span className="text-sm font-semibold text-slate-300">
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                   {isUploading ? 'Uploading Shards...' : 'Select File to Shard'}
                 </span>
                 <span className="text-xs text-slate-500 mt-1 max-w-[180px]">
@@ -395,7 +395,7 @@ export default function FileSharding({
 
         {/* Distributed Files List */}
         <div className="lg:col-span-2 rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+          <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
             Distributed File System Explorer
           </h3>
 
@@ -435,7 +435,7 @@ export default function FileSharding({
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-3.5 text-center font-mono font-bold text-slate-300">
+                        <td className="px-4 py-3.5 text-center font-mono font-bold" style={{ color: 'var(--color-text-muted)' }}>
                           {file.totalChunks}
                         </td>
                         <td className="px-4 py-3.5">

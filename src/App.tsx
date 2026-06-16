@@ -649,17 +649,17 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
+    <div className="flex min-h-screen bg-mesh bg-noise" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
       {/* Content wrapper to stack above fixed bg layers */}
       <div className="relative z-10 flex w-full">
       {/* Sidebar Navigation */}
-      <aside className="w-64 border-r flex flex-col justify-between shrink-0 font-sans backdrop-blur-md" style={{ backgroundColor: 'var(--color-sidebar-bg)', borderColor: 'var(--color-border)' }}>
+      <aside className="w-64 border-r backdrop-blur-md flex flex-col justify-between shrink-0 font-sans" style={{ backgroundColor: 'var(--color-sidebar-bg)', borderColor: 'var(--color-border)' }}>
         <div className="p-6 space-y-6">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <img src={logoSrc} alt="SupaMerge" className="h-10 w-10 rounded-lg" />
             <div>
-              <h2 className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+              <h2 className="text-sm font-extrabold tracking-wider" style={{ color: 'var(--color-logo-text)' }}>
                 SUPAMERGE
               </h2>
               <span className="text-[10px] text-emerald-400/80 font-bold leading-none block tracking-wider">
@@ -686,14 +686,15 @@ export default function App() {
                   onClick={() => setActiveTab(tab.id as ActiveTab)}
                   className={`w-full flex items-center gap-3 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all duration-200 relative ${
                     isActive
-                      ? 'text-emerald-400 bg-emerald-500/8 shadow-sm shadow-emerald-950/20'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'
+                      ? 'text-emerald-400'
+                      : 'hover:bg-slate-800/30'
                   }`}
+                  style={{ color: isActive ? undefined : 'var(--color-text-muted)' }}
                 >
                   {isActive && (
                     <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                   )}
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-emerald-400' : ''}`} style={{ color: isActive ? undefined : 'var(--color-text-muted)' }} />
                   {tab.label}
                 </button>
               );
@@ -702,9 +703,9 @@ export default function App() {
         </div>
 
         {/* Console System Logs in Sidebar footer */}
-        <div className="p-6 border-t border-slate-800/40 space-y-4 bg-[#020617]/30">
+        <div className="p-6 border-t space-y-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-canvas)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
               Cluster Logs
             </span>
             <div className="flex items-center gap-2">
@@ -717,19 +718,19 @@ export default function App() {
             </div>
           </div>
           
-          <div className="max-h-32 overflow-y-auto font-mono text-[10px] text-slate-500 space-y-1.5 scrollbar-thin">
+          <div className="max-h-32 overflow-y-auto font-mono text-[10px] space-y-1.5 scrollbar-thin" style={{ color: 'var(--color-text-muted)' }}>
             {clusterLogs.length === 0 ? (
-              <div className="text-slate-600 italic">No events recorded.</div>
+              <div className="italic" style={{ color: 'var(--color-text-muted)' }}>No events recorded.</div>
             ) : (
               clusterLogs.slice(0, 15).map((log, i) => (
-                <div key={i} className="leading-relaxed border-b border-slate-900/30 pb-1 last:border-0">
+                <div key={i} className="leading-relaxed border-b pb-1 last:border-0" style={{ borderColor: 'var(--color-border)' }}>
                   {log}
                 </div>
               ))
             )}
           </div>
 
-          <div className="rounded-lg bg-slate-950/60 p-3 border border-slate-800/50 text-[10px] text-slate-400 flex items-center gap-2">
+          <div className="rounded-lg p-3 border text-[10px] flex items-center gap-2" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
             <Database className="h-3.5 w-3.5 text-slate-500 shrink-0" />
             <span>
               Mode: <strong className="text-emerald-400 font-mono">Live</strong>
@@ -741,9 +742,9 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 bg-grid">
         {/* Top Header */}
-        <header className="h-14 border-b px-6 flex items-center justify-between shrink-0 backdrop-blur-md" style={{ backgroundColor: 'var(--color-header-bg)', borderColor: 'var(--color-border)' }}>
-          <div className="flex items-center gap-3 text-xs">
-            <span className="text-slate-500 font-medium">Environment:</span>
+        <header className="h-14 border-b px-6 backdrop-blur-md flex items-center justify-between shrink-0" style={{ backgroundColor: 'var(--color-header-bg)', borderColor: 'var(--color-border)' }}>
+          <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            <span className="font-medium">Environment:</span>
             <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20">
               Production Unified Pool
             </span>
@@ -757,9 +758,9 @@ export default function App() {
               </div>
             )}
 
-            <div className="text-slate-500">
+            <div style={{ color: 'var(--color-text-muted)' }}>
               Combined Capacity:{' '}
-              <strong className="text-slate-200 font-mono bg-slate-800/40 px-2 py-0.5 rounded">
+              <strong className="font-mono px-2 py-0.5 rounded" style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)' }}>
                 {(nodes.length * 0.5).toFixed(1)} GB
               </strong>
             </div>

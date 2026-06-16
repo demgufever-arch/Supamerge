@@ -191,7 +191,7 @@ export default function VectorMemoryComponent({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
             <Brain className="h-6 w-6 text-emerald-400" />
             Unified Vector Memory
             <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
@@ -297,7 +297,7 @@ export default function VectorMemoryComponent({
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-2 flex-1">
-                            <p className="text-sm text-slate-200 leading-relaxed">
+                            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
                               {mem.content}
                             </p>
                             <div className="flex flex-wrap items-center gap-2 text-[10px]">
@@ -362,7 +362,7 @@ export default function VectorMemoryComponent({
                         className="group relative rounded-xl border border-slate-800 bg-slate-900/10 p-4 hover:border-slate-700 transition duration-200"
                       >
                         <div className="space-y-2">
-                          <p className="text-sm text-slate-200 leading-relaxed">
+                          <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
                             {mem.content}
                           </p>
                           <div className="flex flex-wrap items-center gap-2 text-[10px]">
@@ -407,7 +407,7 @@ export default function VectorMemoryComponent({
           <div className="lg:col-span-2 space-y-4">
             <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                   <BarChart2 className="h-4 w-4 text-emerald-400" />
                   2D Vector Space Map
                 </h3>
@@ -532,7 +532,7 @@ export default function VectorMemoryComponent({
                         {formatCategory(hoveredMemory.metadata.category)}
                       </span>
                     </div>
-                    <p className="text-slate-300 line-clamp-2 italic leading-relaxed">
+                    <p className="line-clamp-2 italic leading-relaxed" style={{ color: 'var(--color-text)' }}>
                       "{hoveredMemory.content}"
                     </p>
                   </div>
@@ -546,8 +546,8 @@ export default function VectorMemoryComponent({
             </div>
 
             {/* AI Unified Memory Explanation */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm text-xs text-slate-400 space-y-2.5">
-              <h4 className="font-bold text-slate-300 uppercase tracking-wider text-[10px]">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm text-xs space-y-2.5" style={{ color: 'var(--color-text-muted)' }}>
+              <h4 className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-text)' }}>
                 Why Unified Vector Memory?
               </h4>
               <p className="leading-relaxed">
@@ -566,7 +566,7 @@ export default function VectorMemoryComponent({
 
       {activeTab === 'add' && (
         <div className="max-w-2xl mx-auto rounded-xl border border-slate-800 bg-slate-900/15 p-6 backdrop-blur-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-200 flex items-center gap-1.5">
+          <h3 className="text-base font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
             <Plus className="h-5 w-5 text-emerald-400" />
             Add Semantic Memory Chunk
           </h3>
