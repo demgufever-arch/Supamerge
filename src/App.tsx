@@ -31,11 +31,16 @@ function getSupabaseClient(node: SupabaseNode) {
 }
 
 export default function App() {
-  const [showLanding, setShowLanding] = useState<boolean>(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
-    const hash = window.location.hash.replace('#', '') as ActiveTab;
-    return ['dashboard', 'kv', 'files', 'vector', 'console'].includes(hash) ? hash : 'dashboard';
+    const hash = window.location.hash.replace('#', '');
+    const parts = hash.split('/').filter(Boolean);
+    const tab = parts[1] || 'dashboard';
+    return ['dashboard', 'kv', 'files', 'vector', 'console'].includes(tab) ? tab as ActiveTab : 'dashboard';
+  });
+  const [showLanding, setShowLanding] = useState<boolean>(() => {
+    const hash = window.location.hash.replace('#', '');
+    return !hash.startsWith('/app');
   });
   const [nodes, setNodes] = useState<SupabaseNode[]>([]);
   const [kvRecords, setKvRecords] = useState<KVRecord[]>([]);
@@ -587,11 +592,24 @@ export default function App() {
       '/console': 'console',
     };
     const tab = tabMap[href];
-    if (tab) setActiveTab(tab);
+    if (tab) {
+      setActiveTab(tab);
+      window.location.hash = `/app/${tab}`;
+    }
+  };
+
+  const handleLaunch = () => {
+    setShowLanding(false);
+    window.location.hash = '/app/dashboard';
+  };
+
+  const handleBackToLanding = () => {
+    setShowLanding(true);
+    window.location.hash = '';
   };
 
   if (showLanding) {
-    return <LandingPage onLaunch={() => setShowLanding(false)} />;
+    return <LandingPage onLaunch={handleLaunch} />;
   }
 
   const renderSkeleton = () => (
@@ -785,7 +803,7 @@ export default function App() {
             <ThemeToggle />
 
             <button
-              onClick={() => setShowLanding(true)}
+              onClick={handleBackToLanding}
               className="flex items-center gap-1.5 transition-colors p-1 rounded-lg hover:bg-slate-800/30"
               style={{ color: 'var(--color-text-muted)' }}
               title="About SupaMerge"
