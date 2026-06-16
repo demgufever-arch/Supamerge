@@ -13,9 +13,9 @@
   <p align="center"><strong>by Parithosh Varma</strong></p>
   <br />
   <h1 align="center" style="border-bottom: none;">SupaMerge</h1>
-  <h3 align="center">Unify Your Supabase Free Tier Databases</h3>
+  <h3 align="center">Unify Your Supabase Databases</h3>
   <p align="center">
-    Pool multiple Supabase Free Tier projects into a single virtual cluster —<br />
+    Unify multiple Supabase projects into a single virtual cluster —<br />
     shard KV data, distribute file storage, and merge AI vector memories across nodes.
   </p>
   <br />
@@ -32,7 +32,7 @@
 
 ## Overview
 
-SupaMerge is a **browser-only SPA** that aggregates independent Supabase Free Tier databases into a distributed system. No backend server — your API keys stay in `localStorage`, never transmitted to third parties.
+SupaMerge is a **browser-only SPA** that aggregates independent Supabase databases into a distributed system. No backend server — your API keys stay in `localStorage`, never transmitted to third parties.
 
 The app has **two phases**: a full marketing landing page (hero, features grid, how-it-works, CTA) that introduces the product, and the actual tool interface (sidebar + tab layout) for managing the cluster.
 

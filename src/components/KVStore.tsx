@@ -183,7 +183,7 @@ export default function KVStore({
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
             <Key className="h-6 w-6 text-emerald-400" />
             Sharded Key-Value Store
-            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
+            <span className="text-xs font-normal rounded-full px-2.5 py-0.5 border" style={{ backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}>
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
@@ -192,12 +192,13 @@ export default function KVStore({
           </p>
         </div>
 
-        <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-0.5 self-start sm:self-center">
+        <div className="flex rounded-lg border p-0.5 self-start sm:self-center" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-alt)' }}>
           <Button
             variant={activeTab === 'explore' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('explore')}
-            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'explore' ? 'bg-slate-700 text-white' : ''}`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'explore' ? 'text-white' : ''}`}
+            style={activeTab === 'explore' ? { backgroundColor: 'var(--color-surface-alt)' } : {}}
           >
             Explore Records ({filteredRecords.length})
           </Button>
@@ -205,7 +206,8 @@ export default function KVStore({
             variant={activeTab === 'write' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('write')}
-            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'write' ? 'bg-slate-700 text-white' : ''}`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'write' ? 'text-white' : ''}`}
+            style={activeTab === 'write' ? { backgroundColor: 'var(--color-surface-alt)' } : {}}
           >
             Write New Key
           </Button>
@@ -218,21 +220,21 @@ export default function KVStore({
           <div className="lg:col-span-2 space-y-4">
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4" style={{ color: 'var(--color-text-muted)' }} />
               <Input
                 type="text"
                 placeholder="Search by key name or tag (e.g., 'user', 'config')..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 bg-slate-900/40 border-slate-800"
+                className="w-full pl-10" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}
               />
             </div>
 
             {/* KV List Table */}
-            <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/10 backdrop-blur-sm">
+            <div className="overflow-hidden rounded-xl backdrop-blur-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
               <Table>
                 <TableHeader>
-                  <TableRow className="border-slate-800 hover:bg-transparent">
+                  <TableRow className="hover:bg-transparent" style={{ borderColor: 'var(--color-border)' }}>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Key Name</TableHead>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Primary Node</TableHead>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Replica Node</TableHead>
@@ -242,9 +244,9 @@ export default function KVStore({
                 </TableHeader>
                 <TableBody>
                   {filteredRecords.length === 0 ? (
-                    <TableRow className="border-slate-800/60 hover:bg-transparent">
+                    <TableRow className="hover:bg-transparent" style={{ borderColor: 'var(--color-border)' }}>
                        <TableCell colSpan={5} className="px-4 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
-                         <Database className="h-8 w-8 text-slate-600 mx-auto mb-2" />
+                          <Database className="h-8 w-8 mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} />
                          No records found matching your search.
                        </TableCell>
                     </TableRow>
@@ -260,9 +262,13 @@ export default function KVStore({
                       return (
                         <TableRow
                           key={rec.key}
-                          className={`border-slate-800/60 font-mono text-xs ${
-                            selectedRecord?.key === rec.key ? 'bg-slate-800/20' : ''
-                          }`}
+                           className={`font-mono text-xs ${
+                             selectedRecord?.key === rec.key ? '' : ''
+                           }`}
+                           style={{
+                             borderColor: 'var(--color-border)',
+                             ...(selectedRecord?.key === rec.key ? { backgroundColor: 'var(--color-surface-alt)' } : {})
+                           }}
                         >
                           <TableCell className="px-4 py-3.5 font-bold select-all max-w-[180px] truncate" style={{ color: 'var(--color-text)' }}>
                             {rec.key}
@@ -271,7 +277,7 @@ export default function KVStore({
                                 <Badge
                                   key={tag}
                                   variant="outline"
-                                   className="bg-slate-950 hover:text-slate-400 border-slate-800 text-[9px] font-sans px-1.5 py-0.5 h-auto" style={{ color: 'var(--color-text-muted)' }}
+                                    className="text-[9px] font-sans px-1.5 py-0.5 h-auto" style={{ backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-muted)', borderColor: 'var(--color-border)' }}
                                 >
                                   {tag}
                                 </Badge>
@@ -305,7 +311,7 @@ export default function KVStore({
                                 {getNodeName(rec.replicaNodeId)}
                               </Badge>
                             ) : (
-                              <span className="text-slate-600 italic">None</span>
+                               <span className="italic" style={{ color: 'var(--color-text-muted)' }}>None</span>
                             )}
                           </TableCell>
                           <TableCell className="px-4 py-3.5 text-right font-semibold" style={{ color: 'var(--color-text-muted)' }}>
@@ -317,7 +323,7 @@ export default function KVStore({
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setSelectedRecord(rec)}
-                                className="text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                                 className="hover:text-emerald-400 hover:bg-emerald-500/10" style={{ color: 'var(--color-text-muted)' }}
                                 title="Inspect JSON"
                               >
                                 <Eye className="h-4 w-4" />
@@ -331,7 +337,7 @@ export default function KVStore({
                                   setNewTags(rec.tags.join(', '));
                                   setActiveTab('write');
                                 }}
-                                className="text-slate-500 hover:text-blue-400 hover:bg-blue-500/10"
+                                 className="hover:text-blue-400 hover:bg-blue-500/10" style={{ color: 'var(--color-text-muted)' }}
                                 title="Edit Value"
                               >
                                 <Edit2 className="h-4 w-4" />
@@ -340,7 +346,7 @@ export default function KVStore({
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => onDeleteRecord(rec.key)}
-                                className="text-slate-500 hover:text-rose-400 hover:bg-rose-500/10"
+                                 className="hover:text-rose-400 hover:bg-rose-500/10" style={{ color: 'var(--color-text-muted)' }}
                                 title="Delete Record"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -359,7 +365,7 @@ export default function KVStore({
           {/* Sidebar: Inspect View & Failover Diagnostics */}
           <div className="space-y-4">
             {/* Record Inspector */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm">
+            <div className="rounded-xl backdrop-blur-sm p-5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
               <h3 className="text-sm font-bold mb-3 flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                 <Eye className="h-4 w-4 text-emerald-400" />
                 Record Inspector
@@ -399,7 +405,7 @@ export default function KVStore({
                      <span className="text-[10px] uppercase tracking-wider block" style={{ color: 'var(--color-text-muted)' }}>
                        Key Name
                      </span>
-                    <span className="font-mono text-xs font-bold text-slate-200 bg-slate-950 px-2.5 py-1 rounded border border-slate-900 block truncate">
+                     <span className="font-mono text-xs font-bold px-2.5 py-1 rounded block truncate" style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                       {selectedRecord.key}
                     </span>
                   </div>
@@ -408,26 +414,26 @@ export default function KVStore({
                      <span className="text-[10px] uppercase tracking-wider block" style={{ color: 'var(--color-text-muted)' }}>
                        JSON Value
                      </span>
-                    <pre className="font-mono text-[11px] text-slate-300 bg-slate-950/85 p-3 rounded-lg border border-slate-900 overflow-auto max-h-[220px] leading-relaxed">
+                     <pre className="font-mono text-[11px] p-3 rounded-lg overflow-auto max-h-[220px] leading-relaxed" style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                       {JSON.stringify(selectedRecord.value, null, 2)}
                     </pre>
                   </div>
 
-                   <div className="flex justify-between text-[11px] pt-2 border-t border-slate-800/60 font-sans" style={{ color: 'var(--color-text-muted)' }}>
+                    <div className="flex justify-between text-[11px] pt-2 font-sans" style={{ borderColor: 'var(--color-border)', borderTop: '1px solid', color: 'var(--color-text-muted)' }}>
                      <span>Updated</span>
                      <span>{new Date(selectedRecord.updatedAt).toLocaleString()}</span>
                    </div>
                 </div>
               ) : (
                  <div className="text-center py-12 text-xs space-y-2" style={{ color: 'var(--color-text-muted)' }}>
-                   <HelpCircle className="h-6 w-6 text-slate-600 mx-auto" />
+                    <HelpCircle className="h-6 w-6 mx-auto" style={{ color: 'var(--color-text-muted)' }} />
                    <p>Click the eye icon next to any record in the table to inspect its contents and trace its health.</p>
                  </div>
               )}
             </div>
 
             {/* Educational Sharding Info */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm text-xs space-y-2.5" style={{ color: 'var(--color-text-muted)' }}>
+            <div className="rounded-xl backdrop-blur-sm p-5 text-xs space-y-2.5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)', color: 'var(--color-text-muted)' }}>
               <h4 className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-text)' }}>
                 How KV Sharding Works
               </h4>
@@ -445,7 +451,7 @@ export default function KVStore({
       {activeTab === 'write' && (
         <div className="grid gap-6 md:grid-cols-2">
           {/* Form Column */}
-          <div className="rounded-xl border border-slate-800 bg-slate-900/15 p-6 backdrop-blur-sm">
+          <div className="rounded-xl backdrop-blur-sm p-6" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.15)' }}>
             <h3 className="text-base font-bold mb-4 flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
               <Plus className="h-5 w-5 text-emerald-400" />
               Store Key-Value Pair
@@ -487,9 +493,15 @@ export default function KVStore({
                   value={newValue}
                   onChange={(e) => handleJsonChange(e.target.value)}
                   disabled={isWriting}
-                  className={`w-full font-mono text-xs rounded-lg border bg-slate-950 px-3 py-2 text-slate-200 placeholder-slate-600 focus:outline-none ${
-                    jsonError ? 'border-rose-800 focus:border-rose-500' : 'border-slate-800 focus:border-emerald-500'
-                  }`}
+                   className={`w-full font-mono text-xs rounded-lg border px-3 py-2 focus:outline-none ${
+                     jsonError ? 'border-rose-800 focus:border-rose-500' : 'focus:border-emerald-500'
+                   }`}
+                   style={{
+                     backgroundColor: 'var(--color-surface-alt)',
+                     color: 'var(--color-text)',
+                     borderColor: 'var(--color-border)',
+                     ...(!jsonError ? { '--color-placeholder': 'var(--color-text-muted)' } : {})
+                   }}
                 />
               </div>
 
@@ -527,7 +539,7 @@ export default function KVStore({
           </div>
 
           {/* Sharding Log Column */}
-          <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-6 flex flex-col justify-between">
+           <div className="rounded-xl p-6 flex flex-col justify-between" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.6)' }}>
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--color-text)' }}>
                 Distributed Consensus Log
@@ -535,20 +547,25 @@ export default function KVStore({
               
               <div className="space-y-2 font-mono text-xs" style={{ color: 'var(--color-text-muted)' }}>
                  {writeLogs.length === 0 ? (
-                   <div className="text-center py-12 text-slate-600 font-sans italic">
+                    <div className="text-center py-12 font-sans italic" style={{ color: 'var(--color-text-muted)' }}>
                      Fill out the form and submit to view the real-time sharding logs.
                    </div>
                 ) : (
                   writeLogs.map((log, i) => (
                     <div
                       key={i}
-                      className={`py-1 border-b border-slate-900/50 leading-relaxed ${
-                        log.startsWith('[ERROR]')
-                          ? 'text-rose-400'
-                          : log.includes('SUCCESS')
-                          ? 'text-emerald-400 font-bold'
-                          : 'text-slate-400'
-                      }`}
+                       className={`py-1 leading-relaxed ${
+                         log.startsWith('[ERROR]')
+                           ? 'text-rose-400'
+                           : log.includes('SUCCESS')
+                           ? 'text-emerald-400 font-bold'
+                           : ''
+                       }`}
+                       style={{
+                         borderColor: 'var(--color-border)',
+                         borderBottom: '1px solid',
+                         color: log.includes('SUCCESS') ? '#10b981' : log.startsWith('[ERROR]') ? '#f87171' : 'var(--color-text-muted)'
+                       }}
                     >
                       {log}
                     </div>
@@ -559,16 +576,16 @@ export default function KVStore({
 
             {/* Hashing Animation Visualizer */}
             {writeVisual && (
-              <div className="mt-6 border-t border-slate-900 pt-4 space-y-3">
+              <div className="mt-6 pt-4 space-y-3" style={{ borderColor: 'var(--color-border)', borderTop: '1px solid' }}>
                  <span className="block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                    Visual Topology Route
                  </span>
                 
-                <div className="flex items-center justify-between gap-2 rounded-lg bg-slate-900/40 border border-slate-800 p-3">
-                  {/* Key */}
-                   <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
-                     <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Key</span>
-                     <span className="font-mono text-[10px] font-bold text-slate-300">"{writeVisual.key}"</span>
+                 <div className="flex items-center justify-between gap-2 rounded-lg p-3" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+                   {/* Key */}
+                    <div className="text-center px-2 py-1 rounded max-w-[100px] truncate" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+                      <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Key</span>
+                      <span className="font-mono text-[10px] font-bold" style={{ color: 'var(--color-text)' }}>"{writeVisual.key}"</span>
                    </div>
                   
                   {/* arrow */}
@@ -581,8 +598,8 @@ export default function KVStore({
                     </div>
                   </div>
 
-                  {/* Primary Node */}
-                   <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
+                   {/* Primary Node */}
+                    <div className="text-center px-2 py-1 rounded max-w-[100px] truncate" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                      <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Primary</span>
                      <span className={`font-mono text-[10px] font-bold ${getNodeColorClass(writeVisual.primaryNode)}`}>
                        {getNodeName(writeVisual.primaryNode)}
@@ -592,8 +609,8 @@ export default function KVStore({
                   {/* Backup Node */}
                   {writeVisual.replicaNode && (
                     <>
-                      <div className="h-0.5 w-6 bg-slate-800" />
-                       <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
+                      <div className="h-0.5 w-6" style={{ backgroundColor: 'var(--color-border)' }} />
+                       <div className="text-center px-2 py-1 rounded max-w-[100px] truncate" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                          <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Replica</span>
                          <span className={`font-mono text-[10px] font-bold ${getNodeColorClass(writeVisual.replicaNode)}`}>
                            {getNodeName(writeVisual.replicaNode)}

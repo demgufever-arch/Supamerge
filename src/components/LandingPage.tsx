@@ -68,7 +68,7 @@ const STEPS = [
   {
     number: '1',
     title: 'Connect',
-    desc: 'Add your Supabase Free Tier project URLs and anon keys through the Cluster Console.',
+    desc: 'Add your Supabase project URLs and anon keys through the Cluster Console.',
     icon: Server,
   },
   {
@@ -259,13 +259,13 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
               </span>
               <br />
               <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                Free Tier Databases
+                Databases
               </span>
             </h1>
 
             {/* Description */}
             <p className="mt-6 text-base sm:text-lg leading-relaxed max-w-2xl" style={{ color: 'var(--color-text-secondary)' }}>
-              Pool multiple Supabase Free Tier projects into a single virtual cluster. Shard key-value data,
+              Unify multiple Supabase projects into a single virtual cluster. Shard key-value data,
               distribute file storage, and merge AI vector memories across nodes — all in your browser.
             </p>
 
@@ -321,11 +321,11 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-logo-text)' }}>
               Everything You Need to{' '}
               <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                Scale Beyond Free
+                Go Distributed
               </span>
             </h2>
             <p className="mt-4 text-sm sm:text-base leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-              Six integrated systems that turn your collection of Free Tier databases into a unified distributed cluster.
+              Six integrated systems that turn your collection of Supabase databases into a unified distributed cluster.
             </p>
           </div>
 
@@ -485,9 +485,9 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
               <img src={logoSrc} alt="SupaMerge" className="mx-auto h-14 w-14 rounded-2xl" />
 
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-logo-text)' }}>
-                Ready to Max Out Your{' '}
+                Ready to{' '}
                 <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                  Free Tier?
+                  Go Distributed?
                 </span>
               </h2>
               <p className="text-sm sm:text-base max-w-lg mx-auto leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>

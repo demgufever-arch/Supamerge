@@ -76,7 +76,7 @@ export default function FileSharding({
       return <FileCode className="h-6 w-6 text-amber-400" />;
     }
     if (type.includes('text/')) return <FileText className="h-6 w-6 text-emerald-400" />;
-    return <File className="h-6 w-6 text-slate-400" />;
+    return <File className="h-6 w-6" style={{ color: 'var(--color-text-muted)' }} />;
   };
 
   // Convert File to Base64 chunks
@@ -295,7 +295,7 @@ export default function FileSharding({
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
             <Layers className="h-6 w-6 text-emerald-400" />
             Distributed File Sharding
-            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
+            <span className="text-xs font-normal rounded-full px-2.5 py-0.5 border" style={{ backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}>
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
@@ -307,7 +307,7 @@ export default function FileSharding({
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Upload Panel */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
+        <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
           <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
             Shard New File
           </h3>
@@ -330,9 +330,9 @@ export default function FileSharding({
                     className={`font-mono font-bold ${
                        chunkSizeKb === size
                          ? 'bg-emerald-600/10 text-emerald-400 border-emerald-500/45 hover:bg-emerald-600/15'
-                         : 'bg-slate-950 hover:text-slate-200 border-slate-800'
+                         : ''
                     }`}
-                    style={{ color: chunkSizeKb === size ? '' : 'var(--color-text-muted)' }}
+                    style={chunkSizeKb === size ? {} : { backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
                   >
                     {size} KB
                   </Button>

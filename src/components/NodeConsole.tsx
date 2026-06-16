@@ -12,7 +12,7 @@ interface NodeConsoleProps {
   onDeleteNode: (id: string) => void;
 }
 
-const SCHEMA_SQL = `-- 1. Enable the pgvector extension (Supabase free tier supports this out-of-the-box!)
+const SCHEMA_SQL = `-- 1. Enable the pgvector extension (Supabase supports this out-of-the-box!)
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- 2. Create the Key-Value Shard Table
@@ -206,19 +206,19 @@ export default function NodeConsole({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 backdrop-blur-xl">
+      <div className="rounded-2xl p-6 backdrop-blur-xl" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.4)' }}>
         <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
           Cluster Environment Control
         </h2>
          <p className="text-xs mt-1 max-w-2xl leading-normal" style={{ color: 'var(--color-text-muted)' }}>
-           Connect actual Supabase free-tier REST endpoints together. Each database behaves as an individual shard in the unified cluster.
+            Connect Supabase REST endpoints together. Each database behaves as an individual shard in the unified cluster.
          </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Left Side: Node Administration */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
+          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
             <h3 className="text-base font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
               <Plus className="h-5 w-5 text-emerald-400" />
               Add Real Supabase Node
@@ -345,7 +345,7 @@ export default function NodeConsole({
             )}
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
+          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
                 Cluster Provisioned Nodes ({nodes.length})
@@ -375,11 +375,11 @@ export default function NodeConsole({
                   return (
                     <div
                       key={node.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl bg-slate-950/50 border border-slate-800 p-4 transition hover:border-slate-800/100"
+                       className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl p-4 transition" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-xs text-slate-200">{node.name}</span>
+                           <span className="font-mono font-bold text-xs" style={{ color: 'var(--color-text)' }}>{node.name}</span>
                            <span className="text-[10px]">• {node.region}</span>
                         </div>
                          <span className="text-[10px] font-mono block truncate max-w-[280px]" style={{ color: 'var(--color-text-muted)' }}>
@@ -438,7 +438,7 @@ export default function NodeConsole({
                           variant="ghost"
                           size="icon"
                           onClick={() => onDeleteNode(node.id)}
-                          className="text-slate-500 hover:text-rose-400 hover:bg-rose-500/10"
+                           className="hover:text-rose-400 hover:bg-rose-500/10" style={{ color: 'var(--color-text-muted)' }}
                           title="Remove Node from Cluster"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -454,7 +454,7 @@ export default function NodeConsole({
 
         {/* Right Side: PostgreSQL SQL Schema Exporter */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
+          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
             <div>
               <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                 <Terminal className="h-4 w-4 text-emerald-400" />
@@ -470,7 +470,7 @@ export default function NodeConsole({
                 variant="outline"
                 size="sm"
                 onClick={handleCopySql}
-                className="absolute right-3 top-3 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 text-[10px]"
+                 className="absolute right-3 top-3 text-[10px]" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
                 title="Copy SQL Script"
               >
                 {copied ? (
@@ -486,7 +486,7 @@ export default function NodeConsole({
                 )}
               </Button>
               
-               <pre className="rounded-lg bg-slate-950 p-4 font-mono text-[9px] border border-slate-800 h-[360px] overflow-y-auto leading-relaxed select-all" style={{ color: 'var(--color-text-muted)' }}>
+                <pre className="rounded-lg p-4 font-mono text-[9px] h-[360px] overflow-y-auto leading-relaxed select-all" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid', color: 'var(--color-text-muted)' }}>
                  {SCHEMA_SQL}
                </pre>
             </div>

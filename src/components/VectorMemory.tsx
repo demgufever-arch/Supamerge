@@ -177,7 +177,7 @@ export default function VectorMemoryComponent({
       infrastructure: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
       branding: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
       security: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      general: 'bg-[var(--color-surface-alt)] hover:text-slate-400 border-slate-700',
+      general: 'bg-[var(--color-surface-alt)]' ,
     };
     return colors[cat] || colors.general;
   };
@@ -194,7 +194,7 @@ export default function VectorMemoryComponent({
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
             <Brain className="h-6 w-6 text-emerald-400" />
             Unified Vector Memory
-            <span className="text-xs font-normal rounded-full bg-slate-800 text-slate-300 px-2.5 py-0.5 border border-slate-700">
+            <span className="text-xs font-normal rounded-full px-2.5 py-0.5 border" style={{ backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}>
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
@@ -203,12 +203,13 @@ export default function VectorMemoryComponent({
           </p>
         </div>
 
-        <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-0.5 self-start sm:self-center">
+        <div className="flex rounded-lg border p-0.5 self-start sm:self-center" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-alt)' }}>
           <Button
             variant={activeTab === 'explore' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('explore')}
-            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'explore' ? 'bg-slate-700 text-white' : ''}`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'explore' ? 'text-white' : ''}`}
+            style={activeTab === 'explore' ? { backgroundColor: 'var(--color-surface-alt)' } : {}}
           >
             Semantic Explorer
           </Button>
@@ -216,7 +217,8 @@ export default function VectorMemoryComponent({
             variant={activeTab === 'add' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('add')}
-            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'add' ? 'bg-slate-700 text-white' : ''}`}
+            className={`rounded-md px-3 py-1.5 text-xs ${activeTab === 'add' ? 'text-white' : ''}`}
+            style={activeTab === 'add' ? { backgroundColor: 'var(--color-surface-alt)' } : {}}
           >
             Add Memory Chunk
           </Button>
@@ -230,13 +232,13 @@ export default function VectorMemoryComponent({
             {/* Search Input */}
             <form onSubmit={handleSearch} className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-500" />
+                 <Search className="absolute left-3 top-2.5 h-4.5 w-4.5" style={{ color: 'var(--color-text-muted)' }} />
                 <Input
                   type="text"
                   placeholder="Ask a question or enter a semantic query..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 bg-slate-900/40 border-slate-800"
+                   className="w-full pl-10" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}
                 />
               </div>
               <Button
@@ -284,7 +286,7 @@ export default function VectorMemoryComponent({
                      Semantic Matches (Cosine Similarity)
                    </h3>
                   {searchResults.length === 0 ? (
-                     <div className="rounded-xl border border-slate-800 bg-slate-900/5 py-12 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      <div className="rounded-xl py-12 text-center text-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.05)', color: 'var(--color-text-muted)' }}>
                        No matching memories found. Try adjusting your search query.
                      </div>
                   ) : (
@@ -293,7 +295,7 @@ export default function VectorMemoryComponent({
                         key={mem.id}
                         onMouseEnter={() => setHoveredMemory(mem)}
                         onMouseLeave={() => setHoveredMemory(null)}
-                        className="group relative rounded-xl border border-slate-800 bg-slate-900/10 p-4 hover:border-emerald-500/40 hover:bg-slate-900/35 transition duration-200"
+                         className="group relative rounded-xl p-4 hover:border-emerald-500/40 hover:bg-slate-900/35 transition duration-200" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-2 flex-1">
@@ -305,11 +307,11 @@ export default function VectorMemoryComponent({
                                 {formatCategory(mem.metadata.category)}
                               </span>
                                <span className="flex items-center gap-0.5 font-mono" style={{ color: 'var(--color-text-muted)' }}>
-                                 <User className="h-3 w-3 text-slate-600" />
+                                  <User className="h-3 w-3" style={{ color: 'var(--color-text-muted)' }} />
                                  {mem.metadata.agentName}
                                </span>
                                <span className="flex items-center gap-0.5 font-mono" style={{ color: 'var(--color-text-muted)' }}>
-                                 <Clock className="h-3 w-3 text-slate-600" />
+                                  <Clock className="h-3 w-3" style={{ color: 'var(--color-text-muted)' }} />
                                  {new Date(mem.metadata.timestamp).toLocaleDateString()}
                                </span>
                               <span className="font-mono font-bold text-[10px]" style={{ color: getNodeColor(mem.nodeId) }}>
@@ -332,7 +334,7 @@ export default function VectorMemoryComponent({
                         {/* Delete Button */}
                         <button
                           onClick={() => onDeleteMemory(mem.id)}
-                          className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 rounded bg-slate-950 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/30 p-1 text-slate-500 hover:text-rose-400 transition"
+                           className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 rounded hover:bg-rose-500/10 p-1 hover:text-rose-400 transition" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid', color: 'var(--color-text-muted)' }}
                           title="Delete Memory"
                         >
                           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
@@ -350,7 +352,7 @@ export default function VectorMemoryComponent({
                     </h3>
                   </div>
                   {memories.length === 0 ? (
-                     <div className="rounded-xl border border-slate-800 bg-slate-900/5 py-12 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      <div className="rounded-xl py-12 text-center text-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.05)', color: 'var(--color-text-muted)' }}>
                        Memory bank is empty. Write memories to populate the cluster.
                      </div>
                   ) : (
@@ -359,7 +361,7 @@ export default function VectorMemoryComponent({
                         key={mem.id}
                         onMouseEnter={() => setHoveredMemory(mem)}
                         onMouseLeave={() => setHoveredMemory(null)}
-                        className="group relative rounded-xl border border-slate-800 bg-slate-900/10 p-4 hover:border-slate-700 transition duration-200"
+                         className="group relative rounded-xl p-4 hover:border-slate-700 transition duration-200" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}
                       >
                         <div className="space-y-2">
                           <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
@@ -379,8 +381,8 @@ export default function VectorMemoryComponent({
                              </span>
                             <Badge
                               variant="outline"
-                              className="font-mono font-bold text-[10px] px-1.5 py-0.5 border-slate-700"
-                              style={{ color: getNodeColor(mem.nodeId), borderColor: `${getNodeColor(mem.nodeId)}40` }}
+                               className="font-mono font-bold text-[10px] px-1.5 py-0.5"
+                               style={{ color: getNodeColor(mem.nodeId), borderColor: `${getNodeColor(mem.nodeId)}40`, border: '1px solid' }}
                             >
                               @{getNodeName(mem.nodeId)}
                             </Badge>
@@ -390,7 +392,7 @@ export default function VectorMemoryComponent({
                         {/* Delete Button */}
                         <button
                           onClick={() => onDeleteMemory(mem.id)}
-                          className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 rounded bg-slate-950 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/30 p-1.5 text-slate-500 hover:text-rose-400 transition"
+                           className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 rounded hover:bg-rose-500/10 p-1.5 hover:text-rose-400 transition" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid', color: 'var(--color-text-muted)' }}
                           title="Delete Memory"
                         >
                           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
@@ -405,7 +407,7 @@ export default function VectorMemoryComponent({
 
           {/* Right Column: 2D Vector Space Projection Map */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm space-y-4">
+             <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                   <BarChart2 className="h-4 w-4 text-emerald-400" />
@@ -417,13 +419,13 @@ export default function VectorMemoryComponent({
               </div>
 
               {/* Vector Space Plotting Area */}
-              <div className="relative aspect-square w-full rounded-xl border border-slate-800 bg-slate-950/85 overflow-hidden">
+               <div className="relative aspect-square w-full rounded-xl overflow-hidden" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.85)' }}>
                 {/* Grid Lines */}
                 <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 pointer-events-none">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <React.Fragment key={i}>
-                      <div className="border-r border-slate-900/60" style={{ gridColumnStart: i + 2 }} />
-                      <div className="border-b border-slate-900/60" style={{ gridRowStart: i + 2 }} />
+                       <div className="border-r" style={{ borderColor: 'var(--color-border)', gridColumnStart: i + 2 }} />
+                       <div className="border-b" style={{ borderColor: 'var(--color-border)', gridRowStart: i + 2 }} />
                     </React.Fragment>
                   ))}
                 </div>
@@ -465,10 +467,10 @@ export default function VectorMemoryComponent({
                       />
                       {/* Main Dot */}
                       <span
-                        className={`block rounded-full border border-slate-950 transition-all duration-200 ${
+                        className={`block rounded-full transition-all duration-200 ${
                           isHovered ? 'scale-150 h-3 w-3 shadow-lg shadow-black' : 'h-2 w-2'
                         }`}
-                        style={{ backgroundColor: nodeColor }}
+                        style={{ backgroundColor: nodeColor, borderColor: 'rgba(0,0,0,0.3)', border: '1px solid' }}
                       />
                     </div>
                   );
@@ -521,7 +523,7 @@ export default function VectorMemoryComponent({
               </div>
 
               {/* Hover Legend Box */}
-              <div className="rounded-lg bg-slate-950/40 border border-slate-800 p-3 min-h-[90px] flex flex-col justify-between">
+               <div className="rounded-lg p-3 min-h-[90px] flex flex-col justify-between" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                 {hoveredMemory ? (
                   <div className="space-y-1 text-xs">
                     <div className="flex items-center justify-between">
@@ -538,7 +540,7 @@ export default function VectorMemoryComponent({
                   </div>
                 ) : (
                    <div className="text-[11px] leading-normal flex items-center gap-2 py-2" style={{ color: 'var(--color-text-muted)' }}>
-                     <HelpCircle className="h-4 w-4 shrink-0 text-slate-600" />
+                      <HelpCircle className="h-4 w-4 shrink-0" style={{ color: 'var(--color-text-muted)' }} />
                      <span>Hover over any data node in the vector space to inspect its content and region index in real-time.</span>
                    </div>
                 )}
@@ -546,7 +548,7 @@ export default function VectorMemoryComponent({
             </div>
 
             {/* AI Unified Memory Explanation */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/10 p-5 backdrop-blur-sm text-xs space-y-2.5" style={{ color: 'var(--color-text-muted)' }}>
+             <div className="rounded-xl backdrop-blur-sm p-5 text-xs space-y-2.5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)', color: 'var(--color-text-muted)' }}>
               <h4 className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-text)' }}>
                 Why Unified Vector Memory?
               </h4>
@@ -554,7 +556,7 @@ export default function VectorMemoryComponent({
                 Modern AI agents rely on **Retrieval-Augmented Generation (RAG)**. They need high-capacity vector stores to remember long-term context.
               </p>
               <p className="leading-relaxed">
-                Supabase Free Tier projects provide pgvector but limit database space. By combining multiple free-tier databases into a unified vector store, you get N times the memory capacity!
+                Supabase projects provide pgvector but limit database space. By combining multiple databases into a unified vector store, you get N times the memory capacity!
               </p>
               <p className="leading-relaxed">
                 When an agent queries its memory, our system queries all databases in parallel and merges the results instantly, bypassing the single-instance resource constraints!
@@ -565,7 +567,7 @@ export default function VectorMemoryComponent({
       )}
 
       {activeTab === 'add' && (
-        <div className="max-w-2xl mx-auto rounded-xl border border-slate-800 bg-slate-900/15 p-6 backdrop-blur-sm space-y-4">
+        <div className="max-w-2xl mx-auto rounded-xl backdrop-blur-sm p-6 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.15)' }}>
           <h3 className="text-base font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
             <Plus className="h-5 w-5 text-emerald-400" />
             Add Semantic Memory Chunk
@@ -583,7 +585,7 @@ export default function VectorMemoryComponent({
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
                 disabled={isAdding}
-                className="w-full text-sm rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-slate-200 placeholder-slate-600 focus:border-emerald-500 focus:outline-none leading-relaxed"
+                 className="w-full text-sm rounded-lg border px-3 py-2 focus:border-emerald-500 focus:outline-none leading-relaxed" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)' }}
               />
             </div>
 
@@ -593,10 +595,10 @@ export default function VectorMemoryComponent({
                    Category
                  </label>
                 <Select value={newCategory} onValueChange={setNewCategory} disabled={isAdding}>
-                  <SelectTrigger className="w-full text-xs border-slate-800 bg-slate-950 text-slate-300">
+                   <SelectTrigger className="w-full text-xs" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)' }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-800 bg-slate-950 text-slate-300">
+                   <SelectContent style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)' }}>
                     <SelectItem value="user_preferences">User Preferences</SelectItem>
                     <SelectItem value="infrastructure">Infrastructure & Ops</SelectItem>
                     <SelectItem value="branding">Design & Branding</SelectItem>
