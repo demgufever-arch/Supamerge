@@ -58,6 +58,21 @@ npm run test      # Run vitest smoke tests (headless)
 - **Border radius**: 8px (rounded-lg) controls, 12px (rounded-xl) cards
 - **Backgrounds**: `bg-mesh` (animated radial gradients), `bg-grid` (subtle grid pattern), `bg-noise` (texture overlay)
 
+## Theme System
+
+- **CSS custom properties** in `index.css`: `--color-canvas`, `--color-surface`, `--color-border`, `--color-text`, `--color-text-muted`, `--color-accent`, etc.
+- **Default**: follows the OS `prefers-color-scheme` media query.
+- **Manual override**: `useTheme` hook reads/writes `localStorage` key `supamerge_theme` (values: `light`, `dark`, `system`).
+- **Reactive**: `window.matchMedia` listener updates the UI instantly when the OS theme changes (unless manual override is active).
+- **Smooth transition**: `0.3s ease` on `background-color`, `border-color`, `color`, `box-shadow`.
+- Toggle is available in the landing page navbar and the app header.
+
+## Toast System
+
+- **`ToastProvider`** in `src/components/Toast.tsx` wraps the app in `main.tsx`.
+- **`useToast()`** hook returns `{ toast }` — call `toast(message, type)` with types `'success'`, `'error'`, `'warning'`, `'info'`.
+- Toasts auto-dismiss after 4 seconds, positioned bottom-right with slide-in animation.
+
 ## Nuances
 
 - `PGRST116` is treated as success (empty table, not an error).
