@@ -29,6 +29,8 @@ export default function Dashboard({
   const [isTracing, setIsTracing] = useState(false);
   const [hashRing, setHashRing] = useState<HashRingNode[]>([]);
 
+  const connected = useMemo(() => nodes.filter(n => n.status === 'connected'), [nodes]);
+
   // Build hash ring from active nodes
   useEffect(() => {
     const activeNodes = nodes.filter((n) => n.status === 'connected');
@@ -176,7 +178,6 @@ export default function Dashboard({
   };
 
   const mapDots = useMemo(() => {
-    const connected = nodes.filter(n => n.status === 'connected');
     const dots: { start: { lat: number; lng: number }; end: { lat: number; lng: number } }[] = [];
     for (let i = 0; i < connected.length; i++) {
       for (let j = i + 1; j < connected.length; j++) {

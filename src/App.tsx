@@ -12,9 +12,10 @@ import VectorMemoryComponent from './components/VectorMemory';
 import NodeConsole from './components/NodeConsole';
 import LandingPage from './components/LandingPage';
 import ThemeToggle from './components/ThemeToggle';
+import { SidebarNavigationSectionDividers, navItemsWithDividers, getActiveUrl } from './components/sidebar-nav';
 
 // Icons
-import { Activity, Key, Layers, Brain, Terminal, Database, ShieldAlert, HelpCircle } from 'lucide-react';
+import { Database, ShieldAlert, HelpCircle, PanelLeftClose, PanelLeft } from 'lucide-react';
 import logoSrc from './assets/logo.png';
 
 // Live Supabase Client Cache
@@ -31,6 +32,7 @@ function getSupabaseClient(node: SupabaseNode) {
 
 export default function App() {
   const [showLanding, setShowLanding] = useState<boolean>(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     const hash = window.location.hash.replace('#', '') as ActiveTab;
     return ['dashboard', 'kv', 'files', 'vector', 'console'].includes(hash) ? hash : 'dashboard';
@@ -571,6 +573,23 @@ export default function App() {
     await loadClusterData();
   };
 
+  const handleNavigate = (href: string) => {
+    if (href.startsWith('http')) {
+      window.open(href, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    const tabMap: Record<string, ActiveTab> = {
+      '/': 'dashboard',
+      '/dashboard': 'dashboard',
+      '/kv': 'kv',
+      '/files': 'files',
+      '/vector': 'vector',
+      '/console': 'console',
+    };
+    const tab = tabMap[href];
+    if (tab) setActiveTab(tab);
+  };
+
   if (showLanding) {
     return <LandingPage onLaunch={() => setShowLanding(false)} />;
   }
@@ -650,13 +669,22 @@ export default function App() {
   return (
     <div className="flex min-h-screen bg-mesh bg-noise" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
       {/* Content wrapper to stack above fixed bg layers */}
-      <div className="relative z-10 flex w-full">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 border-r backdrop-blur-md flex flex-col justify-between shrink-0 font-sans" style={{ backgroundColor: 'var(--color-sidebar-bg)', borderColor: 'var(--color-border)' }}>
+      <div className="relative z-10 flex w-full min-h-0">
+      {/* Sidebar Navigation — fixed position, slides in/out */}
+      <aside
+        className={`fixed left-0 top-0 h-full font-sans border-r backdrop-blur-md flex flex-col justify-between transition-transform duration-300 ease-in-out z-20 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{
+          width: '16rem',
+          backgroundColor: 'var(--color-sidebar-bg)',
+          borderColor: 'var(--color-border)',
+        }}
+      >
         <div className="p-6 space-y-6">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <img src={logoSrc} alt="SupaMerge" className="h-10 w-10 rounded-lg" />
+            <img src={logoSrc} alt="SupaMerge" className="h-10 w-10 rounded-lg shrink-0" />
             <div>
               <h2 className="text-sm font-extrabold tracking-wider" style={{ color: 'var(--color-logo-text)' }}>
                 SUPAMERGE
@@ -668,46 +696,20 @@ export default function App() {
           </div>
 
           {/* Nav Links */}
-          <nav className="space-y-1">
-            {[
-              { id: 'dashboard', label: 'Cluster Topology', icon: Activity },
-              { id: 'kv', label: 'Sharded KV Store', icon: Key },
-              { id: 'files', label: 'Distributed DFS', icon: Layers },
-              { id: 'vector', label: 'Vector AI Memory', icon: Brain },
-              { id: 'console', label: 'Cluster Console', icon: Terminal },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as ActiveTab)}
-                  className={`w-full flex items-center gap-3 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all duration-200 relative ${
-                    isActive
-                      ? 'text-emerald-400'
-                      : 'hover:bg-slate-800/30'
-                  }`}
-                  style={{ color: isActive ? undefined : 'var(--color-text-muted)' }}
-                >
-                  {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                  )}
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-emerald-400' : ''}`} style={{ color: isActive ? undefined : 'var(--color-text-muted)' }} />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
+          <SidebarNavigationSectionDividers
+            activeUrl={getActiveUrl(activeTab)}
+            items={navItemsWithDividers}
+            onNavigate={handleNavigate}
+          />
         </div>
 
         {/* Console System Logs in Sidebar footer */}
         <div className="p-6 border-t space-y-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-canvas)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+            <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
               Cluster Logs
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               {clusterLogs.length > 0 && (
                 <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
                   {clusterLogs.length}
@@ -722,15 +724,15 @@ export default function App() {
               <div className="italic" style={{ color: 'var(--color-text-muted)' }}>No events recorded.</div>
             ) : (
               clusterLogs.slice(0, 15).map((log, i) => (
-                <div key={i} className="leading-relaxed border-b pb-1 last:border-0" style={{ borderColor: 'var(--color-border)' }}>
+                <div key={i} className="leading-relaxed border-b pb-1 last:border-0 text-ellipsis" style={{ borderColor: 'var(--color-border)' }}>
                   {log}
                 </div>
               ))
             )}
           </div>
 
-          <div className="rounded-lg p-3 border text-[10px] flex items-center gap-2" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
-            <Database className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+          <div className="rounded-lg p-3 border text-[10px] flex items-center gap-2 whitespace-nowrap" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
+            <Database className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--color-text-muted)' }} />
             <span>
               Mode: <strong className="text-emerald-400 font-mono">Live</strong>
             </span>
@@ -738,13 +740,29 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-grid">
+      {/* Main Content Area — adjusts margin to make room for sidebar */}
+      <main
+        className={`flex-1 flex flex-col min-h-screen bg-grid transition-all duration-300 ease-in-out ${
+          sidebarOpen ? 'ml-64' : 'ml-0'
+        }`}
+      >
         {/* Top Header */}
         <header className="h-14 border-b px-6 backdrop-blur-md flex items-center justify-between shrink-0" style={{ backgroundColor: 'var(--color-header-bg)', borderColor: 'var(--color-border)' }}>
-          <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            <span className="font-medium">Environment:</span>
-            <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border shadow-sm transition-all duration-200 hover:scale-105 shrink-0"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border)',
+                color: 'var(--color-text-muted)',
+              }}
+              title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            >
+              {sidebarOpen ? <PanelLeftClose className="h-3.5 w-3.5" /> : <PanelLeft className="h-3.5 w-3.5" />}
+            </button>
+            <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Environment:</span>
+            <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20 text-xs">
               Production Unified Pool
             </span>
           </div>
