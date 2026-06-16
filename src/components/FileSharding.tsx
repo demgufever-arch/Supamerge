@@ -299,7 +299,7 @@ export default function FileSharding({
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Bypass single-database storage limits by splitting large files into chunks and distributing them globally with 2x replication.
           </p>
         </div>
@@ -315,9 +315,9 @@ export default function FileSharding({
           <div className="space-y-4">
             {/* Chunk Size Selector */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Select Chunk Size
-              </label>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                 Select Chunk Size
+               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[64, 128, 256].map((size) => (
                   <Button
@@ -328,18 +328,19 @@ export default function FileSharding({
                     disabled={isUploading}
                     onClick={() => setChunkSizeKb(size)}
                     className={`font-mono font-bold ${
-                      chunkSizeKb === size
-                        ? 'bg-emerald-600/10 text-emerald-400 border-emerald-500/45 hover:bg-emerald-600/15'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                       chunkSizeKb === size
+                         ? 'bg-emerald-600/10 text-emerald-400 border-emerald-500/45 hover:bg-emerald-600/15'
+                         : 'bg-slate-950 hover:text-slate-200 border-slate-800'
                     }`}
+                    style={{ color: chunkSizeKb === size ? '' : 'var(--color-text-muted)' }}
                   >
                     {size} KB
                   </Button>
                 ))}
               </div>
-              <span className="text-[10px] text-slate-500 mt-1.5 block leading-normal">
-                Smaller chunks distribute data more evenly across nodes but generate more API requests.
-              </span>
+               <span className="text-[10px] mt-1.5 block leading-normal" style={{ color: 'var(--color-text-muted)' }}>
+                 Smaller chunks distribute data more evenly across nodes but generate more API requests.
+               </span>
             </div>
 
             {/* Drag and Drop Box */}
@@ -360,15 +361,15 @@ export default function FileSharding({
                     : 'border-slate-800 bg-slate-950/40 hover:border-slate-700 hover:bg-slate-950/80'
                 }`}
               >
-                <div className="rounded-full bg-slate-900 p-3 text-slate-400 border border-slate-800 mb-3 group-hover:scale-110 transition">
-                  <Upload className="h-6 w-6 text-emerald-400" />
-                </div>
+                 <div className="rounded-full bg-slate-900 p-3 border border-slate-800 mb-3 group-hover:scale-110 transition" style={{ color: 'var(--color-text-muted)' }}>
+                   <Upload className="h-6 w-6 text-emerald-400" />
+                 </div>
                 <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                   {isUploading ? 'Uploading Shards...' : 'Select File to Shard'}
                 </span>
-                <span className="text-xs text-slate-500 mt-1 max-w-[180px]">
-                  Supports images, PDFs, text, and JSON files up to 5MB.
-                </span>
+                 <span className="text-xs mt-1 max-w-[180px]" style={{ color: 'var(--color-text-muted)' }}>
+                   Supports images, PDFs, text, and JSON files up to 5MB.
+                 </span>
               </label>
             </div>
 
@@ -401,9 +402,9 @@ export default function FileSharding({
 
           <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950/40">
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left text-xs text-slate-400">
-                <thead className="border-b border-slate-800 bg-slate-900/30 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                  <tr>
+               <table className="w-full border-collapse text-left text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                 <thead className="border-b border-slate-800 bg-slate-900/30 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                   <tr>
                     <th className="px-4 py-3">File Details</th>
                     <th className="px-4 py-3 text-center">Chunks</th>
                     <th className="px-4 py-3">Global Node Distribution Map</th>
@@ -413,11 +414,11 @@ export default function FileSharding({
                 <tbody className="divide-y divide-slate-800">
                   {files.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-4 py-12 text-center text-slate-500 font-sans">
-                        <HardDrive className="h-8 w-8 text-slate-600 mx-auto mb-2" />
-                        No files currently sharded in the cluster.
-                        <p className="text-xs text-slate-600 mt-1">Upload a file to see how it distributes across your Supabase databases!</p>
-                      </td>
+                       <td colSpan={4} className="px-4 py-12 text-center font-sans" style={{ color: 'var(--color-text-muted)' }}>
+                         <HardDrive className="h-8 w-8 text-slate-600 mx-auto mb-2" />
+                         No files currently sharded in the cluster.
+                         <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Upload a file to see how it distributes across your Supabase databases!</p>
+                       </td>
                     </tr>
                   ) : (
                     files.map((file) => (
@@ -430,9 +431,9 @@ export default function FileSharding({
                             <span className="font-bold text-slate-200 block truncate" title={file.name}>
                               {file.name}
                             </span>
-                            <span className="text-[10px] text-slate-500 block font-mono mt-0.5">
-                              {formatBytes(file.size)} • {file.type.split('/')[1]?.toUpperCase() || 'BIN'}
-                            </span>
+                             <span className="text-[10px] block font-mono mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                               {formatBytes(file.size)} • {file.type.split('/')[1]?.toUpperCase() || 'BIN'}
+                             </span>
                           </div>
                         </td>
                         <td className="px-4 py-3.5 text-center font-mono font-bold" style={{ color: 'var(--color-text-muted)' }}>
@@ -499,7 +500,7 @@ export default function FileSharding({
                               size="icon"
                               onClick={() => onDeleteFile(file.id)}
                               disabled={isDownloading !== null}
-                              className="bg-slate-900 hover:bg-rose-500/10 border-slate-800 hover:border-rose-500/30 text-slate-500 hover:text-rose-400"
+                               className="bg-slate-900 hover:bg-rose-500/10 border-slate-800 hover:border-rose-500/30 hover:text-rose-400" style={{ color: 'var(--color-text-muted)' }}
                               title="Delete File Shards"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -534,14 +535,14 @@ export default function FileSharding({
               <div
                 key={idx}
                 className={`${
-                  line.includes('✓')
-                    ? 'text-emerald-400 font-semibold'
-                    : line.includes('⚠️')
-                    ? 'text-amber-400 font-semibold'
-                    : line.includes('❌')
-                    ? 'text-rose-400 font-bold'
-                    : 'text-slate-400'
-                }`}
+                   line.includes('✓')
+                     ? 'text-emerald-400 font-semibold'
+                     : line.includes('⚠️')
+                     ? 'text-amber-400 font-semibold'
+                     : line.includes('❌')
+                     ? 'text-rose-400 font-bold'
+                     : ''
+                 }`} style={{ color: !line.includes('✓') && !line.includes('⚠️') && !line.includes('❌') ? 'var(--color-text-muted)' : undefined }}
               >
                 {line}
               </div>
@@ -549,19 +550,19 @@ export default function FileSharding({
           </div>
 
           <div className="flex justify-between items-center text-xs pt-2">
-            <div className="flex items-center gap-1.5 text-slate-400">
-              {isDownloading ? (
-                <>
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-400" />
-                  <span>Assembling chunks in real-time...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  <span className="text-emerald-400 font-semibold">Download cycle completed.</span>
-                </>
-              )}
-            </div>
+             <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+               {isDownloading ? (
+                 <>
+                   <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-400" />
+                   <span>Assembling chunks in real-time...</span>
+                 </>
+               ) : (
+                 <>
+                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                   <span className="text-emerald-400 font-semibold">Download cycle completed.</span>
+                 </>
+               )}
+             </div>
 
             <Button
               variant="outline"

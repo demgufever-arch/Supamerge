@@ -33,10 +33,13 @@ function createCurvedPath(
 
 export default function WorldMap({
   dots = [],
-  lineColor = "#10b981",
+  lineColor,
 }: MapProps) {
   const { effective } = useTheme();
   const isDark = effective === "dark";
+  
+  // Use theme-aware emerald accent color if not provided
+  const activeLineColor = lineColor || (isDark ? "#10b981" : "#059669");
 
   const backgroundSvg = useMemo(() => {
     const map = new DottedMap({ height: 200, grid: "diagonal" });
@@ -57,14 +60,14 @@ export default function WorldMap({
   }, [dots]);
 
   return (
-    <div className="w-full aspect-[2/1] rounded-lg relative font-sans overflow-hidden" style={{ backgroundColor: isDark ? '#020617' : '#f8fafc' }}>
+    <div className="w-full aspect-[2/1] rounded-lg relative font-sans overflow-hidden" style={{ backgroundColor: isDark ? 'var(--color-canvas)' : 'var(--color-surface)' }}>
       <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} className="w-full h-full">
         <defs>
           <linearGradient id="path-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={lineColor} stopOpacity="0" />
-            <stop offset="10%" stopColor={lineColor} stopOpacity="1" />
-            <stop offset="90%" stopColor={lineColor} stopOpacity="1" />
-            <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
+            <stop offset="0%" stopColor={activeLineColor} stopOpacity="0" />
+            <stop offset="10%" stopColor={activeLineColor} stopOpacity="1" />
+            <stop offset="90%" stopColor={activeLineColor} stopOpacity="1" />
+            <stop offset="100%" stopColor={activeLineColor} stopOpacity="0" />
           </linearGradient>
           <filter id="glow">
             <feGaussianBlur stdDeviation="2" result="blur" />

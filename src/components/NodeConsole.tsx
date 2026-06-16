@@ -210,9 +210,9 @@ export default function NodeConsole({
         <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
           Cluster Environment Control
         </h2>
-        <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-normal">
-          Connect actual Supabase free-tier REST endpoints together. Each database behaves as an individual shard in the unified cluster.
-        </p>
+         <p className="text-xs mt-1 max-w-2xl leading-normal" style={{ color: 'var(--color-text-muted)' }}>
+           Connect actual Supabase free-tier REST endpoints together. Each database behaves as an individual shard in the unified cluster.
+         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -227,9 +227,9 @@ export default function NodeConsole({
             <form onSubmit={handleAddNodeSubmit} className="space-y-4 text-xs">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                    Node Label (Name)
-                  </label>
+                   <label className="block font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                     Node Label (Name)
+                   </label>
                     <Input
                       type="text"
                       required
@@ -239,9 +239,9 @@ export default function NodeConsole({
                     />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                    Hosting Region
-                  </label>
+                   <label className="block font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                     Hosting Region
+                   </label>
                     <Input
                       type="text"
                       list="supabase-regions"
@@ -271,9 +271,9 @@ export default function NodeConsole({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Supabase Project URL
-                </label>
+                 <label className="block font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                   Supabase Project URL
+                 </label>
                     <Input
                       type="url"
                       required
@@ -285,9 +285,9 @@ export default function NodeConsole({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Supabase Anon API Key
-                </label>
+                 <label className="block font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                   Supabase Anon API Key
+                 </label>
                     <Input
                       type="password"
                       required
@@ -355,7 +355,7 @@ export default function NodeConsole({
                 size="sm"
                 onClick={checkAllSchemas}
                 disabled={checkingSchema}
-                className="text-[10px] text-slate-400 hover:text-white h-auto px-2 py-1"
+                 className="text-[10px] hover:text-white h-auto px-2 py-1" style={{ color: 'var(--color-text-muted)' }}
               >
                 <RefreshCw className={`h-3 w-3 ${checkingSchema ? 'animate-spin' : ''}`} />
                 Refresh Schemas
@@ -364,9 +364,9 @@ export default function NodeConsole({
 
             <div className="space-y-3">
               {nodes.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 text-xs italic">
-                  No nodes connected yet. Connect your first Supabase project above!
-                </div>
+                 <div className="text-center py-8 text-xs italic" style={{ color: 'var(--color-text-muted)' }}>
+                   No nodes connected yet. Connect your first Supabase project above!
+                 </div>
               ) : (
                 nodes.map((node) => {
                   const nodeSchema = schemaStatus[node.id];
@@ -380,11 +380,11 @@ export default function NodeConsole({
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-bold text-xs text-slate-200">{node.name}</span>
-                          <span className="text-[10px] text-slate-500">• {node.region}</span>
+                           <span className="text-[10px]">• {node.region}</span>
                         </div>
-                        <span className="text-[10px] text-slate-500 font-mono block truncate max-w-[280px]">
-                          {node.url}
-                        </span>
+                         <span className="text-[10px] font-mono block truncate max-w-[280px]" style={{ color: 'var(--color-text-muted)' }}>
+                           {node.url}
+                         </span>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 self-start sm:self-center">
@@ -460,9 +460,9 @@ export default function NodeConsole({
                 <Terminal className="h-4 w-4 text-emerald-400" />
                 PostgreSQL Schema Setup
               </h3>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-normal">
-                To connect a real Supabase project, copy and run this SQL in your Supabase project's SQL Editor first. It creates the required tables and pgvector RPCs.
-              </p>
+               <p className="text-[11px] mt-0.5 leading-normal" style={{ color: 'var(--color-text-muted)' }}>
+                 To connect a real Supabase project, copy and run this SQL in your Supabase project's SQL Editor first. It creates the required tables and pgvector RPCs.
+               </p>
             </div>
 
             <div className="relative">
@@ -486,9 +486,9 @@ export default function NodeConsole({
                 )}
               </Button>
               
-              <pre className="rounded-lg bg-slate-950 p-4 font-mono text-[9px] text-slate-400 border border-slate-800 h-[360px] overflow-y-auto leading-relaxed select-all">
-                {SCHEMA_SQL}
-              </pre>
+               <pre className="rounded-lg bg-slate-950 p-4 font-mono text-[9px] border border-slate-800 h-[360px] overflow-y-auto leading-relaxed select-all" style={{ color: 'var(--color-text-muted)' }}>
+                 {SCHEMA_SQL}
+               </pre>
             </div>
 
             <div className="rounded-lg border p-3 text-[11px] flex gap-2 leading-relaxed" style={{ backgroundColor: 'color-mix(in srgb, #f59e0b 10%, transparent)', borderColor: 'color-mix(in srgb, #f59e0b 20%, transparent)', color: 'var(--color-text-muted)' }}>

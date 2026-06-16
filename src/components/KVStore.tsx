@@ -187,7 +187,7 @@ export default function KVStore({
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Store and retrieve arbitrary JSON structures distributed across your Supabase databases.
           </p>
         </div>
@@ -233,20 +233,20 @@ export default function KVStore({
               <Table>
                 <TableHeader>
                   <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3">Key Name</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3">Primary Node</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3">Replica Node</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3 text-right">Size</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-4 py-3 text-right">Actions</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Key Name</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Primary Node</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Replica Node</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3 text-right" style={{ color: 'var(--color-text-muted)' }}>Size</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3 text-right" style={{ color: 'var(--color-text-muted)' }}>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredRecords.length === 0 ? (
                     <TableRow className="border-slate-800/60 hover:bg-transparent">
-                      <TableCell colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                        <Database className="h-8 w-8 text-slate-600 mx-auto mb-2" />
-                        No records found matching your search.
-                      </TableCell>
+                       <TableCell colSpan={5} className="px-4 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                         <Database className="h-8 w-8 text-slate-600 mx-auto mb-2" />
+                         No records found matching your search.
+                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredRecords.map((rec) => {
@@ -271,7 +271,7 @@ export default function KVStore({
                                 <Badge
                                   key={tag}
                                   variant="outline"
-                                  className="bg-slate-950 text-slate-400 border-slate-800 text-[9px] font-sans px-1.5 py-0.5 h-auto"
+                                   className="bg-slate-950 hover:text-slate-400 border-slate-800 text-[9px] font-sans px-1.5 py-0.5 h-auto" style={{ color: 'var(--color-text-muted)' }}
                                 >
                                   {tag}
                                 </Badge>
@@ -396,33 +396,33 @@ export default function KVStore({
                   })()}
 
                   <div className="space-y-2">
-                    <span className="text-[10px] uppercase tracking-wider text-slate-500 block">
-                      Key Name
-                    </span>
+                     <span className="text-[10px] uppercase tracking-wider block" style={{ color: 'var(--color-text-muted)' }}>
+                       Key Name
+                     </span>
                     <span className="font-mono text-xs font-bold text-slate-200 bg-slate-950 px-2.5 py-1 rounded border border-slate-900 block truncate">
                       {selectedRecord.key}
                     </span>
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-[10px] uppercase tracking-wider text-slate-500 block">
-                      JSON Value
-                    </span>
+                     <span className="text-[10px] uppercase tracking-wider block" style={{ color: 'var(--color-text-muted)' }}>
+                       JSON Value
+                     </span>
                     <pre className="font-mono text-[11px] text-slate-300 bg-slate-950/85 p-3 rounded-lg border border-slate-900 overflow-auto max-h-[220px] leading-relaxed">
                       {JSON.stringify(selectedRecord.value, null, 2)}
                     </pre>
                   </div>
 
-                  <div className="flex justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800/60 font-sans">
-                    <span>Updated</span>
-                    <span>{new Date(selectedRecord.updatedAt).toLocaleString()}</span>
-                  </div>
+                   <div className="flex justify-between text-[11px] pt-2 border-t border-slate-800/60 font-sans" style={{ color: 'var(--color-text-muted)' }}>
+                     <span>Updated</span>
+                     <span>{new Date(selectedRecord.updatedAt).toLocaleString()}</span>
+                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12 text-slate-500 text-xs space-y-2">
-                  <HelpCircle className="h-6 w-6 text-slate-600 mx-auto" />
-                  <p>Click the eye icon next to any record in the table to inspect its contents and trace its health.</p>
-                </div>
+                 <div className="text-center py-12 text-xs space-y-2" style={{ color: 'var(--color-text-muted)' }}>
+                   <HelpCircle className="h-6 w-6 text-slate-600 mx-auto" />
+                   <p>Click the eye icon next to any record in the table to inspect its contents and trace its health.</p>
+                 </div>
               )}
             </div>
 
@@ -453,9 +453,9 @@ export default function KVStore({
 
             <form onSubmit={handleWrite} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Key (Namespace identifier)
-                </label>
+                 <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                   Key (Namespace identifier)
+                 </label>
                 <Input
                   type="text"
                   required
@@ -464,16 +464,16 @@ export default function KVStore({
                   onChange={(e) => setNewKey(e.target.value)}
                   disabled={isWriting}
                 />
-                <span className="text-[10px] text-slate-500 mt-1 block">
-                  Spaces are not recommended. Use colons `:` to create logical namespaces.
-                </span>
+                 <span className="text-[10px] mt-1 block" style={{ color: 'var(--color-text-muted)' }}>
+                   Spaces are not recommended. Use colons `:` to create logical namespaces.
+                 </span>
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    JSON Value
-                  </label>
+                   <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                     JSON Value
+                   </label>
                   {jsonError && (
                     <span className="text-[10px] font-semibold text-rose-400 font-sans truncate max-w-[200px]">
                       {jsonError}
@@ -494,9 +494,9 @@ export default function KVStore({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Tags (Comma separated)
-                </label>
+                 <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                   Tags (Comma separated)
+                 </label>
                 <Input
                   type="text"
                   placeholder="e.g. config, staging, v1"
@@ -533,11 +533,11 @@ export default function KVStore({
                 Distributed Consensus Log
               </h3>
               
-              <div className="space-y-2 font-mono text-xs text-slate-400">
-                {writeLogs.length === 0 ? (
-                  <div className="text-center py-12 text-slate-600 font-sans italic">
-                    Fill out the form and submit to view the real-time sharding logs.
-                  </div>
+              <div className="space-y-2 font-mono text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                 {writeLogs.length === 0 ? (
+                   <div className="text-center py-12 text-slate-600 font-sans italic">
+                     Fill out the form and submit to view the real-time sharding logs.
+                   </div>
                 ) : (
                   writeLogs.map((log, i) => (
                     <div
@@ -560,16 +560,16 @@ export default function KVStore({
             {/* Hashing Animation Visualizer */}
             {writeVisual && (
               <div className="mt-6 border-t border-slate-900 pt-4 space-y-3">
-                <span className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-                  Visual Topology Route
-                </span>
+                 <span className="block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                   Visual Topology Route
+                 </span>
                 
                 <div className="flex items-center justify-between gap-2 rounded-lg bg-slate-900/40 border border-slate-800 p-3">
                   {/* Key */}
-                  <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
-                    <span className="text-[10px] text-slate-500 block">Key</span>
-                    <span className="font-mono text-[10px] font-bold text-slate-300">"{writeVisual.key}"</span>
-                  </div>
+                   <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
+                     <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Key</span>
+                     <span className="font-mono text-[10px] font-bold text-slate-300">"{writeVisual.key}"</span>
+                   </div>
                   
                   {/* arrow */}
                   <div className="flex-1 flex flex-col items-center">
@@ -582,23 +582,23 @@ export default function KVStore({
                   </div>
 
                   {/* Primary Node */}
-                  <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
-                    <span className="text-[10px] text-slate-500 block">Primary</span>
-                    <span className={`font-mono text-[10px] font-bold ${getNodeColorClass(writeVisual.primaryNode)}`}>
-                      {getNodeName(writeVisual.primaryNode)}
-                    </span>
-                  </div>
+                   <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
+                     <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Primary</span>
+                     <span className={`font-mono text-[10px] font-bold ${getNodeColorClass(writeVisual.primaryNode)}`}>
+                       {getNodeName(writeVisual.primaryNode)}
+                     </span>
+                   </div>
 
                   {/* Backup Node */}
                   {writeVisual.replicaNode && (
                     <>
                       <div className="h-0.5 w-6 bg-slate-800" />
-                      <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
-                        <span className="text-[10px] text-slate-500 block">Replica</span>
-                        <span className={`font-mono text-[10px] font-bold ${getNodeColorClass(writeVisual.replicaNode)}`}>
-                          {getNodeName(writeVisual.replicaNode)}
-                        </span>
-                      </div>
+                       <div className="text-center bg-slate-950 border border-slate-800 px-2 py-1 rounded max-w-[100px] truncate">
+                         <span className="text-[10px] block" style={{ color: 'var(--color-text-muted)' }}>Replica</span>
+                         <span className={`font-mono text-[10px] font-bold ${getNodeColorClass(writeVisual.replicaNode)}`}>
+                           {getNodeName(writeVisual.replicaNode)}
+                         </span>
+                       </div>
                     </>
                   )}
                 </div>

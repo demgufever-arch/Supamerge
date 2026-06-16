@@ -213,31 +213,31 @@ export default function Dashboard({
               <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
                 Live Multi-Tenant Active
               </span>
-              <span className="text-xs text-slate-400">• Distributed Storage Broker</span>
+              <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>• Distributed Storage Broker</span>
             </div>
             <h1 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--color-text)' }}>
               Unified Supabase Memory
             </h1>
-            <p className="mt-1.5 text-sm text-slate-400 max-w-xl">
+            <p className="mt-1.5 text-sm max-w-xl" style={{ color: 'var(--color-text-muted)' }}>
               Pooling independent free-tier projects into a single virtual data layer. Real-time consistent hashing distributes workloads across global regions dynamically.
             </p>
           </div>
           <div className="flex gap-3">
             <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 text-center min-w-[90px]">
-              <div className="text-xs text-slate-500">Status</div>
+              <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Status</div>
               <div className="mt-1 flex items-center justify-center gap-1.5 font-semibold text-emerald-400">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 Online
               </div>
             </div>
             <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 text-center min-w-[90px]">
-              <div className="text-xs text-slate-500">Nodes</div>
+              <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Nodes</div>
               <div className="mt-1 text-lg font-bold" style={{ color: 'var(--color-text)' }}>
                 {metrics.activeNodes} / {metrics.totalNodes}
               </div>
             </div>
             <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 text-center min-w-[90px]">
-              <div className="text-xs text-slate-500">Avg Latency</div>
+              <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Avg Latency</div>
               <div className="mt-1 text-lg font-bold text-emerald-400">
                 {metrics.averageLatencyMs}ms
               </div>
@@ -253,15 +253,15 @@ export default function Dashboard({
           <CardContent className="space-y-0">
             <div className="flex items-start justify-between">
               <div>
-                <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Pooled PostgreSQL Space
-                </CardDescription>
+                 <CardDescription className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                   Pooled PostgreSQL Space
+                 </CardDescription>
                 <CardTitle className="mt-1 text-2xl font-bold font-sans" style={{ color: 'var(--color-text)' }}>
                   {formatBytes(metrics.usedDbBytes)}
                 </CardTitle>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  of {formatBytes(metrics.totalDbCapacityBytes)} combined limit
-                </p>
+                 <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                   of {formatBytes(metrics.totalDbCapacityBytes)} combined limit
+                 </p>
               </div>
               <div className="rounded-lg bg-emerald-500/10 p-2.5 text-emerald-400 border border-emerald-500/25">
                 <Database className="h-5 w-5" />
@@ -274,10 +274,10 @@ export default function Dashboard({
                   style={{ width: `${Math.min(100, dbPercentage)}%` }}
                 />
               </div>
-              <div className="mt-2 flex justify-between text-xs text-slate-400">
-                <span>{dbPercentage.toFixed(1)}% Allocated</span>
-                <span>{formatBytes(metrics.totalDbCapacityBytes - metrics.usedDbBytes)} Free</span>
-              </div>
+               <div className="mt-2 flex justify-between text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                 <span>{dbPercentage.toFixed(1)}% Allocated</span>
+                 <span>{formatBytes(metrics.totalDbCapacityBytes - metrics.usedDbBytes)} Free</span>
+               </div>
             </div>
           </CardContent>
         </Card>
@@ -287,15 +287,15 @@ export default function Dashboard({
           <CardContent className="space-y-0">
             <div className="flex items-start justify-between">
               <div>
-                <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Pooled Storage Capacity
-                </CardDescription>
+                 <CardDescription className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                   Pooled Storage Capacity
+                 </CardDescription>
                 <CardTitle className="mt-1 text-2xl font-bold font-sans" style={{ color: 'var(--color-text)' }}>
                   {formatBytes(metrics.usedStorageBytes)}
                 </CardTitle>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  of {formatBytes(metrics.totalStorageCapacityBytes)} combined limit
-                </p>
+                 <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                   of {formatBytes(metrics.totalStorageCapacityBytes)} combined limit
+                 </p>
               </div>
               <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-400 border border-blue-500/25">
                 <HardDrive className="h-5 w-5" />
@@ -308,10 +308,10 @@ export default function Dashboard({
                   style={{ width: `${Math.min(100, storagePercentage)}%` }}
                 />
               </div>
-              <div className="mt-2 flex justify-between text-xs text-slate-400">
-                <span>{storagePercentage.toFixed(1)}% Allocated</span>
-                <span>{formatBytes(metrics.totalStorageCapacityBytes - metrics.usedStorageBytes)} Free</span>
-              </div>
+               <div className="mt-2 flex justify-between text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                 <span>{storagePercentage.toFixed(1)}% Allocated</span>
+                 <span>{formatBytes(metrics.totalStorageCapacityBytes - metrics.usedStorageBytes)} Free</span>
+               </div>
             </div>
           </CardContent>
         </Card>
@@ -321,27 +321,27 @@ export default function Dashboard({
           <CardContent className="space-y-0">
             <div className="flex items-start justify-between">
               <div>
-                <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Cluster High-Availability
-                </CardDescription>
+                 <CardDescription className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                   Cluster High-Availability
+                 </CardDescription>
                 <CardTitle className="mt-1 text-2xl font-bold font-sans" style={{ color: 'var(--color-text)' }}>
                   {metrics.activeNodes > 1 ? 'High (2x Redundancy)' : 'No Redundancy'}
                 </CardTitle>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Active Replication Factor: <span className="text-emerald-400 font-semibold">2x</span>
-                </p>
+                 <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                   Active Replication Factor: <span className="text-emerald-400 font-semibold">2x</span>
+                 </p>
               </div>
               <div className="rounded-lg bg-purple-500/10 p-2.5 text-purple-400 border border-purple-500/25">
                 <Cpu className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
-                <span className="block text-slate-500">Read Quorum</span>
+               <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
+                 <span className="block" style={{ color: 'var(--color-text-muted)' }}>Read Quorum</span>
                 <span className="font-semibold text-slate-300">1 Node (Fastest)</span>
               </div>
-              <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
-                <span className="block text-slate-500">Write Quorum</span>
+               <div className="rounded bg-slate-950/40 p-2 border border-slate-800/60">
+                 <span className="block" style={{ color: 'var(--color-text-muted)' }}>Write Quorum</span>
                 <span className="font-semibold text-slate-300">2 Nodes (Sync)</span>
               </div>
             </div>
@@ -362,9 +362,9 @@ export default function Dashboard({
                 <Activity className="h-4 w-4 text-emerald-400" />
                 Consistent Hashing Ring Topology
               </h3>
-              <p className="text-xs text-slate-400">
-                Keys hash to a 32-bit ring. They travel clockwise to find the nearest virtual node.
-              </p>
+               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                 Keys hash to a 32-bit ring. They travel clockwise to find the nearest virtual node.
+               </p>
             </div>
             {/* Trace key form */}
             <form onSubmit={handleTrace} className="flex gap-2 w-full sm:w-auto">
@@ -575,7 +575,7 @@ export default function Dashboard({
                       className="h-2 w-2 rounded-full"
                       style={{ backgroundColor: getNodeColor(node.id) }}
                     />
-                    <span className="text-slate-400 font-mono text-[9px]">{node.name}</span>
+                     <span className="font-mono text-[9px]" style={{ color: 'var(--color-text-muted)' }}>{node.name}</span>
                   </div>
                 ))}
               </div>
@@ -590,30 +590,30 @@ export default function Dashboard({
                 
                 {traceResult ? (
                   <div className="space-y-3 text-xs">
-                    <div>
-                      <span className="text-slate-500 block">Analyzed Key</span>
-                      <span className="font-mono font-bold text-slate-200 block truncate bg-slate-900 px-2 py-1 rounded border border-slate-800 mt-1">
-                        "{traceKey}"
-                      </span>
-                    </div>
+                     <div>
+                       <span className="block" style={{ color: 'var(--color-text-muted)' }}>Analyzed Key</span>
+                       <span className="font-mono font-bold text-slate-200 block truncate bg-slate-900 px-2 py-1 rounded border border-slate-800 mt-1">
+                         "{traceKey}"
+                       </span>
+                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <span className="text-slate-500 block">32-Bit Hash</span>
-                        <span className="font-mono block font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                          0x{traceResult.keyHash.toString(16).toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block">Ring Angle</span>
-                        <span className="font-mono block font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                          {Math.round(traceResult.keyAngle)}°
-                        </span>
-                      </div>
+                       <div>
+                         <span className="block" style={{ color: 'var(--color-text-muted)' }}>32-Bit Hash</span>
+                         <span className="font-mono block font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                           0x{traceResult.keyHash.toString(16).toUpperCase()}
+                         </span>
+                       </div>
+                       <div>
+                         <span className="block" style={{ color: 'var(--color-text-muted)' }}>Ring Angle</span>
+                         <span className="font-mono block font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+                           {Math.round(traceResult.keyAngle)}°
+                         </span>
+                       </div>
                     </div>
 
-                    <div className="border-t border-slate-800 pt-2.5">
-                      <span className="text-slate-500 block">Routed Target Node</span>
+                     <div className="border-t border-slate-800 pt-2.5">
+                       <span className="block" style={{ color: 'var(--color-text-muted)' }}>Routed Target Node</span>
                       <div className="mt-1 flex items-center justify-between">
                         <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-mono font-bold ${getNodeColorClass(traceResult.nodeId)}`}>
                           <span
@@ -622,15 +622,15 @@ export default function Dashboard({
                           />
                           {nodes.find(n => n.id === traceResult.nodeId)?.name}
                         </span>
-                        <span className="text-[10px] text-slate-400">
-                          via vnode {traceResult.targetVNode?.label.split('(V-')[1]?.charAt(0)}
-                        </span>
+                         <span className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>
+                           via vnode {traceResult.targetVNode?.label.split('(V-')[1]?.charAt(0)}
+                         </span>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-slate-500 space-y-2">
-                    <Zap className="h-6 w-6 text-slate-600 mx-auto" />
+                   <div className="text-center py-6 space-y-2" style={{ color: 'var(--color-text-muted)' }}>
+                     <Zap className="h-6 w-6 text-slate-600 mx-auto" />
                     <p className="text-xs">
                       Submit a database key to visualize how consistent hashing computes coordinates and routes data.
                     </p>
@@ -640,16 +640,16 @@ export default function Dashboard({
 
               {/* Quick try options */}
               <div>
-                <span className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                  Quick-Test Keys
-                </span>
+                 <span className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                   Quick-Test Keys
+                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {['user:profile:john', 'analytics:daily', 'session:token_901', 'app:config:features'].map((k) => (
                     <button
                       key={k}
                       type="button"
                       onClick={() => handleQuickTrace(k)}
-                      className="rounded bg-slate-900 hover:bg-slate-800 border border-slate-800/80 px-2 py-0.5 font-mono text-[10px] text-slate-400 hover:text-emerald-400 transition"
+                       className="rounded bg-slate-900 hover:bg-slate-800 border border-slate-800/80 px-2 py-0.5 font-mono text-[10px] hover:text-emerald-400 transition" style={{ color: 'var(--color-text-muted)' }}
                     >
                       {k}
                     </button>
@@ -668,34 +668,34 @@ export default function Dashboard({
               Unified Replication Info
             </h3>
             
-            <div className="space-y-2.5 text-xs text-slate-400">
-              <p>
-                In a standard cluster, node failures cause data loss. SupaMerge overcomes this with a **Replication Factor (RF) of 2x**.
-              </p>
+             <div className="space-y-2.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+               <p>
+                 In a standard cluster, node failures cause data loss. SupaMerge overcomes this with a **Replication Factor (RF) of 2x**.
+               </p>
               
               <div className="rounded-lg bg-slate-950/40 border border-slate-800/80 p-3 space-y-2">
                 <div className="flex items-center gap-1.5 font-semibold" style={{ color: 'var(--color-text)' }}>
                   <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
                   Primary Node (Hash Routing)
                 </div>
-                <p className="text-[11px] text-slate-500 leading-normal pl-3">
-                  Keys are hashed and saved to the primary node on the consistent hash ring.
-                </p>
+                 <p className="text-[11px] leading-normal pl-3" style={{ color: 'var(--color-text-muted)' }}>
+                   Keys are hashed and saved to the primary node on the consistent hash ring.
+                 </p>
                 
                 <div className="flex items-center gap-1.5 font-semibold" style={{ color: 'var(--color-text)' }}>
                   <div className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse" />
                   Secondary Replica Node
                 </div>
-                <p className="text-[11px] text-slate-500 leading-normal pl-3">
-                  The data is instantly duplicated on the *next active neighbor node* in clockwise order.
-                </p>
+                 <p className="text-[11px] leading-normal pl-3" style={{ color: 'var(--color-text-muted)' }}>
+                   The data is instantly duplicated on the *next active neighbor node* in clockwise order.
+                 </p>
               </div>
             </div>
           </div>
 
           <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs">
-            <span className="text-slate-500">Hash Algorithm</span>
-            <span className="font-mono bg-slate-900 px-1.5 py-0.5 rounded text-slate-300 border border-slate-800 text-[10px]">
+            <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Hash Algorithm</span>
+             <span className="font-mono bg-slate-900 px-1.5 py-0.5 rounded text-slate-300 border border-slate-800 text-[10px]">
               FNV-1a 32-bit
             </span>
           </div>
@@ -742,9 +742,9 @@ export default function Dashboard({
                           {node.name}
                         </h4>
                       </div>
-                      <span className="text-[11px] text-slate-500 block mt-0.5">
-                        {node.region}
-                      </span>
+                       <span className="text-[11px] block mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                         {node.region}
+                       </span>
                     </div>
 
                     <div className="flex flex-col items-end">
@@ -762,22 +762,22 @@ export default function Dashboard({
                         {isOnline ? 'Online' : 'Offline'}
                       </Badge>
                       {isOnline && (
-                        <span className="text-[10px] text-slate-400 mt-1 font-mono">
-                          {node.latency}ms
-                        </span>
+                         <span className="text-[10px] mt-1 font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                           {node.latency}ms
+                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* API Details */}
-                  <div className="text-[11px] text-slate-500 font-mono rounded bg-slate-950/40 p-2 border border-slate-900 space-y-0.5">
-                    <div className="flex justify-between">
-                      <span>URL:</span>
-                      <span className="text-slate-400 truncate max-w-[150px]">{node.url}</span>
+                   {/* API Details */}
+                   <div className="text-[11px] font-mono rounded bg-slate-950/40 p-2 border border-slate-900 space-y-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                     <div className="flex justify-between">
+                       <span>URL:</span>
+                       <span className="truncate max-w-[150px]">{node.url}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>KEY:</span>
-                      <span className="text-slate-400">{node.anonKey.substring(0, 15)}...</span>
+                     <div className="flex justify-between">
+                       <span>KEY:</span>
+                       <span>{node.anonKey.substring(0, 15)}...</span>
                     </div>
                   </div>
 
@@ -786,12 +786,12 @@ export default function Dashboard({
                     <div className="space-y-2.5">
                       {/* Database Progress */}
                       <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-slate-400">Database Space</span>
-                          <span className="font-semibold font-mono" style={{ color: 'var(--color-text-muted)' }}>
-                            {formatBytes(node.dbUsageBytes)} / {formatBytes(node.dbLimitBytes, 0)}
-                          </span>
-                        </div>
+                         <div className="flex justify-between text-xs mb-1">
+                           <span style={{ color: 'var(--color-text-muted)' }}>Database Space</span>
+                           <span className="font-semibold font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                             {formatBytes(node.dbUsageBytes)} / {formatBytes(node.dbLimitBytes, 0)}
+                           </span>
+                         </div>
                         <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
                           <div
                             className="h-full rounded-full transition-all duration-300"
@@ -805,12 +805,12 @@ export default function Dashboard({
 
                       {/* Storage Progress */}
                       <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-slate-400">Storage Buckets</span>
-                          <span className="font-semibold font-mono" style={{ color: 'var(--color-text-muted)' }}>
-                            {formatBytes(node.storageUsageBytes)} / {formatBytes(node.storageLimitBytes, 0)}
-                          </span>
-                        </div>
+                         <div className="flex justify-between text-xs mb-1">
+                           <span style={{ color: 'var(--color-text-muted)' }}>Storage Buckets</span>
+                           <span className="font-semibold font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                             {formatBytes(node.storageUsageBytes)} / {formatBytes(node.storageLimitBytes, 0)}
+                           </span>
+                         </div>
                         <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
                           <div
                             className="h-full rounded-full transition-all duration-300"

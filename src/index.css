@@ -73,8 +73,39 @@
 /* ── Custom scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+:root:not([data-theme="dark"]) {
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+:root[data-theme="dark"],
+.dark {
+  --scrollbar-thumb: #1e293b;
+  --scrollbar-thumb-hover: #334155;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --scrollbar-thumb: #1e293b;
+    --scrollbar-thumb-hover: #334155;
+  }
+}
+
+::-webkit-scrollbar-thumb { 
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--scrollbar-thumb-hover);
+}
 
 /* ── Animated gradient mesh background ── */
 @keyframes gradient-shift {

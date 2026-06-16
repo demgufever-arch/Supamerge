@@ -177,7 +177,7 @@ export default function VectorMemoryComponent({
       infrastructure: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
       branding: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
       security: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      general: 'bg-slate-800 text-slate-400 border-slate-700',
+      general: 'bg-[var(--color-surface-alt)] hover:text-slate-400 border-slate-700',
     };
     return colors[cat] || colors.general;
   };
@@ -198,7 +198,7 @@ export default function VectorMemoryComponent({
               {isSandbox ? 'Sandbox' : 'Live'}
             </span>
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             A distributed semantic database storing high-dimensional embeddings. Queries all Supabase databases in parallel to retrieve AI agent long-term memory.
           </p>
         </div>
@@ -280,13 +280,13 @@ export default function VectorMemoryComponent({
               {searchQuery.trim() ? (
                 // Search Results View
                 <>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    Semantic Matches (Cosine Similarity)
-                  </h3>
+                   <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                     Semantic Matches (Cosine Similarity)
+                   </h3>
                   {searchResults.length === 0 ? (
-                    <div className="rounded-xl border border-slate-800 bg-slate-900/5 py-12 text-center text-slate-500 text-sm">
-                      No matching memories found. Try adjusting your search query.
-                    </div>
+                     <div className="rounded-xl border border-slate-800 bg-slate-900/5 py-12 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                       No matching memories found. Try adjusting your search query.
+                     </div>
                   ) : (
                     searchResults.map((mem) => (
                       <div
@@ -304,14 +304,14 @@ export default function VectorMemoryComponent({
                               <span className={`rounded px-1.5 py-0.5 font-semibold border ${getCategoryColor(mem.metadata.category)}`}>
                                 {formatCategory(mem.metadata.category)}
                               </span>
-                              <span className="text-slate-500 flex items-center gap-0.5 font-mono">
-                                <User className="h-3 w-3 text-slate-600" />
-                                {mem.metadata.agentName}
-                              </span>
-                              <span className="text-slate-500 flex items-center gap-0.5 font-mono">
-                                <Clock className="h-3 w-3 text-slate-600" />
-                                {new Date(mem.metadata.timestamp).toLocaleDateString()}
-                              </span>
+                               <span className="flex items-center gap-0.5 font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                                 <User className="h-3 w-3 text-slate-600" />
+                                 {mem.metadata.agentName}
+                               </span>
+                               <span className="flex items-center gap-0.5 font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                                 <Clock className="h-3 w-3 text-slate-600" />
+                                 {new Date(mem.metadata.timestamp).toLocaleDateString()}
+                               </span>
                               <span className="font-mono font-bold text-[10px]" style={{ color: getNodeColor(mem.nodeId) }}>
                                 @{getNodeName(mem.nodeId)}
                               </span>
@@ -321,7 +321,7 @@ export default function VectorMemoryComponent({
                           {/* Similarity Badge */}
                           {mem.similarity !== undefined && (
                             <div className="text-right shrink-0">
-                              <span className="text-xs font-semibold text-slate-400 block">Match Score</span>
+                               <span className="text-xs font-semibold block" style={{ color: 'var(--color-text-muted)' }}>Match Score</span>
                               <span className="font-mono text-base font-extrabold text-emerald-400">
                                 {Math.round(mem.similarity * 100)}%
                               </span>
@@ -345,14 +345,14 @@ export default function VectorMemoryComponent({
                 // All Memories View
                 <>
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      All Stored Memory Chunks ({memories.length})
+                   <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                       All Stored Memory Chunks ({memories.length})
                     </h3>
                   </div>
                   {memories.length === 0 ? (
-                    <div className="rounded-xl border border-slate-800 bg-slate-900/5 py-12 text-center text-slate-500 text-sm">
-                      Memory bank is empty. Write memories to populate the cluster.
-                    </div>
+                     <div className="rounded-xl border border-slate-800 bg-slate-900/5 py-12 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                       Memory bank is empty. Write memories to populate the cluster.
+                     </div>
                   ) : (
                     memories.map((mem) => (
                       <div
@@ -369,14 +369,14 @@ export default function VectorMemoryComponent({
                             <Badge className={`px-1.5 py-0.5 text-[10px] font-semibold border ${getCategoryColor(mem.metadata.category)}`}>
                               {formatCategory(mem.metadata.category)}
                             </Badge>
-                            <span className="text-slate-500 flex items-center gap-0.5 font-mono">
-                              <User className="h-3 w-3 text-slate-600" />
-                              {mem.metadata.agentName}
-                            </span>
-                            <span className="text-slate-500 flex items-center gap-0.5 font-mono">
-                              <Clock className="h-3 w-3 text-slate-600" />
-                              {new Date(mem.metadata.timestamp).toLocaleDateString()}
-                            </span>
+                             <span className="flex items-center gap-0.5 font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                               <User className="h-3 w-3 text-slate-600" />
+                               {mem.metadata.agentName}
+                             </span>
+                             <span className="flex items-center gap-0.5 font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                               <Clock className="h-3 w-3 text-slate-600" />
+                               {new Date(mem.metadata.timestamp).toLocaleDateString()}
+                             </span>
                             <Badge
                               variant="outline"
                               className="font-mono font-bold text-[10px] px-1.5 py-0.5 border-slate-700"
@@ -411,9 +411,9 @@ export default function VectorMemoryComponent({
                   <BarChart2 className="h-4 w-4 text-emerald-400" />
                   2D Vector Space Map
                 </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-normal">
-                  Mathematical 2D projection of 384-dimensional vector embeddings. Proximity indicates semantic similarity.
-                </p>
+                 <p className="text-[11px] mt-0.5 leading-normal" style={{ color: 'var(--color-text-muted)' }}>
+                   Mathematical 2D projection of 384-dimensional vector embeddings. Proximity indicates semantic similarity.
+                 </p>
               </div>
 
               {/* Vector Space Plotting Area */}
@@ -513,11 +513,11 @@ export default function VectorMemoryComponent({
                 )}
 
                 {/* Empty State Instructions */}
-                {memories.length === 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-xs text-slate-500">
-                    Write memories to populate the coordinate space map!
-                  </div>
-                )}
+                 {memories.length === 0 && (
+                   <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                     Write memories to populate the coordinate space map!
+                   </div>
+                 )}
               </div>
 
               {/* Hover Legend Box */}
@@ -528,19 +528,19 @@ export default function VectorMemoryComponent({
                       <span className="font-mono text-[9px] font-bold" style={{ color: getNodeColor(hoveredMemory.nodeId) }}>
                         @{getNodeName(hoveredMemory.nodeId)}
                       </span>
-                      <span className="text-[9px] text-slate-500">
-                        {formatCategory(hoveredMemory.metadata.category)}
-                      </span>
+                       <span className="text-[9px]" style={{ color: 'var(--color-text-muted)' }}>
+                         {formatCategory(hoveredMemory.metadata.category)}
+                       </span>
                     </div>
                     <p className="line-clamp-2 italic leading-relaxed" style={{ color: 'var(--color-text)' }}>
                       "{hoveredMemory.content}"
                     </p>
                   </div>
                 ) : (
-                  <div className="text-slate-500 text-[11px] leading-normal flex items-center gap-2 py-2">
-                    <HelpCircle className="h-4 w-4 shrink-0 text-slate-600" />
-                    <span>Hover over any data node in the vector space to inspect its content and region index in real-time.</span>
-                  </div>
+                   <div className="text-[11px] leading-normal flex items-center gap-2 py-2" style={{ color: 'var(--color-text-muted)' }}>
+                     <HelpCircle className="h-4 w-4 shrink-0 text-slate-600" />
+                     <span>Hover over any data node in the vector space to inspect its content and region index in real-time.</span>
+                   </div>
                 )}
               </div>
             </div>
@@ -573,9 +573,9 @@ export default function VectorMemoryComponent({
 
           <form onSubmit={handleAddMemory} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Memory Content (AI Context)
-              </label>
+               <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                 Memory Content (AI Context)
+               </label>
               <textarea
                 required
                 rows={4}
@@ -589,9 +589,9 @@ export default function VectorMemoryComponent({
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Category
-                </label>
+                 <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                   Category
+                 </label>
                 <Select value={newCategory} onValueChange={setNewCategory} disabled={isAdding}>
                   <SelectTrigger className="w-full text-xs border-slate-800 bg-slate-950 text-slate-300">
                     <SelectValue />
@@ -607,9 +607,9 @@ export default function VectorMemoryComponent({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Agent Name (Originator)
-                </label>
+                 <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                   Agent Name (Originator)
+                 </label>
                 <Input
                   type="text"
                   required

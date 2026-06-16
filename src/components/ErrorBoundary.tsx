@@ -20,13 +20,13 @@ export default class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen items-center justify-center bg-[#020617] p-8">
+        <div className="flex min-h-screen items-center justify-center p-8" style={{ backgroundColor: 'var(--color-canvas)' }}>
           <div className="max-w-md text-center space-y-6">
             <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20">
               <AlertTriangle className="h-7 w-7 text-rose-400" />
             </div>
-            <h1 className="text-xl font-bold text-slate-100">Something went wrong</h1>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h1 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>Something went wrong</h1>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
               {this.state.error?.message || 'An unexpected error occurred.'}
             </p>
             <button
