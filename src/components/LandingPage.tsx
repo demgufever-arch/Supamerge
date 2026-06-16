@@ -9,6 +9,13 @@ import { Terminal } from '@/components/ui/terminal';
 import { TextHoverEffect } from '@/components/ui/text-hover-effect';
 import { useTheme } from '../hooks/useTheme';
 import logoSrc from '../assets/logo.png';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface LandingPageProps {
   onLaunch: () => void;
@@ -523,18 +530,99 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
             <Cpu className="h-3.5 w-3.5" />
             SupaMerge &copy; {new Date().getFullYear()}
           </div>
-          <a
-            href="https://github.com/demgufever-arch/Supamerge"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs font-semibold transition-colors hover:text-emerald-400"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
-            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111432.png" alt="GitHub" className="h-3.5 w-3.5 dark:brightness-0 dark:invert" />
-            demgufever-arch/Supamerge
-          </a>
-          <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            Built with React 19, Supabase, and Tailwind CSS
+          <div className="flex items-center gap-4">
+            <Dialog>
+              <DialogTrigger render={<button
+                className="text-xs font-semibold transition-colors hover:text-emerald-400"
+                style={{ color: 'var(--color-text-muted)' }}
+              />}>
+                Privacy Policy
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>
+                    Privacy Policy
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                    <p><strong>Last Updated:</strong> June 2026</p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>1. Information We Collect</h4>
+                    <p>
+                      SupaMerge is a browser-only application. We do not operate any backend servers, databases, 
+                      or tracking infrastructure. All data you provide — including Supabase project URLs, anon keys, 
+                      and any data stored through the app — resides exclusively in your browser's 
+                      <code className="mx-1 rounded bg-slate-800 px-1 py-0.5 font-mono" style={{ color: 'var(--color-text)' }}>localStorage</code>.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>2. No Data Transmission</h4>
+                    <p>
+                      Your Supabase anon keys and project URLs are never transmitted to any third party. 
+                      All API requests are made directly from your browser to your configured Supabase projects. 
+                      We do not proxy, log, or store any network traffic.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>3. Third-Party Services</h4>
+                    <p>
+                      The only external services your browser communicates with are the Supabase projects 
+                      you explicitly configure. The app loads icon assets from Flaticon (cdn-icons-png.flaticon.com) 
+                      and font files from Google Fonts (via @fontsource). These services have their own privacy policies.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>4. No Cookies or Tracking</h4>
+                    <p>
+                      SupaMerge does not use cookies, analytics, fingerprinting, or any form of user tracking. 
+                      Theme preference is stored in 
+                      <code className="mx-1 rounded bg-slate-800 px-1 py-0.5 font-mono" style={{ color: 'var(--color-text)' }}>localStorage</code> 
+                      under the key <code className="mx-1 rounded bg-slate-800 px-1 py-0.5 font-mono" style={{ color: 'var(--color-text)' }}>supamerge_theme</code>.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>5. Data Control & Deletion</h4>
+                    <p>
+                      Since all data is stored in your browser, you can clear it at any time via your 
+                      browser settings (Clear Site Data, Clear localStorage, or Reset). Uninstalling the app 
+                      or clearing your browser data will permanently remove all stored configuration.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>6. Open Source</h4>
+                    <p>
+                      SupaMerge is open-source software. The full source code is available on 
+                      <a href="https://github.com/demgufever-arch/Supamerge" target="_blank" rel="noopener noreferrer" className="mx-1 underline hover:text-emerald-400">GitHub</a>. 
+                      You are free to audit, fork, or self-host the application.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>7. Changes to This Policy</h4>
+                    <p>
+                      Any updates to this privacy policy will be reflected in the application. 
+                      Since the app is open-source, changes are publicly tracked in the repository's commit history.
+                    </p>
+
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>8. Contact</h4>
+                    <p>
+                      For questions about this privacy policy, please open an issue on the 
+                      <a href="https://github.com/demgufever-arch/Supamerge" target="_blank" rel="noopener noreferrer" className="mx-1 underline hover:text-emerald-400">GitHub repository</a>.
+                    </p>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <a
+              href="https://github.com/demgufever-arch/Supamerge"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs font-semibold transition-colors hover:text-emerald-400"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111432.png" alt="GitHub" className="h-3.5 w-3.5 dark:brightness-0 dark:invert" />
+              demgufever-arch/Supamerge
+            </a>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              Made by <span className="font-semibold" style={{ color: 'var(--color-text)' }}>Parithosh Varma</span>
+            </div>
+            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              Built with React 19, Supabase, and Tailwind CSS
+            </div>
           </div>
         </div>
       </footer>
