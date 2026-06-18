@@ -68,6 +68,57 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [clusterLogs, setClusterLogs] = useState<string[]>([]);
 
+  // Generate demo data for sandbox mode
+  const generateDemoData = () => {
+    const demoNodes: SupabaseNode[] = [
+      { id: 'sb-node-us-east', name: 'us-east-1-demo', url: 'https://demo-east.supabase.co', anonKey: 'demo-key-east', region: 'us-east-1', status: 'connected', latency: 42, dbUsageBytes: 128000000, dbLimitBytes: 524288000, storageUsageBytes: 256000000, storageLimitBytes: 1073741824, pgVersion: '15.1', extensions: ['vector'] },
+      { id: 'sb-node-eu-west', name: 'eu-west-1-demo', url: 'https://demo-eu.supabase.co', anonKey: 'demo-key-eu', region: 'eu-west-1', status: 'connected', latency: 89, dbUsageBytes: 92000000, dbLimitBytes: 524288000, storageUsageBytes: 180000000, storageLimitBytes: 1073741824, pgVersion: '15.1', extensions: ['vector'] },
+      { id: 'sb-node-ap-south', name: 'ap-south-1-demo', url: 'https://demo-ap.supabase.co', anonKey: 'demo-key-ap', region: 'ap-south-1', status: 'connected', latency: 215, dbUsageBytes: 65000000, dbLimitBytes: 524288000, storageUsageBytes: 95000000, storageLimitBytes: 1073741824, pgVersion: '15.1', extensions: ['vector'] },
+    ];
+    setNodes(demoNodes);
+
+    const demoKV: KVRecord[] = [
+      { key: 'user:prefs:theme', value: 'dark', tags: ['user', 'preferences'], createdAt: '2025-06-15T10:00:00Z', updatedAt: '2025-06-15T10:00:00Z', version: 1, checksum: crc32('dark'), consistencyStatus: 'consistent', nodeId: 'sb-node-us-east' },
+      { key: 'user:prefs:language', value: 'en-US', tags: ['user', 'preferences'], createdAt: '2025-06-15T10:01:00Z', updatedAt: '2025-06-15T10:01:00Z', version: 1, checksum: crc32('en-US'), consistencyStatus: 'consistent', nodeId: 'sb-node-eu-west' },
+      { key: 'config:max_connections', value: 100, tags: ['config', 'database'], createdAt: '2025-06-14T08:00:00Z', updatedAt: '2025-06-16T12:00:00Z', version: 3, checksum: crc32('100'), consistencyStatus: 'consistent', nodeId: 'sb-node-us-east' },
+      { key: 'feature:vector_search', value: { enabled: true, dimensions: 384, threshold: 0.2 }, tags: ['feature', 'vector'], createdAt: '2025-06-16T09:00:00Z', updatedAt: '2025-06-16T09:00:00Z', version: 1, checksum: crc32(JSON.stringify({ enabled: true })), consistencyStatus: 'consistent', nodeId: 'sb-node-ap-south' },
+      { key: 'session:abc123', value: { userId: 'user_42', expiresAt: '2025-07-01T00:00:00Z' }, tags: ['session', 'temp'], createdAt: '2025-06-16T14:30:00Z', updatedAt: '2025-06-16T14:30:00Z', version: 1, checksum: crc32(JSON.stringify({ userId: 'user_42' })), consistencyStatus: 'unchecked', nodeId: 'sb-node-eu-west' },
+      { key: 'rate_limit:api', value: { requests: 1000, windowMs: 3600000 }, tags: ['config', 'rate-limit'], createdAt: '2025-06-13T16:00:00Z', updatedAt: '2025-06-17T08:00:00Z', version: 2, checksum: crc32(JSON.stringify({ requests: 1000 })), consistencyStatus: 'consistent', nodeId: 'sb-node-us-east' },
+    ];
+    setKvRecords(demoKV);
+
+    const demoFiles: FileMetadata[] = [
+      { id: 'file-1', name: 'architecture-diagram.png', type: 'image/png', size: 245760, totalChunks: 3, chunkIds: ['chunk-1a', 'chunk-1b', 'chunk-1c'], nodeDistribution: { 0: 'sb-node-us-east', 1: 'sb-node-eu-west', 2: 'sb-node-ap-south' }, createdAt: '2025-06-15T11:00:00Z', version: 1, checksum: 'a1b2c3d4' },
+      { id: 'file-2', name: 'supabase-schema.sql', type: 'text/sql', size: 45678, totalChunks: 1, chunkIds: ['chunk-2a'], nodeDistribution: { 0: 'sb-node-eu-west' }, createdAt: '2025-06-16T09:30:00Z', version: 1, checksum: 'e5f6g7h8', chunkSizeKb: 45 },
+      { id: 'file-3', name: 'cluster-config.json', type: 'application/json', size: 12345, totalChunks: 1, chunkIds: ['chunk-3a'], nodeDistribution: { 0: 'sb-node-us-east' }, createdAt: '2025-06-16T10:00:00Z', version: 2, checksum: 'i9j0k1l2', chunkSizeKb: 12 },
+    ];
+    setFiles(demoFiles);
+
+    const catList = [
+      { content: 'User prefers dark mode and uses VS Code as main IDE. Works in EST timezone.', category: 'user_preferences', agentName: 'SupaBot-UX' },
+      { content: 'Database pool is configured for max 100 connections with 5 min idle timeout.', category: 'infrastructure', agentName: 'SupaBot-Ops' },
+      { content: 'Application brand colors: emerald (#10b981) primary, slate (#94a3b8) secondary.', category: 'branding', agentName: 'SupaBot-UX' },
+      { content: 'API rate limit set to 1000 requests per hour per API key.', category: 'security', agentName: 'SupaBot-Ops' },
+      { content: 'User John prefers PostgreSQL over MySQL. Has used Prisma ORM for 2 years.', category: 'user_preferences', agentName: 'SupaBot-UX' },
+      { content: 'Vector embeddings use 384 dimensions with cosine similarity search.', category: 'infrastructure', agentName: 'SupaBot-Ops' },
+      { content: 'Brand voice: technical but approachable. Avoids marketing fluff.', category: 'branding', agentName: 'SupaBot-UX' },
+      { content: 'CORS whitelist includes *.supabase.co and localhost:5173.', category: 'security', agentName: 'SupaBot-Ops' },
+      { content: 'User Alice requested keyboard shortcut documentation and CLI tool.', category: 'user_preferences', agentName: 'SupaBot-UX' },
+      { content: 'Session tokens expire after 24 hours. Refresh token rotation enabled.', category: 'security', agentName: 'SupaBot-Ops' },
+    ];
+    const demoMemories: VectorMemory[] = catList.map((item, i) => ({
+      id: `demo-mem-${i}`,
+      content: item.content,
+      embedding: generateMockEmbedding(item.content),
+      metadata: { category: item.category, agentName: item.agentName, timestamp: `2025-06-${String(15 + (i % 3)).padStart(2, '0')}T${String(8 + i).padStart(2, '0')}:00:00Z` },
+      nodeId: demoNodes[i % demoNodes.length].id,
+      similarity: undefined,
+    }));
+    setMemories(demoMemories);
+
+    addLog(`[Sandbox] Loaded demo cluster with 3 nodes, ${demoKV.length} KV records, ${demoFiles.length} files, ${demoMemories.length} vector memories.`);
+  };
+
   // Initialize and load data on mount
   useEffect(() => {
     loadClusterData();
@@ -95,10 +146,8 @@ export default function App() {
     setNodes(loadedNodes);
 
     if (loadedNodes.length === 0) {
-      addLog("No Supabase nodes provisioned! Add a project in Cluster Console to get started.");
-      setKvRecords([]);
-      setFiles([]);
-      setMemories([]);
+      addLog("No Supabase nodes found — loading sandbox demo environment with pre-seeded data.");
+      generateDemoData();
       setLoading(false);
       return;
     }
@@ -298,6 +347,26 @@ export default function App() {
       throw new Error('No active database nodes available to write to!');
     }
 
+    // Sandbox mode: add locally
+    if (isSandbox) {
+      const existing = kvRecords.find(r => r.key === key);
+      const version = (existing?.version || 0) + 1;
+      const checksum = crc32(JSON.stringify(value));
+      const newRecord: KVRecord = {
+        key, value, tags, version, checksum,
+        consistencyStatus: 'consistent',
+        createdAt: existing?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        nodeId: activeNodes[0].id,
+      };
+      setKvRecords(prev => {
+        const filtered = prev.filter(r => r.key !== key);
+        return [...filtered, newRecord];
+      });
+      addLog(`[KV] Sandbox: "${key}" committed locally.`);
+      return { primary: activeNodes[0].id, replica: activeNodes.length > 1 ? activeNodes[1].id : activeNodes[0].id };
+    }
+
     const ring = buildHashRing(activeNodes, 4);
     const routing = getNodeForKey(key, ring);
     
@@ -380,6 +449,12 @@ export default function App() {
   };
 
   const handleDeleteKVRecord = async (key: string) => {
+    if (isSandbox) {
+      setKvRecords(prev => prev.filter(r => r.key !== key));
+      addLog(`[KV] Sandbox: "${key}" deleted locally.`);
+      return;
+    }
+
     const record = kvRecords.find(r => r.key === key);
     if (!record) return;
 
@@ -409,6 +484,24 @@ export default function App() {
     chunks: FileChunk[],
     nodeDistribution: { [chunkIndex: number]: string }
   ) => {
+    if (isSandbox) {
+      const fileChecksum = crc32(chunks.map(c => c.data).join(''));
+      const newFile: FileMetadata = {
+        id: `sandbox-${Date.now()}`,
+        name, type: _type, size: _size,
+        totalChunks: chunks.length,
+        chunkIds: chunks.map(c => c.chunkId),
+        nodeDistribution,
+        createdAt: new Date().toISOString(),
+        version: 1,
+        checksum: fileChecksum,
+        chunkSizeKb: Math.round(_size / chunks.length / 1024),
+      };
+      setFiles(prev => [...prev, newFile]);
+      addLog(`[DFS] Sandbox: "${name}" uploaded locally (CRC: ${fileChecksum}).`);
+      return;
+    }
+
     const uploadPromises = chunks.map(async (chunk) => {
       const primaryNodeId = nodeDistribution[chunk.chunkIndex];
       const primaryNode = nodes.find(n => n.id === primaryNodeId);
@@ -512,6 +605,12 @@ export default function App() {
   };
 
   const handleDeleteFile = async (fileId: string) => {
+    if (isSandbox) {
+      setFiles(prev => prev.filter(f => f.id !== fileId));
+      addLog(`[DFS] Sandbox: file deleted locally.`);
+      return;
+    }
+
     const file = files.find(f => f.id === fileId);
     if (!file) return;
 
@@ -530,6 +629,19 @@ export default function App() {
 
   // Vector Memory Operations
   const handleAddMemory = async (content: string, category: string, agentName: string) => {
+    if (isSandbox) {
+      const newMem: VectorMemory = {
+        id: `sandbox-mem-${Date.now()}`,
+        content,
+        embedding: generateMockEmbedding(content),
+        metadata: { category, agentName, timestamp: new Date().toISOString() },
+        nodeId: nodes[0]?.id || 'demo',
+      };
+      setMemories(prev => [...prev, newMem]);
+      addLog(`[Vector] Sandbox: memory added locally.`);
+      return;
+    }
+
     const embedding = generateMockEmbedding(content);
     const activeNodes = nodes.filter(n => n.status === 'connected');
     if (activeNodes.length === 0) {
@@ -581,6 +693,21 @@ export default function App() {
     limit: number,
     filters?: { category?: string; agentName?: string }
   ): Promise<VectorMemory[]> => {
+    // Sandbox mode: search local state
+    if (isSandbox) {
+      const queryEmbedding = generateMockEmbedding(queryText);
+      let filtered = memories;
+      if (filters?.category) filtered = filtered.filter(m => m.metadata.category === filters.category);
+      if (filters?.agentName) filtered = filtered.filter(m => m.metadata.agentName === filters.agentName);
+
+      const scored = filtered.map(m => ({
+        ...m,
+        similarity: cosineSimilarity(queryEmbedding, m.embedding),
+      }));
+      const sorted = scored.sort((a, b) => (b.similarity || 0) - (a.similarity || 0)).slice(0, limit);
+      return sorted;
+    }
+
     const queryEmbedding = generateMockEmbedding(queryText);
     const activeNodes = nodes.filter(n => n.status === 'connected');
     const allResults: VectorMemory[] = [];
@@ -670,6 +797,12 @@ export default function App() {
   };
 
   const handleDeleteMemory = async (memoryId: string) => {
+    if (isSandbox) {
+      setMemories(prev => prev.filter(m => m.id !== memoryId));
+      addLog(`[Vector] Sandbox: memory deleted locally.`);
+      return;
+    }
+
     const memory = memories.find(m => m.id === memoryId);
     if (!memory) return;
 
@@ -743,6 +876,8 @@ export default function App() {
     </div>
   );
 
+  const isSandbox = nodes.length > 0 && nodes.every(n => n.anonKey.startsWith('demo-key'));
+
   const renderTabContent = () => {
     if (loading) {
       return renderSkeleton();
@@ -758,7 +893,7 @@ export default function App() {
             records={kvRecords}
             onAddRecord={handleAddKVRecord}
             onDeleteRecord={handleDeleteKVRecord}
-            isSandbox={false}
+            isSandbox={isSandbox}
           />
         );
       case 'files':
@@ -769,7 +904,7 @@ export default function App() {
             onUploadFile={handleUploadFile}
             onDownloadChunk={handleDownloadChunk}
             onDeleteFile={handleDeleteFile}
-            isSandbox={false}
+            isSandbox={isSandbox}
           />
         );
       case 'vector':
@@ -780,7 +915,7 @@ export default function App() {
             onAddMemory={handleAddMemory}
             onSearchMemories={handleSearchMemories}
             onDeleteMemory={handleDeleteMemory}
-            isSandbox={false}
+            isSandbox={isSandbox}
           />
         );
       case 'console':
@@ -964,6 +1099,12 @@ export default function App() {
               <div className="hidden sm:flex items-center gap-1.5 text-rose-400/90 bg-rose-500/8 border border-rose-500/20 rounded-lg px-3 py-1 font-semibold">
                 <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
                 <span>No projects connected. Add them in Cluster Console.</span>
+              </div>
+            )}
+            {isSandbox && (
+              <div className="hidden sm:flex items-center gap-1.5 text-emerald-400/90 bg-emerald-500/8 border border-emerald-500/20 rounded-lg px-3 py-1 font-semibold">
+                <Database className="h-3.5 w-3.5 shrink-0" />
+                <span>Sandbox demo — add real nodes in Cluster Console</span>
               </div>
             )}
 
