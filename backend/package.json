@@ -1,0 +1,45 @@
+{
+  "name": "supabase-gateway-api",
+  "version": "1.0.0",
+  "description": "Unified Database API Gateway - Connect to any database with a single API key",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node --loader tsx src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "supabase",
+    "database",
+    "gateway",
+    "api",
+    "multi-database"
+  ],
+  "author": "Parithosh Varma",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.0",
+    "pg": "^8.10.0",
+    "mysql2": "^3.6.0",
+    "mongodb": "^6.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6",
+    "@types/express": "^4.17.21",
+    "@types/uuid": "^9.0.7",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/pg": "^8.10.9",
+    "tsx": "^4.7.0"
+  }
+}
