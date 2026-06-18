@@ -38,8 +38,8 @@ const FEATURES = [
     icon: Layers,
     title: 'Distributed File System',
     desc: 'Files are split into chunks and spread across your cluster for fault-tolerant storage with replica redundancy.',
-    color: 'from-blue-400 to-indigo-500',
-    shadow: 'shadow-blue-500/10',
+    color: 'from-emerald-400 to-teal-500',
+    shadow: 'shadow-emerald-500/10',
   },
   {
     icon: Brain,
@@ -66,8 +66,8 @@ const FEATURES = [
     icon: Shield,
     title: 'Browser-Only Privacy',
     desc: 'No backend server. Your API keys and URLs stay in localStorage, never transmitted to third parties.',
-    color: 'from-cyan-400 to-sky-500',
-    shadow: 'shadow-cyan-500/10',
+    color: 'from-teal-400 to-emerald-500',
+    shadow: 'shadow-teal-500/10',
   },
 ];
 
@@ -247,7 +247,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
         {/* Background orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-emerald-500/5 blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-blue-500/4 blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-teal-500/4 blur-3xl" />
           <div className="absolute top-1/3 right-1/3 h-64 w-64 rounded-full bg-purple-500/3 blur-3xl" />
         </div>
 
@@ -290,7 +290,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
                 onClick={() => scrollTo('features')}
                 size="lg"
                 variant="outline"
-                className="h-12 px-8 text-sm font-semibold hover:bg-slate-800/50"
+                className="h-12 px-8 text-sm font-semibold hover:bg-[var(--color-surface-alt)]"
                 style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
               >
                 Explore Features
@@ -486,7 +486,7 @@ export default function LandingPage({ onLaunch }: LandingPageProps) {
         <div className="mx-auto max-w-4xl px-6 text-center">
           <div className="relative rounded-2xl border backdrop-blur-sm p-8 sm:p-12 shadow-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-border)' }}>
             <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-emerald-500/8 blur-3xl" />
-            <div className="absolute -left-20 -bottom-20 h-60 w-60 rounded-full bg-blue-500/6 blur-3xl" />
+            <div className="absolute -left-20 -bottom-20 h-60 w-60 rounded-full bg-teal-500/6 blur-3xl" />
 
             <div className="relative z-10 space-y-6">
               <img src={logoSrc} alt="SupaMerge" className="mx-auto h-14 w-14 rounded-2xl" />

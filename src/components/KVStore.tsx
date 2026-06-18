@@ -51,7 +51,7 @@ export default function KVStore({
   const getNodeColorClass = (nodeId: string) => {
     const colors: { [key: string]: string } = {
       'sb-node-us-east': 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
-      'sb-node-eu-west': 'text-blue-400 border-blue-500/30 bg-blue-500/10',
+      'sb-node-eu-west': 'text-teal-400 border-teal-500/30 bg-teal-500/10',
       'sb-node-ap-south': 'text-purple-400 border-purple-500/30 bg-purple-500/10',
     };
     return colors[nodeId] || 'text-amber-400 border-amber-500/30 bg-amber-500/10';
@@ -231,7 +231,7 @@ export default function KVStore({
             </div>
 
             {/* KV List Table */}
-            <div className="overflow-hidden rounded-xl backdrop-blur-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+            <div className="overflow-hidden rounded-xl backdrop-blur-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent" style={{ borderColor: 'var(--color-border)' }}>
@@ -337,7 +337,7 @@ export default function KVStore({
                                   setNewTags(rec.tags.join(', '));
                                   setActiveTab('write');
                                 }}
-                                 className="hover:text-blue-400 hover:bg-blue-500/10" style={{ color: 'var(--color-text-muted)' }}
+                                 className="hover:text-emerald-400 hover:bg-emerald-500/10" style={{ color: 'var(--color-text-muted)' }}
                                 title="Edit Value"
                               >
                                 <Edit2 className="h-4 w-4" />
@@ -365,7 +365,7 @@ export default function KVStore({
           {/* Sidebar: Inspect View & Failover Diagnostics */}
           <div className="space-y-4">
             {/* Record Inspector */}
-            <div className="rounded-xl backdrop-blur-sm p-5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+            <div className="rounded-xl backdrop-blur-sm p-5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
               <h3 className="text-sm font-bold mb-3 flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                 <Eye className="h-4 w-4 text-emerald-400" />
                 Record Inspector
@@ -433,7 +433,7 @@ export default function KVStore({
             </div>
 
             {/* Educational Sharding Info */}
-            <div className="rounded-xl backdrop-blur-sm p-5 text-xs space-y-2.5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)', color: 'var(--color-text-muted)' }}>
+            <div className="rounded-xl backdrop-blur-sm p-5 text-xs space-y-2.5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)', color: 'var(--color-text-muted)' }}>
               <h4 className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-text)' }}>
                 How KV Sharding Works
               </h4>
@@ -451,7 +451,7 @@ export default function KVStore({
       {activeTab === 'write' && (
         <div className="grid gap-6 md:grid-cols-2">
           {/* Form Column */}
-          <div className="rounded-xl backdrop-blur-sm p-6" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.15)' }}>
+          <div className="rounded-xl backdrop-blur-sm p-6" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.15)' }}>
             <h3 className="text-base font-bold mb-4 flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
               <Plus className="h-5 w-5 text-emerald-400" />
               Store Key-Value Pair
@@ -539,7 +539,7 @@ export default function KVStore({
           </div>
 
           {/* Sharding Log Column */}
-           <div className="rounded-xl p-6 flex flex-col justify-between" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.6)' }}>
+           <div className="rounded-xl p-6 flex flex-col justify-between" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.6)' }}>
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--color-text)' }}>
                 Distributed Consensus Log
@@ -593,7 +593,7 @@ export default function KVStore({
                     <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1 rounded border border-emerald-500/20 mb-1">
                       Hash Module
                     </span>
-                    <div className="h-0.5 w-full bg-gradient-to-r from-emerald-500 to-blue-500 relative">
+                    <div className="h-0.5 w-full bg-gradient-to-r from-emerald-500 to-emerald-400 relative">
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-white animate-ping" />
                     </div>
                   </div>

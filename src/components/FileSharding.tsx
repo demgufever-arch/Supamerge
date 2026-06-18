@@ -60,7 +60,7 @@ export default function FileSharding({
   const getNodeColor = (nodeId: string) => {
     const colors: { [key: string]: string } = {
       'sb-node-us-east': 'bg-emerald-500 text-emerald-400 border-emerald-500/30',
-      'sb-node-eu-west': 'bg-blue-500 text-blue-400 border-blue-500/30',
+      'sb-node-eu-west': 'bg-teal-500 text-teal-400 border-teal-500/30',
       'sb-node-ap-south': 'bg-purple-500 text-purple-400 border-purple-500/30',
     };
     return colors[nodeId] || 'bg-amber-500 text-amber-400 border-amber-500/30';
@@ -71,7 +71,7 @@ export default function FileSharding({
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return <FileImage className="h-6 w-6 text-blue-400" />;
+    if (type.startsWith('image/')) return <FileImage className="h-6 w-6 text-teal-400" />;
     if (type.includes('json') || type.includes('javascript') || type.includes('html') || type.includes('css')) {
       return <FileCode className="h-6 w-6 text-amber-400" />;
     }
@@ -307,7 +307,7 @@ export default function FileSharding({
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Upload Panel */}
-        <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+        <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
           <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
             Shard New File
           </h3>
@@ -422,7 +422,7 @@ export default function FileSharding({
                     </tr>
                   ) : (
                     files.map((file) => (
-                      <tr key={file.id} className="hover:bg-slate-900/40 transition">
+                      <tr key={file.id} className="transition hover:bg-[var(--color-surface-alt)] cursor-pointer">
                         <td className="px-4 py-3.5 flex items-center gap-3">
                           <div className="rounded-lg bg-slate-900 p-2 border border-slate-800">
                             {getFileIcon(file.type)}
@@ -569,7 +569,8 @@ export default function FileSharding({
               size="sm"
               onClick={() => setShowDiagnosticsModal(false)}
               disabled={isDownloading !== null}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
+              className="hover:opacity-80 transition"
+              style={{ backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)', borderColor: 'var(--color-border)', border: '1px solid' }}
             >
               Close Logs
             </Button>

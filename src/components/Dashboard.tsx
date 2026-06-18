@@ -98,15 +98,15 @@ export default function Dashboard({
   // Node colors for mapping in the hash ring
   const getNodeColor = (nodeId: string) => {
     const colors: { [key: string]: string } = {
-      'sb-node-us-east': '#10b981', // Emerald
-      'sb-node-eu-west': '#3b82f6', // Blue
-      'sb-node-ap-south': '#a855f7', // Purple
+      'sb-node-us-east': '#10b981',
+      'sb-node-eu-west': '#14b8a6',
+      'sb-node-ap-south': '#a855f7',
     };
-    
+
     // Fallback for custom nodes
     if (!colors[nodeId]) {
       const hash = nodeId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const customColors = ['#f59e0b', '#ec4899', '#14b8a6', '#f43f5e', '#06b6d4'];
+      const customColors = ['#f59e0b', '#ec4899', '#14b8a6', '#f43f5e', '#10b981'];
       return customColors[hash % customColors.length];
     }
     return colors[nodeId];
@@ -115,7 +115,7 @@ export default function Dashboard({
   const getNodeColorClass = (nodeId: string) => {
     const colors: { [key: string]: string } = {
       'sb-node-us-east': 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
-      'sb-node-eu-west': 'text-blue-400 border-blue-500/30 bg-blue-500/10',
+      'sb-node-eu-west': 'text-teal-400 border-teal-500/30 bg-teal-500/10',
       'sb-node-ap-south': 'text-purple-400 border-purple-500/30 bg-purple-500/10',
     };
     return colors[nodeId] || 'text-amber-400 border-amber-500/30 bg-amber-500/10';
@@ -197,9 +197,9 @@ export default function Dashboard({
   return (
     <div className="space-y-6">
       {/* Cluster Banner */}
-      <div className="relative overflow-hidden rounded-2xl p-6 backdrop-blur-xl" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.5)' }}>
+      <div className="relative overflow-hidden rounded-2xl p-6 backdrop-blur-xl" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.5)' }}>
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-500/10 blur-3xl" />
 
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
@@ -286,7 +286,7 @@ export default function Dashboard({
       {/* Cluster Metrics Cards */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {/* DB Capacity Card */}
-        <Card size="sm" className="card-lift" style={{ borderColor: 'var(--color-border)', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.2)' }}>
+        <Card size="sm" className="card-lift" style={{ borderColor: 'var(--color-border)', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.2)' }}>
           <CardContent className="space-y-0">
             <div className="flex items-start justify-between">
               <div>
@@ -320,7 +320,7 @@ export default function Dashboard({
         </Card>
 
         {/* File Storage Card */}
-        <Card size="sm" className="card-lift" style={{ borderColor: 'var(--color-border)', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.2)' }}>
+        <Card size="sm" className="card-lift" style={{ borderColor: 'var(--color-border)', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.2)' }}>
           <CardContent className="space-y-0">
             <div className="flex items-start justify-between">
               <div>
@@ -334,14 +334,14 @@ export default function Dashboard({
                    of {formatBytes(metrics.totalStorageCapacityBytes)} combined limit
                  </p>
               </div>
-              <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-400 border border-blue-500/25">
+              <div className="rounded-lg bg-teal-500/10 p-2.5 text-teal-400 border border-teal-500/25">
                 <HardDrive className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-4">
               <div className="h-2 w-full rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-border)' }}>
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-400 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
                   style={{ width: `${Math.min(100, storagePercentage)}%` }}
                 />
               </div>
@@ -392,7 +392,7 @@ export default function Dashboard({
       {/* Topology and Hash Ring Section */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Interactive Hash Ring Visualization */}
-        <div className="lg:col-span-2 rounded-xl backdrop-blur-sm p-5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+        <div className="lg:col-span-2 rounded-xl backdrop-blur-sm p-5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div>
               <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
@@ -456,7 +456,7 @@ export default function Dashboard({
                 <defs>
                   <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
-                    <stop offset="50%" stopColor="#3b82f6" stopOpacity="0.5" />
+                    <stop offset="50%" stopColor="#14b8a6" stopOpacity="0.5" />
                     <stop offset="100%" stopColor="#a855f7" stopOpacity="0.2" />
                   </linearGradient>
                 </defs>
@@ -620,7 +620,7 @@ export default function Dashboard({
 
             {/* Trace Info Column */}
             <div className="md:col-span-2 space-y-4">
-              <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.6)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+              <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.6)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                 <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text)' }}>
                   Routing Console
                 </h4>
@@ -698,7 +698,7 @@ export default function Dashboard({
         </div>
 
         {/* Distributed Resilience Guide */}
-        <div className="rounded-xl backdrop-blur-sm p-5 flex flex-col justify-between space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+        <div className="rounded-xl backdrop-blur-sm p-5 flex flex-col justify-between space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
           <div className="space-y-3">
             <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
               <Signal className="h-4 w-4 text-emerald-400" />
@@ -712,7 +712,7 @@ export default function Dashboard({
               
                <div className="rounded-lg p-3 space-y-2" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
                 <div className="flex items-center gap-1.5 font-semibold" style={{ color: 'var(--color-text)' }}>
-                  <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-teal-400" />
                   Primary Node (Hash Routing)
                 </div>
                  <p className="text-[11px] leading-normal pl-3" style={{ color: 'var(--color-text-muted)' }}>

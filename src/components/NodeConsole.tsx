@@ -286,7 +286,7 @@ export default function NodeConsole({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl p-6 backdrop-blur-xl" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.4)' }}>
+      <div className="rounded-2xl p-6 backdrop-blur-xl" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.4)' }}>
         <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
           Cluster Environment Control
         </h2>
@@ -298,7 +298,7 @@ export default function NodeConsole({
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Left Side: Node Administration */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
             <h3 className="text-base font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
               <Plus className="h-5 w-5 text-emerald-400" />
               Add Real Supabase Node
@@ -425,7 +425,7 @@ export default function NodeConsole({
             )}
           </div>
 
-          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>
                 Cluster Provisioned Nodes ({nodes.length})
@@ -534,7 +534,7 @@ export default function NodeConsole({
 
         {/* Right Side: PostgreSQL SQL Schema Exporter */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+          <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
             <div>
               <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                 <Terminal className="h-4 w-4 text-emerald-400" />
@@ -587,7 +587,7 @@ export default function NodeConsole({
                </pre>
             </div>
 
-            <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+            <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                   <Download className="h-4 w-4 text-emerald-400" />

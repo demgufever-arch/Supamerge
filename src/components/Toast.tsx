@@ -28,7 +28,7 @@ const COLORS = {
   success: 'border-emerald-500/30 bg-emerald-500/8 text-emerald-400',
   error: 'border-rose-500/30 bg-rose-500/8 text-rose-400',
   warning: 'border-amber-500/30 bg-amber-500/8 text-amber-400',
-  info: 'border-blue-500/30 bg-blue-500/8 text-blue-400',
+  info: 'border-zinc-500/30 bg-zinc-500/8 text-zinc-500',
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {

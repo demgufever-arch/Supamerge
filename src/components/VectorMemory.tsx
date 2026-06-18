@@ -160,9 +160,9 @@ export default function VectorMemoryComponent({
   // Node coloring helpers
   const getNodeColor = (nodeId: string) => {
     const colors: { [key: string]: string } = {
-      'sb-node-us-east': '#10b981', // Emerald
-      'sb-node-eu-west': '#3b82f6', // Blue
-      'sb-node-ap-south': '#a855f7', // Purple
+      'sb-node-us-east': '#10b981',
+      'sb-node-eu-west': '#14b8a6',
+      'sb-node-ap-south': '#a855f7',
     };
     return colors[nodeId] || '#f59e0b';
   };
@@ -174,7 +174,7 @@ export default function VectorMemoryComponent({
   const getCategoryColor = (cat: string) => {
     const colors: { [key: string]: string } = {
       user_preferences: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-      infrastructure: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      infrastructure: 'bg-teal-500/10 text-teal-400 border-teal-500/20',
       branding: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
       security: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
       general: 'bg-[var(--color-surface-alt)]' ,
@@ -286,7 +286,7 @@ export default function VectorMemoryComponent({
                      Semantic Matches (Cosine Similarity)
                    </h3>
                   {searchResults.length === 0 ? (
-                      <div className="rounded-xl py-12 text-center text-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.05)', color: 'var(--color-text-muted)' }}>
+                      <div className="rounded-xl py-12 text-center text-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.05)', color: 'var(--color-text-muted)' }}>
                        No matching memories found. Try adjusting your search query.
                      </div>
                   ) : (
@@ -295,7 +295,7 @@ export default function VectorMemoryComponent({
                         key={mem.id}
                         onMouseEnter={() => setHoveredMemory(mem)}
                         onMouseLeave={() => setHoveredMemory(null)}
-                         className="group relative rounded-xl p-4 hover:border-emerald-500/40 hover:bg-slate-900/35 transition duration-200" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}
+                         className="group relative rounded-xl p-4 hover:border-emerald-500/40 transition duration-200 hover:bg-[var(--color-surface-alt)]" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-2 flex-1">
@@ -352,7 +352,7 @@ export default function VectorMemoryComponent({
                     </h3>
                   </div>
                   {memories.length === 0 ? (
-                      <div className="rounded-xl py-12 text-center text-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.05)', color: 'var(--color-text-muted)' }}>
+                      <div className="rounded-xl py-12 text-center text-sm" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.05)', color: 'var(--color-text-muted)' }}>
                        Memory bank is empty. Write memories to populate the cluster.
                      </div>
                   ) : (
@@ -361,7 +361,7 @@ export default function VectorMemoryComponent({
                         key={mem.id}
                         onMouseEnter={() => setHoveredMemory(mem)}
                         onMouseLeave={() => setHoveredMemory(null)}
-                         className="group relative rounded-xl p-4 hover:border-slate-700 transition duration-200" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}
+                         className="group relative rounded-xl p-4 hover:border-[var(--color-border-hover)] transition duration-200" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}
                       >
                         <div className="space-y-2">
                           <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
@@ -407,7 +407,7 @@ export default function VectorMemoryComponent({
 
           {/* Right Column: 2D Vector Space Projection Map */}
           <div className="lg:col-span-2 space-y-4">
-             <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+             <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
                   <BarChart2 className="h-4 w-4 text-emerald-400" />
@@ -419,7 +419,7 @@ export default function VectorMemoryComponent({
               </div>
 
               {/* Vector Space Plotting Area */}
-               <div className="relative aspect-square w-full rounded-xl overflow-hidden" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.85)' }}>
+               <div className="relative aspect-square w-full rounded-xl overflow-hidden" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.85)' }}>
                 {/* Grid Lines */}
                 <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 pointer-events-none">
                   {Array.from({ length: 3 }).map((_, i) => (
@@ -548,7 +548,7 @@ export default function VectorMemoryComponent({
             </div>
 
             {/* AI Unified Memory Explanation */}
-             <div className="rounded-xl backdrop-blur-sm p-5 text-xs space-y-2.5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)', color: 'var(--color-text-muted)' }}>
+             <div className="rounded-xl backdrop-blur-sm p-5 text-xs space-y-2.5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)', color: 'var(--color-text-muted)' }}>
               <h4 className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-text)' }}>
                 Why Unified Vector Memory?
               </h4>
@@ -567,7 +567,7 @@ export default function VectorMemoryComponent({
       )}
 
       {activeTab === 'add' && (
-        <div className="max-w-2xl mx-auto rounded-xl backdrop-blur-sm p-6 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.15)' }}>
+        <div className="max-w-2xl mx-auto rounded-xl backdrop-blur-sm p-6 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.15)' }}>
           <h3 className="text-base font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
             <Plus className="h-5 w-5 text-emerald-400" />
             Add Semantic Memory Chunk
