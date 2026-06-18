@@ -13,6 +13,7 @@ import NodeConsole from './components/NodeConsole';
 import LandingPage from './components/LandingPage';
 import ThemeToggle from './components/ThemeToggle';
 import { SidebarNavigationSectionDividers, navItemsWithDividers, getActiveUrl } from './components/sidebar-nav';
+import { CommandPalette, Command } from './components/CommandPalette';
 
 // Icons
 import { Database, ShieldAlert, HelpCircle, PanelLeftClose, PanelLeft } from 'lucide-react';
@@ -31,7 +32,24 @@ function getSupabaseClient(node: SupabaseNode) {
 }
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const stored = localStorage.getItem('supamerge_sidebar');
+    return stored !== null ? stored === 'true' : true;
+  });
+
+  // Persist sidebar state
+  useEffect(() => {
+    localStorage.setItem('supamerge_sidebar', String(sidebarOpen));
+  }, [sidebarOpen]);
+
+  // Auto-close sidebar on small screens
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    if (mq.matches) setSidebarOpen(false);
+    const handler = (e: MediaQueryListEvent) => setSidebarOpen(!e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     const hash = window.location.hash.replace('#', '');
     const parts = hash.split('/').filter(Boolean);
@@ -579,6 +597,10 @@ export default function App() {
   };
 
   const handleNavigate = (href: string) => {
+    // Close sidebar on mobile after navigation
+    const mq = window.matchMedia('(max-width: 768px)');
+    if (mq.matches) setSidebarOpen(false);
+
     if (href.startsWith('http')) {
       window.open(href, '_blank', 'noopener,noreferrer');
       return;
@@ -684,8 +706,62 @@ export default function App() {
     }
   };
 
+  // Build command palette commands
+  const commands: Command[] = [
+    {
+      id: 'nav-dashboard',
+      label: 'Go to Dashboard',
+      description: 'View cluster overview and metrics',
+      action: () => { setActiveTab('dashboard'); window.location.hash = '/app/dashboard'; },
+      shortcut: '⌘ D',
+    },
+    {
+      id: 'nav-kv',
+      label: 'Go to KV Store',
+      description: 'Manage key-value data across nodes',
+      action: () => { setActiveTab('kv'); window.location.hash = '/app/kv'; },
+      shortcut: '⌘ K',
+    },
+    {
+      id: 'nav-files',
+      label: 'Go to File Sharding',
+      description: 'Manage distributed files and chunks',
+      action: () => { setActiveTab('files'); window.location.hash = '/app/files'; },
+      shortcut: '⌘ F',
+    },
+    {
+      id: 'nav-vector',
+      label: 'Go to Vector Memory',
+      description: 'Manage embeddings and similarity search',
+      action: () => { setActiveTab('vector'); window.location.hash = '/app/vector'; },
+      shortcut: '⌘ V',
+    },
+    {
+      id: 'nav-console',
+      label: 'Go to Cluster Console',
+      description: 'Configure nodes and schema',
+      action: () => { setActiveTab('console'); window.location.hash = '/app/console'; },
+      shortcut: '⌘ ;',
+    },
+    {
+      id: 'toggle-sidebar',
+      label: 'Toggle Sidebar',
+      description: 'Show or hide the sidebar',
+      action: () => setSidebarOpen(!sidebarOpen),
+    },
+    {
+      id: 'toggle-landing',
+      label: 'Back to Landing Page',
+      description: 'Return to the home screen',
+      action: handleBackToLanding,
+    },
+  ];
+
   return (
     <div className="flex min-h-screen bg-mesh bg-noise" style={{ backgroundColor: 'var(--color-canvas)', color: 'var(--color-text)' }}>
+      {/* Command Palette */}
+      {!showLanding && <CommandPalette commands={commands} />}
+
       {/* Content wrapper to stack above fixed bg layers */}
       <div className="relative z-10 flex w-full min-h-0">
       {/* Sidebar Navigation — fixed position, slides in/out */}
@@ -757,6 +833,14 @@ export default function App() {
           </div>
         </div>
       </aside>
+
+      {/* Mobile overlay — closes sidebar on tap */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-10 bg-black/30 backdrop-blur-sm md:hidden transition-opacity duration-300"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Main Content Area — adjusts margin to make room for sidebar */}
       <main

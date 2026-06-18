@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SupabaseNode } from '../types';
 import { createClient } from '@supabase/supabase-js';
-import { Plus, Trash2, Terminal, Check, AlertTriangle, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Plus, Trash2, Terminal, Check, AlertTriangle, RefreshCw, ShieldCheck, Download, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -82,6 +82,7 @@ export default function NodeConsole({
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string; latency?: number } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [runningSql, setRunningSql] = useState<string | null>(null);
   const [schemaStatus, setSchemaStatus] = useState<{ [nodeId: string]: { kv: boolean; chunks: boolean; vector: boolean; checked: boolean } }>({});
   const [checkingSchema, setCheckingSchema] = useState(false);
 
@@ -98,6 +99,85 @@ export default function NodeConsole({
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Run SQL Schema on all connected nodes
+  const handleRunSqlOnAll = async () => {
+    setRunningSql('running');
+    const connectedNodes = nodes.filter(n => n.status === 'connected');
+    let success = 0;
+    let failed = 0;
+
+    await Promise.all(
+      connectedNodes.map(async (node) => {
+        const supabase = createClient(node.url, node.anonKey, { auth: { persistSession: false } });
+        try {
+          // Attempt to use exec_sql RPC to run SQL
+          const { error } = await supabase.rpc('exec_sql', { query: SCHEMA_SQL });
+          if (!error) {
+            success++;
+          } else {
+            // RPC doesn't exist or failed — will need manual SQL execution
+            failed++;
+          }
+        } catch {
+          failed++;
+        }
+      })
+    );
+
+    setRunningSql(success > 0 && failed === 0 ? 'done' : 'partial');
+    setTimeout(() => setRunningSql(null), 3000);
+  };
+
+  // Export cluster config as JSON
+  const handleExportConfig = () => {
+    const config = {
+      exportedAt: new Date().toISOString(),
+      nodes: nodes.map(n => ({
+        name: n.name,
+        url: n.url,
+        anonKey: n.anonKey,
+      })),
+    };
+    const json = JSON.stringify(config, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cluster-config-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import cluster config from JSON
+  const handleImportConfig = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const text = await file.text();
+    const config = JSON.parse(text);
+
+    if (!Array.isArray(config.nodes)) {
+      alert('Invalid config format');
+      return;
+    }
+
+    for (const nodeConfig of config.nodes) {
+      if (nodeConfig.url && nodeConfig.anonKey && nodeConfig.name) {
+        await onAddNode({
+          name: nodeConfig.name,
+          url: nodeConfig.url,
+          anonKey: nodeConfig.anonKey,
+        });
+      }
+    }
+
+    // Reset input
+    e.target.value = '';
+  };
+
 
   // Test Node Connection
   const testNodeConnection = async (nodeUrl: string, nodeKey: string): Promise<{ success: boolean; message: string; latency?: number }> => {
@@ -466,29 +546,95 @@ export default function NodeConsole({
             </div>
 
             <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopySql}
-                 className="absolute right-3 top-3 text-[10px]" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
-                title="Copy SQL Script"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                    Copy SQL
-                  </>
-                )}
-              </Button>
+              <div className="absolute right-3 top-3 flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRunSqlOnAll}
+                  disabled={runningSql !== null || nodes.filter(n => n.status === 'connected').length === 0}
+                  className="text-[10px]" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                  title="Run SQL on all connected nodes"
+                >
+                  {runningSql === 'running' && <RefreshCw className="h-3.5 w-3.5 animate-spin" />}
+                  {runningSql === 'done' && <Check className="h-3.5 w-3.5 text-emerald-400" />}
+                  {runningSql === 'partial' && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+                  {!runningSql && <Terminal className="h-3.5 w-3.5" />}
+                  {runningSql === 'running' ? 'Running...' : runningSql === 'done' ? 'Done!' : runningSql === 'partial' ? 'Partial' : 'Run SQL'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopySql}
+                  className="text-[10px]" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                  title="Copy SQL Script"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      Copy SQL
+                    </>
+                  )}
+                </Button>
+              </div>
               
                 <pre className="rounded-lg p-4 font-mono text-[9px] h-[360px] overflow-y-auto leading-relaxed select-all" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid', color: 'var(--color-text-muted)' }}>
                  {SCHEMA_SQL}
                </pre>
+            </div>
+
+            <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 240 249 255), 0.1)' }}>
+              <div>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
+                  <Download className="h-4 w-4 text-emerald-400" />
+                  Cluster Configuration
+                </h3>
+                <p className="text-[11px] mt-0.5 leading-normal" style={{ color: 'var(--color-text-muted)' }}>
+                  Export your cluster nodes to a JSON file, or import a previously saved configuration.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportConfig}
+                  disabled={nodes.length === 0}
+                  className="flex-1 text-[10px]"
+                  style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                  title="Export cluster configuration"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Export Config
+                </Button>
+
+                <label className="flex-1">
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportConfig}
+                    className="hidden"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      const input = (e.target as HTMLElement).parentElement?.querySelector('input');
+                      input?.click();
+                    }}
+                    className="w-full text-[10px]"
+                    style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                    title="Import cluster configuration"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    Import Config
+                  </Button>
+                </label>
+              </div>
             </div>
 
             <div className="rounded-lg border p-3 text-[11px] flex gap-2 leading-relaxed" style={{ backgroundColor: 'color-mix(in srgb, #f59e0b 10%, transparent)', borderColor: 'color-mix(in srgb, #f59e0b 20%, transparent)', color: 'var(--color-text-muted)' }}>
