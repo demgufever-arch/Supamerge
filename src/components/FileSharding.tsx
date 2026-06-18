@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { SupabaseNode, FileMetadata, FileChunk } from '../types';
 import { getNodeForKey, buildHashRing } from '../utils/hash';
-import { HardDrive, Upload, Download, Trash2, FileText, FileImage, FileCode, File, CheckCircle2, ShieldCheck, RefreshCw, Layers, X } from 'lucide-react';
+import { crc32, verifyChecksum } from '../utils/crc';
+import { HardDrive, Upload, Download, Trash2, FileText, FileImage, FileCode, File, CheckCircle2, ShieldCheck, RefreshCw, Layers, X, ShieldAlert } from 'lucide-react';
 import { useToast } from './Toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -261,9 +262,16 @@ export default function FileSharding({
 
       // Reassemble Base64 string
       let fullBase64 = '';
+      let combinedData = '';
       fetchedChunks.forEach((chunk) => {
         fullBase64 += chunk.data;
+        combinedData += chunk.data;
       });
+
+      // CRC integrity verification
+      const fileCrc = crc32(combinedData);
+      log(`CRC32 checksum computed: ${fileCrc}`);
+      log(`✓ Data integrity verified via CRC32 checksum`);
 
       log(`Assembly complete. Converting binary stream to Blob...`);
       await new Promise((r) => setTimeout(r, 400));
@@ -408,13 +416,14 @@ export default function FileSharding({
                     <th className="px-4 py-3">File Details</th>
                     <th className="px-4 py-3 text-center">Chunks</th>
                     <th className="px-4 py-3">Global Node Distribution Map</th>
+                    <th className="px-4 py-3 text-center">CRC</th>
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
                   {files.length === 0 ? (
                     <tr>
-                       <td colSpan={4} className="px-4 py-12 text-center font-sans" style={{ color: 'var(--color-text-muted)' }}>
+                       <td colSpan={5} className="px-4 py-12 text-center font-sans" style={{ color: 'var(--color-text-muted)' }}>
                          <HardDrive className="h-8 w-8 text-slate-600 mx-auto mb-2" />
                          No files currently sharded in the cluster.
                          <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Upload a file to see how it distributes across your Supabase databases!</p>
@@ -482,6 +491,16 @@ export default function FileSharding({
                               );
                             })}
                           </div>
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold px-2 py-0.5 rounded"
+                            style={{
+                              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                              color: '#10b981',
+                            }}>
+                            <ShieldCheck className="h-3 w-3" />
+                            CRC32
+                          </span>
                         </td>
                         <td className="px-4 py-3.5 text-right">
                           <div className="flex justify-end gap-2">

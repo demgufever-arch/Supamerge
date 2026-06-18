@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SupabaseNode, KVRecord } from '../types';
 import { getNodeForKey, buildHashRing } from '../utils/hash';
-import { Search, Database, RefreshCw, Plus, Edit2, Trash2, Key, HelpCircle, Eye, ShieldAlert, Check } from 'lucide-react';
+import { Search, Database, RefreshCw, Plus, Edit2, Trash2, Key, HelpCircle, Eye, ShieldAlert, Check, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -235,9 +235,11 @@ export default function KVStore({
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent" style={{ borderColor: 'var(--color-border)' }}>
-                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Key Name</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Key Name</TableHead>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Primary Node</TableHead>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3" style={{ color: 'var(--color-text-muted)' }}>Replica Node</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3 text-center" style={{ color: 'var(--color-text-muted)' }}>V</TableHead>
+                   <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3 text-center" style={{ color: 'var(--color-text-muted)' }}>Status</TableHead>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3 text-right" style={{ color: 'var(--color-text-muted)' }}>Size</TableHead>
                    <TableHead className="text-xs font-semibold uppercase tracking-wider px-4 py-3 text-right" style={{ color: 'var(--color-text-muted)' }}>Actions</TableHead>
                   </TableRow>
@@ -245,7 +247,7 @@ export default function KVStore({
                 <TableBody>
                   {filteredRecords.length === 0 ? (
                     <TableRow className="hover:bg-transparent" style={{ borderColor: 'var(--color-border)' }}>
-                       <TableCell colSpan={5} className="px-4 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                       <TableCell colSpan={7} className="px-4 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
                           <Database className="h-8 w-8 mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} />
                          No records found matching your search.
                        </TableCell>
@@ -313,6 +315,23 @@ export default function KVStore({
                             ) : (
                                <span className="italic" style={{ color: 'var(--color-text-muted)' }}>None</span>
                             )}
+                          </TableCell>
+                          <TableCell className="px-4 py-3.5 text-center">
+                            <span className="font-mono font-bold text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                              v{rec.version || 1}
+                            </span>
+                          </TableCell>
+                          <TableCell className="px-4 py-3.5 text-center">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                              style={{
+                                backgroundColor: rec.consistencyStatus === 'consistent' ? 'rgba(16, 185, 129, 0.1)' : rec.consistencyStatus === 'inconsistent' ? 'rgba(244, 63, 94, 0.1)' : 'rgba(161, 161, 170, 0.1)',
+                                color: rec.consistencyStatus === 'consistent' ? '#10b981' : rec.consistencyStatus === 'inconsistent' ? '#f43f5e' : '#a1a1aa',
+                              }}>
+                              {rec.consistencyStatus === 'consistent' && <Check className="h-3 w-3" />}
+                              {rec.consistencyStatus === 'inconsistent' && <AlertTriangle className="h-3 w-3" />}
+                              {rec.consistencyStatus === 'unchecked' || !rec.consistencyStatus ? '?' : null}
+                              {rec.consistencyStatus || 'unchecked'}
+                            </span>
                           </TableCell>
                           <TableCell className="px-4 py-3.5 text-right font-semibold" style={{ color: 'var(--color-text-muted)' }}>
                             {sizeBytes} B
@@ -442,6 +461,9 @@ export default function KVStore({
               </p>
               <p className="leading-relaxed">
                 We write the data to the matching Supabase database. If that database goes down, our client-side SDK automatically recovers the record from the backup node, guaranteeing zero downtime.
+              </p>
+              <p className="leading-relaxed">
+                Each write increments the <strong>version number</strong> and attaches a <strong>CRC32 checksum</strong> for data integrity. The <strong>consistency status</strong> indicator shows whether primary and replica copies match. Read repair automatically syncs inconsistent records on access.
               </p>
             </div>
           </div>

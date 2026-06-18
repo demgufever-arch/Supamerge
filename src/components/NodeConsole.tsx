@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { SupabaseNode } from '../types';
 import { createClient } from '@supabase/supabase-js';
-import { Plus, Trash2, Terminal, Check, AlertTriangle, RefreshCw, ShieldCheck, Download, Upload } from 'lucide-react';
+import { Plus, Trash2, Terminal, Check, AlertTriangle, RefreshCw, ShieldCheck, Download, Upload, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { encryptKey, decryptKey, generatePassphrase } from '../utils/encryption';
 
 interface NodeConsoleProps {
   nodes: SupabaseNode[];
@@ -83,8 +84,80 @@ export default function NodeConsole({
   const [testResult, setTestResult] = useState<{ success: boolean; message: string; latency?: number } | null>(null);
   const [copied, setCopied] = useState(false);
   const [runningSql, setRunningSql] = useState<string | null>(null);
-  const [schemaStatus, setSchemaStatus] = useState<{ [nodeId: string]: { kv: boolean; chunks: boolean; vector: boolean; checked: boolean } }>({});
+  const [schemaStatus, setSchemaStatus] = useState<{ [nodeId: string]: { kv: boolean; chunks: boolean; vector: boolean; checked: boolean; pgvector: boolean } }>({});
   const [checkingSchema, setCheckingSchema] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
+
+  const ONBOARDING_STEPS = [
+    {
+      title: 'Welcome to Cluster Console',
+      description: 'Connect your Supabase projects together to form a unified distributed database cluster. This tool lets you manage KV stores, distribute file chunks, and run vector search across multiple Supabase instances.',
+      action: 'Get Started',
+    },
+    {
+      title: 'Add Your First Node',
+      description: 'Enter a name, Supabase project URL (e.g. https://your-project.supabase.co), and your anon API key. The tool will test the connection before adding it to your cluster.',
+      action: 'I have my keys ready',
+    },
+    {
+      title: 'Run Schema Setup',
+      description: 'After connecting, copy the SQL script to the right into your Supabase SQL Editor. This creates the required tables (unified_kv, unified_chunks, unified_vector) and the pgvector search function.',
+      action: 'Show me the SQL',
+    },
+    {
+      title: 'Explore Dashboard & KV Store',
+      description: 'Once connected, navigate to the Dashboard tab to see cluster overview and the KV Store tab to start writing distributed key-value data. Files are automatically sharded across nodes.',
+      action: 'Launch Dashboard',
+    },
+  ];
+
+  // Encryption dialog state
+  const [showEncryption, setShowEncryption] = useState(false);
+  const [encryptPassphrase, setEncryptPassphrase] = useState('');
+  const [encryptTargetKey, setEncryptTargetKey] = useState('');
+  const [encryptResult, setEncryptResult] = useState<string | null>(null);
+  const [encryptError, setEncryptError] = useState<string | null>(null);
+  const [showDecrypted, setShowDecrypted] = useState(false);
+
+  // Generate a passphrase for key encryption
+  const handleGeneratePassphrase = () => {
+    const phrase = generatePassphrase();
+    setEncryptPassphrase(phrase);
+  };
+
+  // Encrypt an API key
+  const handleEncryptKey = async () => {
+    setEncryptError(null);
+    setEncryptResult(null);
+    if (!encryptPassphrase.trim() || !encryptTargetKey.trim()) {
+      setEncryptError('Both passphrase and API key are required.');
+      return;
+    }
+    try {
+      const encrypted = await encryptKey(encryptTargetKey.trim(), encryptPassphrase.trim());
+      setEncryptResult(encrypted);
+      setShowDecrypted(false);
+    } catch (err) {
+      setEncryptError(`Encryption failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+  };
+
+  // Decrypt an API key
+  const handleDecryptKey = async () => {
+    setEncryptError(null);
+    setEncryptResult(null);
+    if (!encryptPassphrase.trim() || !encryptTargetKey.trim()) {
+      setEncryptError('Both passphrase and encrypted key are required.');
+      return;
+    }
+    try {
+      const decrypted = await decryptKey(encryptTargetKey.trim(), encryptPassphrase.trim());
+      setEncryptResult(decrypted);
+      setShowDecrypted(true);
+    } catch (err) {
+      setEncryptError(`Decryption failed: ${err instanceof Error ? err.message : 'Invalid passphrase or corrupted key'}`);
+    }
+  };
 
   // Auto-check schemas when nodes are loaded
   useEffect(() => {
@@ -260,14 +333,22 @@ export default function NodeConsole({
       const { error: vectorError } = await supabase.from('unified_vector').select('*').limit(0);
       const vectorExists = !vectorError;
 
+      // Check pgvector extension
+      let pgvectorExists = false;
+      const { data: extData } = await supabase.rpc('exec_sql', { query: "SELECT * FROM pg_extension WHERE extname = 'vector'" });
+      if (extData && Array.isArray(extData)) {
+        pgvectorExists = extData.length > 0;
+      }
+
       return {
         kv: kvExists,
         chunks: chunksExists,
         vector: vectorExists,
+        pgvector: pgvectorExists,
         checked: true,
       };
     } catch (e) {
-      return { kv: false, chunks: false, vector: false, checked: true };
+      return { kv: false, chunks: false, vector: false, pgvector: false, checked: true };
     }
   };
 
@@ -303,6 +384,39 @@ export default function NodeConsole({
               <Plus className="h-5 w-5 text-emerald-400" />
               Add Real Supabase Node
             </h3>
+
+            {nodes.length === 0 && (
+              <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-emerald-400">Onboarding ({onboardingStep + 1}/{ONBOARDING_STEPS.length})</h4>
+                  <button
+                    onClick={() => setOnboardingStep((onboardingStep + 1) % ONBOARDING_STEPS.length)}
+                    className="text-[9px] px-2 py-1 rounded hover:bg-emerald-500/10 transition"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    Next →
+                  </button>
+                </div>
+                <h5 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
+                  {ONBOARDING_STEPS[onboardingStep].title}
+                </h5>
+                <p className="text-[11px] leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                  {ONBOARDING_STEPS[onboardingStep].description}
+                </p>
+                <div className="flex gap-1.5">
+                  {ONBOARDING_STEPS.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setOnboardingStep(i)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === onboardingStep ? 'w-6 bg-emerald-400' : 'w-1.5'
+                      }`}
+                      style={{ backgroundColor: i === onboardingStep ? '#10b981' : 'var(--color-border)' }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             
             <form onSubmit={handleAddNodeSubmit} className="space-y-4 text-xs">
               <div className="grid sm:grid-cols-2 gap-4">
@@ -503,6 +617,17 @@ export default function NodeConsole({
                           >
                             VEC:{nodeSchema.vector ? '✓' : '✗'}
                           </Badge>
+                          <Badge
+                            variant={nodeSchema.pgvector ? 'default' : 'outline'}
+                            className={`text-[9px] font-mono ${
+                              nodeSchema.pgvector
+                                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15'
+                                : 'text-amber-400 border-amber-500/30'
+                            }`}
+                            title="pgvector extension"
+                          >
+                            PG:{nodeSchema.pgvector ? '✓' : '✗'}
+                          </Badge>
                           </div>
                         )}
 
@@ -634,6 +759,105 @@ export default function NodeConsole({
                     Import Config
                   </Button>
                 </label>
+              </div>
+            </div>
+
+            <div className="rounded-xl backdrop-blur-sm p-5 space-y-4" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
+              <div>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--color-text)' }}>
+                  <KeyRound className="h-4 w-4 text-emerald-400" />
+                  API Key Encryption
+                </h3>
+                <p className="text-[11px] mt-0.5 leading-normal" style={{ color: 'var(--color-text-muted)' }}>
+                  Encrypt or decrypt Supabase API keys using a passphrase (AES-GCM + PBKDF2).
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Passphrase
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Enter or generate a passphrase..."
+                      value={encryptPassphrase}
+                      onChange={(e) => setEncryptPassphrase(e.target.value)}
+                      className="font-mono text-[10px]"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGeneratePassphrase}
+                      className="shrink-0 text-[10px]"
+                      title="Generate random passphrase"
+                    >
+                      Generate
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                    {showDecrypted ? 'Decrypted' : 'Key'} Value
+                  </label>
+                  <Input
+                    type={showDecrypted ? 'text' : 'password'}
+                    placeholder="Paste API key or encrypted blob..."
+                    value={encryptTargetKey}
+                    onChange={(e) => setEncryptTargetKey(e.target.value)}
+                    className="font-mono text-[10px]"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEncryptKey}
+                    disabled={!encryptPassphrase.trim() || !encryptTargetKey.trim()}
+                    className="flex-1 text-[10px]"
+                    style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                  >
+                    <ShieldCheck className="h-3 w-3" />
+                    Encrypt
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDecryptKey}
+                    disabled={!encryptPassphrase.trim() || !encryptTargetKey.trim()}
+                    className="flex-1 text-[10px]"
+                    style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                  >
+                    {showDecrypted ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    Decrypt
+                  </Button>
+                </div>
+
+                {encryptResult && (
+                  <div className="rounded-lg border p-2 text-[10px] font-mono break-all max-h-20 overflow-y-auto" style={{
+                    backgroundColor: showDecrypted ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                    borderColor: 'rgba(16, 185, 129, 0.2)',
+                    color: '#10b981',
+                  }}>
+                    <strong className="block mb-1 text-[9px] uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                      {showDecrypted ? '✓ Decrypted Key' : '✓ Encrypted Blob'}
+                    </strong>
+                    {encryptResult}
+                  </div>
+                )}
+
+                {encryptError && (
+                  <div className="rounded-lg border p-2 text-[10px]" style={{
+                    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                    borderColor: 'rgba(244, 63, 94, 0.2)',
+                    color: '#fb7185',
+                  }}>
+                    {encryptError}
+                  </div>
+                )}
               </div>
             </div>
 

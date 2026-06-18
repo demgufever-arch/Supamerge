@@ -386,6 +386,51 @@ export default function Dashboard({
         </Card>
       </div>
 
+      {/* Node Latency Overview */}
+      {connected.length > 0 && (
+        <div className="rounded-xl backdrop-blur-sm p-5" style={{ borderColor: 'var(--color-border)', border: '1px solid', backgroundColor: 'rgba(var(--color-surface-alt-rgb, 228 228 231), 0.1)' }}>
+          <h3 className="text-sm font-bold flex items-center gap-2 mb-4" style={{ color: 'var(--color-text)' }}>
+            <Signal className="h-4 w-4 text-emerald-400" />
+            Node Latency Overview
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {connected.map((node) => {
+              const lat = node.latency || 0;
+              const barWidth = Math.min(100, (lat / 500) * 100);
+              const isHigh = lat > 300;
+              const isMedium = lat > 100;
+              return (
+                <div key={node.id} className="rounded-lg p-3" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)', border: '1px solid' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold font-mono" style={{ color: 'var(--color-text)' }}>{node.name}</span>
+                    <span className={`text-[10px] font-mono font-bold ${isHigh ? 'text-rose-400' : isMedium ? 'text-amber-400' : 'text-emerald-400'}`}>
+                      {lat}ms
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-border)' }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${barWidth}%`,
+                        background: isHigh
+                          ? 'linear-gradient(90deg, #f43f5e, #e11d48)'
+                          : isMedium
+                          ? 'linear-gradient(90deg, #f59e0b, #d97706)'
+                          : 'linear-gradient(90deg, #10b981, #059669)',
+                      }}
+                    />
+                  </div>
+                  <div className="mt-1.5 flex justify-between text-[9px]" style={{ color: 'var(--color-text-muted)' }}>
+                    <span>{node.region}</span>
+                    <span>{isHigh ? 'Degraded' : isMedium ? 'Elevated' : 'Optimal'}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* World Map */}
       <WorldMap dots={mapDots} />
 

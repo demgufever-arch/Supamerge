@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { SupabaseNode, VectorMemory } from '../types';
-import { generateMockEmbedding } from '../utils/embedding';
-import { Brain, Search, Plus, Sparkles, Database, HelpCircle, User, Clock, BarChart2 } from 'lucide-react';
+import { generateMockEmbedding, cosineSimilarity } from '../utils/embedding';
+import { Brain, Search, Plus, Sparkles, Database, HelpCircle, User, Clock, BarChart2, Filter, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -62,6 +62,34 @@ export default function VectorMemoryComponent({
   const [activeTab, setActiveTab] = useState<'explore' | 'add'>('explore');
   const [hoveredMemory, setHoveredMemory] = useState<VectorMemory | null>(null);
 
+  // Metadata filters
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [agentFilter, setAgentFilter] = useState<string>('all');
+  const [searchLimit, setSearchLimit] = useState(5);
+
+  // Derive unique categories and agent names from memories
+  const categories = useMemo(() => {
+    const cats = new Set(memories.map(m => m.category));
+    return Array.from(cats).sort();
+  }, [memories]);
+
+  const agentNames = useMemo(() => {
+    const agents = new Set(memories.map(m => m.agentName));
+    return Array.from(agents).sort();
+  }, [memories]);
+
+  // Filtered memories for display
+  const filteredMemories = useMemo(() => {
+    let result = memories;
+    if (categoryFilter !== 'all') {
+      result = result.filter(m => m.category === categoryFilter);
+    }
+    if (agentFilter !== 'all') {
+      result = result.filter(m => m.agentName === agentFilter);
+    }
+    return result;
+  }, [memories, categoryFilter, agentFilter]);
+
   // Auto-search when query is cleared
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -100,8 +128,11 @@ export default function VectorMemoryComponent({
     const start = performance.now();
 
     try {
-      // Search all nodes in parallel (triggered via parent)
-      const results = await onSearchMemories(searchQuery.trim(), 5);
+      const filters = {
+        category: categoryFilter !== 'all' ? categoryFilter : undefined,
+        agentName: agentFilter !== 'all' ? agentFilter : undefined,
+      };
+      const results = await onSearchMemories(searchQuery.trim(), searchLimit, filters);
       const end = performance.now();
 
       setSearchResults(results);
@@ -139,7 +170,7 @@ export default function VectorMemoryComponent({
 
   // Pre-calculate positions of all memories
   const projectedMemories = useMemo(() => {
-    return memories.map((mem) => {
+    return filteredMemories.map((mem) => {
       const { x, y } = projectVector(mem.embedding);
       return {
         ...mem,
@@ -259,6 +290,51 @@ export default function VectorMemoryComponent({
                 )}
               </Button>
             </form>
+
+            {/* Filters */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <Filter className="h-3.5 w-3.5" style={{ color: 'var(--color-text-muted)' }} />
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[160px] h-8 text-xs" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map(cat => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5" style={{ color: 'var(--color-text-muted)' }} />
+                <Select value={agentFilter} onValueChange={setAgentFilter}>
+                  <SelectTrigger className="w-[160px] h-8 text-xs" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
+                    <SelectValue placeholder="Agent" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Agents</SelectItem>
+                    {agentNames.map(agent => (
+                      <SelectItem key={agent} value={agent}>{agent}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <SlidersHorizontal className="h-3.5 w-3.5" style={{ color: 'var(--color-text-muted)' }} />
+                <Select value={String(searchLimit)} onValueChange={(v) => setSearchLimit(Number(v))}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
+                    <SelectValue placeholder="Results" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[3, 5, 10, 20, 50].map(n => (
+                      <SelectItem key={n} value={String(n)}>Top {n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {/* Parallel Search Diagnostics Banner */}
             {searchStats && (

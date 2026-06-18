@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { SupabaseNode, KVRecord, FileMetadata, FileChunk, VectorMemory, ActiveTab } from './types';
 import { buildHashRing, getNodeForKey } from './utils/hash';
-import { generateMockEmbedding } from './utils/embedding';
+import { generateMockEmbedding, cosineSimilarity } from './utils/embedding';
+import { crc32 } from './utils/crc';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Import Components
@@ -308,10 +309,21 @@ export default function App() {
       replicaNodeId = activeNodes[(primaryIdx + 1) % activeNodes.length].id;
     }
 
+    // Compute version: find existing record and increment
+    const existing = kvRecords.find(r => r.key === key);
+    const version = (existing?.version || 0) + 1;
+
+    // Compute checksum for data integrity
+    const valStr = JSON.stringify(value);
+    const checksum = crc32(valStr);
+
     const newRecord: KVRecord = {
       key,
       value,
       tags,
+      version,
+      checksum,
+      consistencyStatus: 'consistent',
       updatedAt: new Date().toISOString(),
       nodeId: primaryNodeId,
       replicaNodeId: replicaNodeId || undefined,
@@ -330,6 +342,8 @@ export default function App() {
             key,
             value,
             tags,
+            version,
+            checksum,
             updated_at: newRecord.updatedAt,
           })
         );
@@ -344,6 +358,8 @@ export default function App() {
             key,
             value,
             tags,
+            version,
+            checksum,
             updated_at: newRecord.updatedAt,
           })
         );
@@ -402,6 +418,9 @@ export default function App() {
       const replicaNodeId = activeNodes[(primaryIdx + 1) % activeNodes.length].id;
       const replicaNode = nodes.find(n => n.id === replicaNodeId);
 
+      // Compute CRC32 checksum for chunk data integrity
+      const chunkChecksum = crc32(chunk.data);
+
       const chunkPromises = [];
 
       if (primaryNode) {
@@ -416,6 +435,7 @@ export default function App() {
               total_chunks: chunk.totalChunks,
               data: chunk.data,
               size_bytes: chunk.sizeBytes,
+              checksum: chunkChecksum,
             })
           );
         }
@@ -433,6 +453,7 @@ export default function App() {
               total_chunks: chunk.totalChunks,
               data: chunk.data,
               size_bytes: chunk.sizeBytes,
+              checksum: chunkChecksum,
             })
           );
         }
@@ -442,7 +463,33 @@ export default function App() {
     });
 
     await Promise.all(uploadPromises);
-    addLog(`[DFS] Live file sharded upload complete: "${name}"`);
+
+    // Compute file-level checksum
+    const fileChecksum = crc32(chunks.map(c => c.data).join(''));
+
+    // Update file metadata with checksum
+    const activeNodes = nodes.filter(n => n.status === 'connected');
+    if (activeNodes.length > 0) {
+      const fileNodeId = activeNodes[0].id;
+      const fileNode = nodes.find(n => n.id === fileNodeId);
+      if (fileNode) {
+        const sub = getSupabaseClient(fileNode);
+        if (sub) {
+          await sub.from('unified_chunks').upsert({
+            chunk_id: `file_meta_${name}`,
+            file_name: name,
+            file_type: 'meta',
+            chunk_index: -1,
+            total_chunks: chunks.length,
+            data: JSON.stringify({ checksum: fileChecksum, chunks: chunks.length }),
+            size_bytes: 0,
+            checksum: fileChecksum,
+          });
+        }
+      }
+    }
+
+    addLog(`[DFS] Live file sharded upload complete: "${name}" (CRC: ${fileChecksum})`);
     await loadClusterData();
   };
 
@@ -529,10 +576,24 @@ export default function App() {
     await loadClusterData();
   };
 
-  const handleSearchMemories = async (queryText: string, limit: number): Promise<VectorMemory[]> => {
+  const handleSearchMemories = async (
+    queryText: string,
+    limit: number,
+    filters?: { category?: string; agentName?: string }
+  ): Promise<VectorMemory[]> => {
     const queryEmbedding = generateMockEmbedding(queryText);
     const activeNodes = nodes.filter(n => n.status === 'connected');
     const allResults: VectorMemory[] = [];
+
+    // Build metadata filter clause for pgvector
+    const filterConditions: string[] = [];
+    if (filters?.category) {
+      filterConditions.push(`metadata->>'category' = '${filters.category.replace(/'/g, "''")}'`);
+    }
+    if (filters?.agentName) {
+      filterConditions.push(`metadata->>'agent_name' = '${filters.agentName.replace(/'/g, "''")}'`);
+    }
+    const filterSql = filterConditions.length > 0 ? `AND ${filterConditions.join(' AND ')}` : '';
 
     await Promise.all(
       activeNodes.map(async (node) => {
@@ -540,14 +601,20 @@ export default function App() {
         if (!sub) return;
 
         try {
-          const { data } = await sub.rpc('match_unified_vectors', {
-            query_embedding: queryEmbedding,
-            match_threshold: 0.2,
-            match_count: limit,
-          });
+          // Try real pgvector query with exec_sql for metadata filtering
+          const embeddingStr = `[${queryEmbedding.join(',')}]`;
+          const sql = `
+            SELECT id, content, metadata, 1 - (embedding <=> '${embeddingStr}'::vector) AS similarity
+            FROM unified_vectors
+            WHERE 1 - (embedding <=> '${embeddingStr}'::vector) > 0.2
+            ${filterSql}
+            ORDER BY similarity DESC
+            LIMIT ${limit}
+          `;
+          const { data: sqlData } = await sub.rpc('exec_sql', { query: sql });
 
-          if (data) {
-            data.forEach((row: { id: string; content: string; metadata: Record<string, unknown> | null; similarity: number | null }) => {
+          if (sqlData && Array.isArray(sqlData)) {
+            sqlData.forEach((row: { id: string; content: string; metadata: Record<string, unknown> | null; similarity: number | null }) => {
               allResults.push({
                 id: row.id,
                 content: row.content,
@@ -557,6 +624,29 @@ export default function App() {
                 similarity: row.similarity,
               });
             });
+          } else {
+            // Fallback to match_unified_vectors RPC
+            const { data } = await sub.rpc('match_unified_vectors', {
+              query_embedding: queryEmbedding,
+              match_threshold: 0.2,
+              match_count: limit,
+            });
+
+            if (data) {
+              data.forEach((row: { id: string; content: string; metadata: Record<string, unknown> | null; similarity: number | null }) => {
+                // Client-side post-filter for metadata
+                if (filters?.category && row.metadata?.category !== filters.category) return;
+                if (filters?.agentName && row.metadata?.agent_name !== filters.agentName) return;
+                allResults.push({
+                  id: row.id,
+                  content: row.content,
+                  embedding: [],
+                  metadata: row.metadata || {},
+                  nodeId: node.id,
+                  similarity: row.similarity,
+                });
+              });
+            }
           }
         } catch {
           addLog(`WARNING: Vector search RPC failed on node [${node.name}]`);
