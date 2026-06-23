@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { SupabaseNode, ClusterMetrics } from '../types';
 import { buildHashRing, getNodeForKey, HashRingNode } from '../utils/hash';
-import { Database, HardDrive, Cpu, Activity, Signal, RefreshCw, Zap, Plus, Terminal } from 'lucide-react';
+import { Database, HardDrive, Cpu, Activity, Signal, RefreshCw, Zap, Terminal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import WorldMap from '@/components/ui/world-map';
@@ -192,7 +191,7 @@ export default function Dashboard({
       return [];
     }
     return dots;
-  }, [nodes]);
+  }, [connected]);
 
   return (
     <div className="space-y-6">

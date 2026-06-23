@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { SupabaseNode, VectorMemory } from '../types';
-import { generateMockEmbedding, cosineSimilarity } from '../utils/embedding';
+import { generateMockEmbedding } from '../utils/embedding';
 import { Brain, Search, Plus, Sparkles, Database, HelpCircle, User, Clock, BarChart2, Filter, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ interface VectorMemoryProps {
   nodes: SupabaseNode[];
   memories: VectorMemory[];
   onAddMemory: (content: string, category: string, agentName: string) => Promise<void>;
-  onSearchMemories: (queryText: string, limit: number) => Promise<VectorMemory[]>;
+  onSearchMemories: (queryText: string, limit: number, filters?: { category?: string; agentName?: string }) => Promise<VectorMemory[]>;
   onDeleteMemory: (memoryId: string) => Promise<void>;
   isSandbox: boolean;
 }
@@ -69,12 +69,12 @@ export default function VectorMemoryComponent({
 
   // Derive unique categories and agent names from memories
   const categories = useMemo(() => {
-    const cats = new Set(memories.map(m => m.category));
+    const cats = new Set(memories.map(m => m.metadata.category));
     return Array.from(cats).sort();
   }, [memories]);
 
   const agentNames = useMemo(() => {
-    const agents = new Set(memories.map(m => m.agentName));
+    const agents = new Set(memories.map(m => m.metadata.agentName));
     return Array.from(agents).sort();
   }, [memories]);
 
@@ -82,10 +82,10 @@ export default function VectorMemoryComponent({
   const filteredMemories = useMemo(() => {
     let result = memories;
     if (categoryFilter !== 'all') {
-      result = result.filter(m => m.category === categoryFilter);
+      result = result.filter(m => m.metadata.category === categoryFilter);
     }
     if (agentFilter !== 'all') {
-      result = result.filter(m => m.agentName === agentFilter);
+      result = result.filter(m => m.metadata.agentName === agentFilter);
     }
     return result;
   }, [memories, categoryFilter, agentFilter]);
@@ -132,7 +132,7 @@ export default function VectorMemoryComponent({
         category: categoryFilter !== 'all' ? categoryFilter : undefined,
         agentName: agentFilter !== 'all' ? agentFilter : undefined,
       };
-      const results = await onSearchMemories(searchQuery.trim(), searchLimit, filters);
+      const results = await onSearchMemories(searchQuery.trim(), searchLimit, filters as { category?: string; agentName?: string });
       const end = performance.now();
 
       setSearchResults(results);
@@ -178,7 +178,7 @@ export default function VectorMemoryComponent({
         y,
       };
     });
-  }, [memories]);
+  }, [filteredMemories]);
 
   // Project the active search query if present
   const projectedQuery = useMemo(() => {
@@ -214,7 +214,7 @@ export default function VectorMemoryComponent({
   };
 
   const formatCategory = (cat: string) => {
-    return cat.replace('_', ' ').toUpperCase();
+    return cat.replaceAll('_', ' ').toUpperCase();
   };
 
   return (
@@ -295,7 +295,7 @@ export default function VectorMemoryComponent({
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-1.5">
                 <Filter className="h-3.5 w-3.5" style={{ color: 'var(--color-text-muted)' }} />
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as string)}>
                   <SelectTrigger className="w-[160px] h-8 text-xs" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
@@ -309,7 +309,7 @@ export default function VectorMemoryComponent({
               </div>
               <div className="flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5" style={{ color: 'var(--color-text-muted)' }} />
-                <Select value={agentFilter} onValueChange={setAgentFilter}>
+                <Select value={agentFilter} onValueChange={(v) => setAgentFilter(v as string)}>
                   <SelectTrigger className="w-[160px] h-8 text-xs" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
                     <SelectValue placeholder="Agent" />
                   </SelectTrigger>
@@ -397,7 +397,7 @@ export default function VectorMemoryComponent({
                           </div>
 
                           {/* Similarity Badge */}
-                          {mem.similarity !== undefined && (
+                          {mem.similarity != null && (
                             <div className="text-right shrink-0">
                                <span className="text-xs font-semibold block" style={{ color: 'var(--color-text-muted)' }}>Match Score</span>
                               <span className="font-mono text-base font-extrabold text-emerald-400">
@@ -670,7 +670,7 @@ export default function VectorMemoryComponent({
                  <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
                    Category
                  </label>
-                <Select value={newCategory} onValueChange={setNewCategory} disabled={isAdding}>
+                <Select value={newCategory} onValueChange={(v) => setNewCategory(v as string)} disabled={isAdding}>
                    <SelectTrigger className="w-full text-xs" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text)' }}>
                     <SelectValue />
                   </SelectTrigger>

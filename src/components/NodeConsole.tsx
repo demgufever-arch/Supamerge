@@ -111,8 +111,6 @@ export default function NodeConsole({
     },
   ];
 
-  // Encryption dialog state
-  const [showEncryption, setShowEncryption] = useState(false);
   const [encryptPassphrase, setEncryptPassphrase] = useState('');
   const [encryptTargetKey, setEncryptTargetKey] = useState('');
   const [encryptResult, setEncryptResult] = useState<string | null>(null);
@@ -243,6 +241,9 @@ export default function NodeConsole({
           name: nodeConfig.name,
           url: nodeConfig.url,
           anonKey: nodeConfig.anonKey,
+          region: nodeConfig.region || 'us-east-1',
+          dbLimitBytes: nodeConfig.dbLimitBytes || 524288000,
+          storageLimitBytes: nodeConfig.storageLimitBytes || 1073741824,
         });
       }
     }
@@ -322,7 +323,7 @@ export default function NodeConsole({
   // Check Schema on Node
   const checkNodeSchema = async (node: SupabaseNode) => {
     try {
-      const supabase = createClient(node.url, node.anonKey);
+      const supabase = createClient(node.url, node.anonKey, { auth: { persistSession: false } });
       
       const { error: kvError } = await supabase.from('unified_kv').select('*').limit(0);
       const kvExists = !kvError;

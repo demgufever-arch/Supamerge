@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SupabaseNode, KVRecord, FileMetadata, FileChunk, VectorMemory, ActiveTab } from './types';
 import { buildHashRing, getNodeForKey } from './utils/hash';
-import { generateMockEmbedding, cosineSimilarity } from './utils/embedding';
+import { generateMockEmbedding } from './utils/embedding';
 import { crc32 } from './utils/crc';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -13,12 +13,11 @@ import VectorMemoryComponent from './components/VectorMemory';
 import NodeConsole from './components/NodeConsole';
 import LandingPage from './components/LandingPage';
 import ThemeToggle from './components/ThemeToggle';
-import { SidebarNavigationSectionDividers, navItemsWithDividers, getActiveUrl } from './components/sidebar-nav';
 import { CommandPalette, Command } from './components/CommandPalette';
+import Sidebar from './components/Sidebar';
 
 // Icons
 import { Database, ShieldAlert, HelpCircle, PanelLeftClose, PanelLeft } from 'lucide-react';
-import logoSrc from './assets/logo.png';
 
 // Live Supabase Client Cache
 const supabaseClientCache: Record<string, SupabaseClient> = {};
@@ -66,6 +65,8 @@ export default function App() {
   const [files, setFiles] = useState<FileMetadata[]>([]);
   const [memories, setMemories] = useState<VectorMemory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  
+  const isSandbox = nodes.length > 0 && nodes.every(n => n.anonKey.startsWith('demo-key'));
   const [clusterLogs, setClusterLogs] = useState<string[]>([]);
 
   // Generate demo data for sandbox mode
@@ -112,7 +113,7 @@ export default function App() {
       embedding: generateMockEmbedding(item.content),
       metadata: { category: item.category, agentName: item.agentName, timestamp: `2025-06-${String(15 + (i % 3)).padStart(2, '0')}T${String(8 + i).padStart(2, '0')}:00:00Z` },
       nodeId: demoNodes[i % demoNodes.length].id,
-      similarity: undefined,
+      similarity: null,
     }));
     setMemories(demoMemories);
 
@@ -218,7 +219,7 @@ export default function App() {
                 id: row.id,
                 content: row.content,
                 embedding: row.embedding ? JSON.parse(row.embedding) : [],
-                metadata: row.metadata || {},
+                metadata: (row.metadata || {}) as VectorMemory['metadata'],
                 nodeId: node.id,
               });
             });
@@ -337,7 +338,7 @@ export default function App() {
     addLog(`Removed node [${id}] from live cluster configuration.`);
     
     delete supabaseClientCache[id];
-    loadClusterData();
+    loadClusterData().catch(() => {});
   };
 
   // KV Operations
@@ -508,7 +509,7 @@ export default function App() {
       
       const activeNodes = nodes.filter(n => n.status === 'connected');
       const primaryIdx = activeNodes.findIndex(n => n.id === primaryNodeId);
-      const replicaNodeId = activeNodes[(primaryIdx + 1) % activeNodes.length].id;
+      const replicaNodeId = primaryIdx >= 0 ? activeNodes[(primaryIdx + 1) % activeNodes.length].id : activeNodes[0]?.id;
       const replicaNode = nodes.find(n => n.id === replicaNodeId);
 
       // Compute CRC32 checksum for chunk data integrity
@@ -702,7 +703,9 @@ export default function App() {
 
       const scored = filtered.map(m => ({
         ...m,
-        similarity: cosineSimilarity(queryEmbedding, m.embedding),
+        similarity: m.embedding.reduce((sum, v, i) => sum + v * queryEmbedding[i], 0) / (
+          Math.sqrt(m.embedding.reduce((s, v) => s + v * v, 0)) * Math.sqrt(queryEmbedding.reduce((s, v) => s + v * v, 0))
+        ) || 0,
       }));
       const sorted = scored.sort((a, b) => (b.similarity || 0) - (a.similarity || 0)).slice(0, limit);
       return sorted;
@@ -732,7 +735,7 @@ export default function App() {
           const embeddingStr = `[${queryEmbedding.join(',')}]`;
           const sql = `
             SELECT id, content, metadata, 1 - (embedding <=> '${embeddingStr}'::vector) AS similarity
-            FROM unified_vectors
+            FROM unified_vector
             WHERE 1 - (embedding <=> '${embeddingStr}'::vector) > 0.2
             ${filterSql}
             ORDER BY similarity DESC
@@ -746,7 +749,7 @@ export default function App() {
                 id: row.id,
                 content: row.content,
                 embedding: [],
-                metadata: row.metadata || {},
+                metadata: (row.metadata || {}) as VectorMemory['metadata'],
                 nodeId: node.id,
                 similarity: row.similarity,
               });
@@ -761,14 +764,13 @@ export default function App() {
 
             if (data) {
               data.forEach((row: { id: string; content: string; metadata: Record<string, unknown> | null; similarity: number | null }) => {
-                // Client-side post-filter for metadata
-                if (filters?.category && row.metadata?.category !== filters.category) return;
-                if (filters?.agentName && row.metadata?.agent_name !== filters.agentName) return;
+                if (filters?.category && (row.metadata as Record<string, unknown>)?.category !== filters.category) return;
+                if (filters?.agentName && (row.metadata as Record<string, unknown>)?.agent_name !== filters.agentName) return;
                 allResults.push({
                   id: row.id,
                   content: row.content,
                   embedding: [],
-                  metadata: row.metadata || {},
+                  metadata: (row.metadata || {}) as VectorMemory['metadata'],
                   nodeId: node.id,
                   similarity: row.similarity,
                 });
@@ -811,7 +813,7 @@ export default function App() {
       const sub = getSupabaseClient(node);
       if (!sub) return;
 
-      await sub.from('unified_vector').delete().eq('content', memory.content);
+      await sub.from('unified_vector').delete().eq('id', memoryId);
     });
 
     await Promise.all(deletePromises);
@@ -875,8 +877,6 @@ export default function App() {
       </div>
     </div>
   );
-
-  const isSandbox = nodes.length > 0 && nodes.every(n => n.anonKey.startsWith('demo-key'));
 
   const renderTabContent = () => {
     if (loading) {
@@ -989,150 +989,76 @@ export default function App() {
 
       {/* Content wrapper to stack above fixed bg layers */}
       <div className="relative z-10 flex w-full min-h-0">
-      {/* Sidebar Navigation — fixed position, slides in/out */}
-      <aside
-        className={`fixed left-0 top-0 h-full font-sans border-r backdrop-blur-md flex flex-col justify-between transition-transform duration-300 ease-in-out z-20 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-        style={{
-          width: '16rem',
-          backgroundColor: 'var(--color-sidebar-bg)',
-          borderColor: 'var(--color-border)',
-        }}
-      >
-        <div className="p-6 space-y-6">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <img src={logoSrc} alt="SupaMerge" className="h-10 w-10 rounded-lg shrink-0" />
-            <div>
-              <h2 className="text-sm font-extrabold tracking-wider" style={{ color: 'var(--color-logo-text)' }}>
-                SUPAMERGE
-              </h2>
-              <span className="text-[10px] text-emerald-400/80 font-bold leading-none block tracking-wider">
-                UNIFIED CLUSTER
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          activeTab={activeTab}
+          clusterLogs={clusterLogs}
+          onNavigate={handleNavigate}
+        />
+
+        {/* Main Content Area — adjusts margin to make room for sidebar */}
+        <main
+          className={`flex-1 flex flex-col min-h-screen bg-grid transition-all duration-300 ease-in-out ${
+            sidebarOpen ? 'ml-64' : 'ml-0'
+          }`}
+        >
+          {/* Top Header */}
+          <header className="h-14 border-b px-6 backdrop-blur-md flex items-center justify-between shrink-0" style={{ backgroundColor: 'var(--color-header-bg)', borderColor: 'var(--color-border)' }}>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border shadow-sm transition-all duration-200 hover:scale-105 shrink-0"
+                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+                title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              >
+                {sidebarOpen ? <PanelLeftClose className="h-3.5 w-3.5" /> : <PanelLeft className="h-3.5 w-3.5" />}
+              </button>
+              <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Environment:</span>
+              <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20 text-xs">
+                Production Unified Pool
               </span>
             </div>
-          </div>
 
-          {/* Nav Links */}
-          <SidebarNavigationSectionDividers
-            activeUrl={getActiveUrl(activeTab)}
-            items={navItemsWithDividers}
-            onNavigate={handleNavigate}
-          />
-        </div>
-
-        {/* Console System Logs in Sidebar footer */}
-        <div className="p-6 border-t space-y-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-canvas)' }}>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>
-              Cluster Logs
-            </span>
-            <div className="flex items-center gap-2 shrink-0">
-              {clusterLogs.length > 0 && (
-                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                  {clusterLogs.length}
-                </span>
-              )}
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            </div>
-          </div>
-          
-          <div className="max-h-32 overflow-y-auto font-mono text-[10px] space-y-1.5 scrollbar-thin" style={{ color: 'var(--color-text-muted)' }}>
-            {clusterLogs.length === 0 ? (
-              <div className="italic" style={{ color: 'var(--color-text-muted)' }}>No events recorded.</div>
-            ) : (
-              clusterLogs.slice(0, 15).map((log, i) => (
-                <div key={i} className="leading-relaxed border-b pb-1 last:border-0 text-ellipsis" style={{ borderColor: 'var(--color-border)' }}>
-                  {log}
+            <div className="flex items-center gap-4 text-xs">
+              {nodes.length === 0 && (
+                <div className="hidden sm:flex items-center gap-1.5 text-rose-400/90 bg-rose-500/8 border border-rose-500/20 rounded-lg px-3 py-1 font-semibold">
+                  <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                  <span>No projects connected. Add them in Cluster Console.</span>
                 </div>
-              ))
-            )}
-          </div>
+              )}
+              {isSandbox && (
+                <div className="hidden sm:flex items-center gap-1.5 text-emerald-400/90 bg-emerald-500/8 border border-emerald-500/20 rounded-lg px-3 py-1 font-semibold">
+                  <Database className="h-3.5 w-3.5 shrink-0" />
+                  <span>Sandbox demo — add real nodes in Cluster Console</span>
+                </div>
+              )}
 
-          <div className="rounded-lg p-3 border text-[10px] flex items-center gap-2 whitespace-nowrap" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
-            <Database className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--color-text-muted)' }} />
-            <span>
-              Mode: <strong className="text-emerald-400 font-mono">Live</strong>
-            </span>
-          </div>
-        </div>
-      </aside>
-
-      {/* Mobile overlay — closes sidebar on tap */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-10 bg-black/30 backdrop-blur-sm md:hidden transition-opacity duration-300"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Main Content Area — adjusts margin to make room for sidebar */}
-      <main
-        className={`flex-1 flex flex-col min-h-screen bg-grid transition-all duration-300 ease-in-out ${
-          sidebarOpen ? 'ml-64' : 'ml-0'
-        }`}
-      >
-        {/* Top Header */}
-        <header className="h-14 border-b px-6 backdrop-blur-md flex items-center justify-between shrink-0" style={{ backgroundColor: 'var(--color-header-bg)', borderColor: 'var(--color-border)' }}>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border shadow-sm transition-all duration-200 hover:scale-105 shrink-0"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border)',
-                color: 'var(--color-text-muted)',
-              }}
-              title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-            >
-              {sidebarOpen ? <PanelLeftClose className="h-3.5 w-3.5" /> : <PanelLeft className="h-3.5 w-3.5" />}
-            </button>
-            <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Environment:</span>
-            <span className="rounded-full px-3 py-0.5 font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm shadow-emerald-950/20 text-xs">
-              Production Unified Pool
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 text-xs">
-            {nodes.length === 0 && (
-              <div className="hidden sm:flex items-center gap-1.5 text-rose-400/90 bg-rose-500/8 border border-rose-500/20 rounded-lg px-3 py-1 font-semibold">
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                <span>No projects connected. Add them in Cluster Console.</span>
+              <div style={{ color: 'var(--color-text-muted)' }}>
+                Combined Capacity:{' '}
+                <strong className="font-mono px-2 py-0.5 rounded" style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)' }}>
+                  {(nodes.length * 0.5).toFixed(1)} GB
+                </strong>
               </div>
-            )}
-            {isSandbox && (
-              <div className="hidden sm:flex items-center gap-1.5 text-emerald-400/90 bg-emerald-500/8 border border-emerald-500/20 rounded-lg px-3 py-1 font-semibold">
-                <Database className="h-3.5 w-3.5 shrink-0" />
-                <span>Sandbox demo — add real nodes in Cluster Console</span>
-              </div>
-            )}
 
-            <div style={{ color: 'var(--color-text-muted)' }}>
-              Combined Capacity:{' '}
-              <strong className="font-mono px-2 py-0.5 rounded" style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)' }}>
-                {(nodes.length * 0.5).toFixed(1)} GB
-              </strong>
+              <ThemeToggle />
+
+              <button
+                onClick={handleBackToLanding}
+                className="flex items-center gap-1.5 transition-colors p-1 rounded-lg hover:bg-slate-800/30"
+                style={{ color: 'var(--color-text-muted)' }}
+                title="About SupaMerge"
+              >
+                <HelpCircle className="h-4 w-4" />
+              </button>
             </div>
+          </header>
 
-            <ThemeToggle />
-
-            <button
-              onClick={handleBackToLanding}
-              className="flex items-center gap-1.5 transition-colors p-1 rounded-lg hover:bg-slate-800/30"
-              style={{ color: 'var(--color-text-muted)' }}
-              title="About SupaMerge"
-            >
-              <HelpCircle className="h-4 w-4" />
-            </button>
+          {/* Tab Content Page */}
+          <div className="flex-1 overflow-y-auto p-6 max-w-7xl w-full mx-auto tab-enter" key={activeTab}>
+            {renderTabContent()}
           </div>
-        </header>
-
-        {/* Tab Content Page */}
-        <div className="flex-1 overflow-y-auto p-6 max-w-7xl w-full mx-auto tab-enter" key={activeTab}>
-          {renderTabContent()}
-        </div>
-      </main>
+        </main>
       </div>
     </div>
   );

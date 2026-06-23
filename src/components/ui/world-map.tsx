@@ -114,18 +114,18 @@ export default function WorldMap({
                 }}
               />
               {/* Start dot */}
-              <circle cx={c.start.x} cy={c.start.y} r="3" fill={lineColor} opacity="0">
+              <circle cx={c.start.x} cy={c.start.y} r="3" fill={activeLineColor} opacity="0">
                 <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin={`${delay}s`} fill="freeze" />
               </circle>
-              <circle cx={c.start.x} cy={c.start.y} r="3" fill={lineColor} opacity="0">
+              <circle cx={c.start.x} cy={c.start.y} r="3" fill={activeLineColor} opacity="0">
                 <animate attributeName="opacity" from="0.4" to="0" dur="2s" begin={`${delay + 0.5}s`} repeatCount="indefinite" />
                 <animate attributeName="r" from="3" to="10" dur="2s" begin={`${delay + 0.5}s`} repeatCount="indefinite" />
               </circle>
               {/* End dot */}
-              <circle cx={c.end.x} cy={c.end.y} r="4" fill={lineColor} opacity="0">
+              <circle cx={c.end.x} cy={c.end.y} r="4" fill={activeLineColor} opacity="0">
                 <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin={`${delay + 0.2}s`} fill="freeze" />
               </circle>
-              <circle cx={c.end.x} cy={c.end.y} r="4" fill={lineColor} opacity="0">
+              <circle cx={c.end.x} cy={c.end.y} r="4" fill={activeLineColor} opacity="0">
                 <animate attributeName="opacity" from="0.4" to="0" dur="2s" begin={`${delay + 0.7}s`} repeatCount="indefinite" />
                 <animate attributeName="r" from="4" to="12" dur="2s" begin={`${delay + 0.7}s`} repeatCount="indefinite" />
               </circle>
